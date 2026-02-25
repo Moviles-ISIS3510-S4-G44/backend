@@ -1,0 +1,18 @@
+opencollection: 1.0.0
+info:
+  name: "marketplace-andes-workspace"
+  type: workspace
+
+collections:
+  - name: "auth"
+    path: "collections/auth"
+  - name: "user"
+    path: "collections/user"
+  - name: "item"
+    path: "collections/item"
+  - name: "review"
+    path: "collections/review"
+
+specs:
+
+docs: ''
