@@ -12,8 +12,14 @@ dependencies = [
     "sqlmodel>=0.0.37",
 ]
 
-[dependency-groups]
-dev = [
-    "pytest>=9.0.2",
-    "ruff>=0.15.2",
+[project.optional-dependencies]
+otel = [
+    "opentelemetry-exporter-otlp-proto-grpc>=1.39.1",
+    "opentelemetry-instrumentation-fastapi>=0.60b1",
+    "opentelemetry-instrumentation-logging>=0.60b1",
+    "opentelemetry-instrumentation-psycopg>=0.60b1",
+    "opentelemetry-instrumentation-sqlalchemy>=0.60b1",
 ]
+
+[dependency-groups]
+dev = ["pytest>=9.0.2", "ruff>=0.15.2"]
