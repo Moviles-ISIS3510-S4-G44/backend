@@ -1,12 +1,15 @@
 from fastapi import FastAPI
+from contextlib import asynccontextmanager
 
-app = FastAPI()
-
-
-def hello():
-    print("Hello world")
+from backend.auth.routes import router as auth_router
+from backend.database import init_db
 
 
-@app.get("/")
-async def root():
-    return "Hello world"
+@asynccontextmanager
+async def lifespan(_: FastAPI):
+    init_db()
+    yield
+
+
+app = FastAPI(title="Marketplace Andes Backend", lifespan=lifespan)
+app.include_router(auth_router)
