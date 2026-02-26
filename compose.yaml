@@ -2,6 +2,7 @@ services:
   server:
     build:
       context: .
+    restart: always
     ports:
       - 8000:8000
     develop:
@@ -13,3 +14,29 @@ services:
             - .venv/
         - action: rebuild
           path: ./pyproject.toml
+
+  db:
+    image: postgres:18.2-trixie
+    restart: always
+    user: postgres
+    secrets:
+      - db-password
+    volumes:
+      - db-data:/var/lib/postgresql
+    environment:
+      - POSTGRES_DB=marketplace
+      - POSTGRES_PASSWORD_FILE=/run/secrets/db-password
+    expose:
+      - 5432
+    healthcheck:
+      test: ["CMD", "pg_isready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  db-data:
+
+secrets:
+  db-password:
+    environment: PG_PASSWORD

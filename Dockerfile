@@ -37,4 +37,4 @@ USER nonroot
 
 WORKDIR /app
 
-CMD ["fastapi", "run", "--host", "0.0.0.0", "--port", "8000", "--workers", "1", "src/backend/app.py"]
+CMD ["fastapi", "run", "--host", "0.0.0.0", "--port", "8000", "--workers", "1", "src/marketplace-andes-backend/app.py"]
