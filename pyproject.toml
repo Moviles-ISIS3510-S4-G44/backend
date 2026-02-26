@@ -1,7 +1,7 @@
 [project]
-name = "backend"
-version = "0.1.0"
-description = "Add your description here"
+name = "marketplace-andes-backend"
+version = "0.0.1"
+description = "Marketplace Andes"
 readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
@@ -12,5 +12,6 @@ dependencies = [
 
 [dependency-groups]
 dev = [
+    "pytest>=9.0.2",
     "ruff>=0.15.2",
 ]

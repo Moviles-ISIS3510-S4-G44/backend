@@ -1,5 +1,7 @@
 FROM ghcr.io/astral-sh/uv:0.10.6-python3.14-trixie-slim AS builder
 
+ENV UVICORN_WORKERS=1
+
 ENV UV_COMPILE_BYTECODE=1
 ENV UV_LINK_MODE=copy
 ENV UV_NO_DEV=1
@@ -35,4 +37,4 @@ USER nonroot
 
 WORKDIR /app
 
-CMD ["fastapi", "run", "--host", "0.0.0.0", "--port", "8000", "src/backend/app.py"]
+CMD ["fastapi", "run", "--host", "0.0.0.0", "--port", "8000", "--workers", "1", "src/backend/app.py"]

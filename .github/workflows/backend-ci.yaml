@@ -1,0 +1,29 @@
+name: Backend CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  lint-and-format:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6.0.2
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v7.3.0
+
+      - name: Install dependencies
+        run: uv sync --locked --dev
+
+      - name: Run ruff linting
+        run: uv run ruff check
+
+      - name: Check ruff formatting
+        run: uv run ruff format --check
