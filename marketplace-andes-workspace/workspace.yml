@@ -12,7 +12,11 @@ collections:
     path: "collections/item"
   - name: "review"
     path: "collections/review"
+  - name: "healthcheck"
+    path: "collections/healthcheck"
 
 specs:
 
 docs: ''
+
+activeEnvironmentUid: 1bqfd6u00000000000000
