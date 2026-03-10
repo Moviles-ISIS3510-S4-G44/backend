@@ -27,3 +27,6 @@ jobs:
 
       - name: Check ruff formatting
         run: uv run ruff format --check
+
+      - name: Ty check
+        run: uv run ty check
