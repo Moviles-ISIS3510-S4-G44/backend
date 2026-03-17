@@ -5,6 +5,9 @@ services:
     restart: always
     ports:
       - 8000:8000
+    depends_on:
+      db:
+        condition: service_healthy
     develop:
       watch:
         - action: sync
@@ -16,7 +19,7 @@ services:
           path: ./pyproject.toml
 
   db:
-    image: postgres:18.2-trixie
+    image: postgres:18.3-trixie
     restart: always
     user: postgres
     secrets:
@@ -24,7 +27,6 @@ services:
     volumes:
       - db-data:/var/lib/postgresql
     environment:
-      - POSTGRES_DB=marketplace
       - POSTGRES_PASSWORD_FILE=/run/secrets/db-password
     expose:
       - 5432
@@ -34,10 +36,30 @@ services:
       timeout: 5s
       retries: 5
 
+  pgadmin:
+    image: dpage/pgadmin4:9.13
+    restart: always
+    profiles:
+      - db-admin
+    secrets:
+      - pgadmin-password
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=${PGADMIN_DEFAULT_EMAIL}
+      - PGADMIN_DEFAULT_PASSWORD_FILE=/run/secrets/pgadmin-password
+    ports:
+      - 5050:80
+    depends_on:
+      db:
+        condition: service_healthy
+
 volumes:
   db-data:
-
+  pgadmin-data:
 
 secrets:
   db-password:
     environment: PG_PASSWORD
+  pgadmin-password:
+    environment: PGADMIN_DEFAULT_PASSWORD

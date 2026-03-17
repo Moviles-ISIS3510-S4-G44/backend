@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 
-FROM ghcr.io/astral-sh/uv:0.10.6-python3.14-trixie-slim AS builder
+FROM ghcr.io/astral-sh/uv:0.10.11-python3.14-trixie-slim AS builder
 
 ENV UVICORN_WORKERS=1
 

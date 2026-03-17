@@ -8,7 +8,7 @@ dependencies = [
     "fastapi[standard]>=0.135.1",
     "passlib[argon2]>=1.7.4",
     "psycopg[binary]>=3.3.3",
-    "pyjwt>=2.11.0",
+    "pyjwt>=2.12.1",
     "sqlmodel>=0.0.37",
 ]
 
@@ -25,6 +25,6 @@ otel = [
 dev = [
     "alembic>=1.18.4",
     "pytest>=9.0.2",
-    "ruff>=0.15.2",
-    "ty>=0.0.21",
+    "ruff>=0.15.6",
+    "ty>=0.0.23",
 ]
