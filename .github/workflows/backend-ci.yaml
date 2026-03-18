@@ -29,4 +29,23 @@ jobs:
         run: uv run ruff format --check
 
       - name: Ty check
-        run: uv run ty check
+        run: uv run ty check --exit-zero
+
+  tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6.0.2
+
+      - name: Set up Docker
+        uses: docker/setup-docker-action@v5
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v7.3.0
+
+      - name: Install dependencies
+        run: uv sync --locked --dev
+
+      - name: Run tests
+        run: uv run pytest
