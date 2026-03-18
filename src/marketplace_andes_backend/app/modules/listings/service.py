@@ -1,3 +1,5 @@
+from ..categories.schemas import CategoryResponse
+from ..locations.schemas import LocationResponse
 from .repository import ListingRepository
 from .schemas import ListingListItemResponse, ListingListResponse
 
@@ -11,9 +13,6 @@ class ListingService:
         items: list[ListingListItemResponse] = []
 
         for listing in listings:
-            if not listing.category or not listing.location:
-                continue
-
             sorted_images = sorted(listing.images, key=lambda image: image.order)
             items.append(
                 ListingListItemResponse(
@@ -22,16 +21,9 @@ class ListingService:
                     condition=listing.condition,
                     status=listing.status,
                     images=[image.url for image in sorted_images],
-                    category={
-                        "id": listing.category.id,
-                        "name": listing.category.name,
-                    },
-                    location={
-                        "id": listing.location.id,
-                        "name": listing.location.name,
-                    },
+                    category=CategoryResponse.model_validate(listing.category),
+                    location=LocationResponse.model_validate(listing.location),
                 )
             )
 
         return ListingListResponse(items=items, total=len(items))
-

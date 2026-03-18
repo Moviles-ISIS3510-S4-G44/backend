@@ -30,7 +30,7 @@ class Listing(SQLModel, table=True):
     seller: "User" = Relationship(back_populates="listings")
     images: list["ListingImage"] = Relationship(
         back_populates="listing",
-        sa_relationship_kwargs={"order_by": "ListingImage.order"},
+        sa_relationship_kwargs={"order_by": lambda: ListingImage.order},
     )
 
 

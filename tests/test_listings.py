@@ -1,4 +1,5 @@
 from collections.abc import Generator
+from uuid import UUID
 from uuid import uuid4
 
 from fastapi.testclient import TestClient
@@ -64,10 +65,12 @@ def test_get_listings_returns_expected_shape() -> None:
     assert len(data["items"]) == 1
 
     first_item = data["items"][0]
+    UUID(first_item["id"])
     assert first_item["price"] == 50000
     assert first_item["condition"] == "new"
     assert first_item["status"] == "active"
     assert first_item["images"] == ["url1", "url2"]
+    UUID(first_item["category"]["id"])
     assert first_item["category"]["name"] == "Books"
+    UUID(first_item["location"]["id"])
     assert first_item["location"]["name"] == "Uniandes"
-
