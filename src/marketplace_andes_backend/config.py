@@ -1,3 +1,4 @@
+import os
 from functools import lru_cache
 
 from pydantic import Field
@@ -9,9 +10,9 @@ class Settings(BaseSettings):
         default="postgresql+psycopg://backend_user:password@db:5432/marketplace"
     )
     database_echo: bool = Field(default=False)
-    enable_otel: bool = Field(default=False, env="ENABLE_OTEL")
+    enable_otel: bool = Field(default=False)
     model_config = SettingsConfigDict(
-        env_file=".env",
+        env_file=os.getenv("ENV_FILE", ".env"),
         env_file_encoding="utf-8",
         extra="ignore",
     )

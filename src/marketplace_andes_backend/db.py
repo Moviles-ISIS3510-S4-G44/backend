@@ -1,6 +1,8 @@
 from collections.abc import Generator
 from functools import lru_cache
+from typing import Annotated
 
+from fastapi import Depends
 from sqlalchemy.engine import Engine
 from sqlmodel import Session, create_engine
 
@@ -16,3 +18,6 @@ def get_engine() -> Engine:
 def get_session() -> Generator[Session, None, None]:
     with Session(get_engine()) as session:
         yield session
+
+
+SessionDep = Annotated[Session, Depends(get_session)]
