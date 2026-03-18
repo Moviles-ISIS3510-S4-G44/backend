@@ -22,7 +22,7 @@ otel = [
 ]
 
 [tool.fastapi]
-entrypoint = "src.marketplace_andes_backend.app:app"
+entrypoint = "src.marketplace_andes_backend.app.main:app"
 
 [dependency-groups]
 dev = [
