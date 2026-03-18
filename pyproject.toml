@@ -21,6 +21,9 @@ otel = [
     "opentelemetry-instrumentation-sqlalchemy>=0.60b1",
 ]
 
+[tool.fastapi]
+entrypoint = "src.marketplace_andes_backend.app:app"
+
 [dependency-groups]
 dev = [
     "alembic>=1.18.4",

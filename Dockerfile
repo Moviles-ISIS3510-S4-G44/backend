@@ -26,6 +26,8 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 
 FROM debian:trixie-slim
 
+ENV UVICORN_WORKERS=1
+
 RUN groupadd --system --gid 999 nonroot \
     && useradd --system --gid 999 --uid 999 --create-home nonroot
 
@@ -39,4 +41,4 @@ USER nonroot
 
 WORKDIR /app
 
-CMD ["fastapi", "run", "--host", "0.0.0.0", "--port", "8000", "--workers", "1", "src/marketplace_andes_backend/app.py"]
+CMD ["sh", "-c", "fastapi run --host 0.0.0.0 --port 8000 --workers ${UVICORN_WORKERS}"]
