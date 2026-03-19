@@ -1,0 +1,61 @@
+info:
+  name: Get Profile
+  type: http
+  seq: 1
+
+http:
+  method: GET
+  url: http://{{server}}:{{port}}/users/profile/1
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |
+  # User Profile
+
+  Returns a user profile by ID.
+
+  ## Endpoint
+
+  - Method: `GET`
+  - URL: `/users/profile/{user_id}`
+
+  ## Path Params
+
+  - `user_id` (integer): ID of the user to fetch.
+
+  ## Success Response
+
+  - Status: `200 OK`
+  - Body:
+
+    ```json
+    {
+      "id": 1,
+      "name": "Alice",
+      "email": "alice@example.com",
+      "rating": 5
+    }
+    ```
+
+  ### Field Notes
+
+  - `id`: integer
+  - `name`: string
+  - `email`: string
+  - `rating`: integer from 0 to 5
+
+  ## Error Response
+
+  - Status: `404 Not Found`
+  - Body:
+
+    ```json
+    {
+      "detail": "User not found"
+    }
+    ```
