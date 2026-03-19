@@ -24,7 +24,7 @@ REQUIRED_LISTINGS: tuple[dict[str, str | Decimal], ...] = (
         "category_name": "Electronics",
         "title": "iPhone 14 Pro 256GB",
         "description": "Unlocked, 91% battery health, incluye cargador.",
-        "price": Decimal("3300.00"),
+        "price": Decimal("3300000.00"),
         "condition": "used",
         "images": '["https://example.com/images/iphone14pro.jpg"]',
         "status": "active",
@@ -160,9 +160,11 @@ def seed_database(session: Session) -> None:
         )
         listing = session.exec(statement).first()
         if listing is None:
+            if seller.id is None or category.id is None:
+                continue
             listing = Listing(
-                seller_id=int(seller.id),
-                category_id=int(category.id),
+                seller_id=seller.id,
+                category_id=category.id,
                 title=str(listing_data["title"]),
                 description=str(listing_data["description"]),
                 price=Decimal(str(listing_data["price"])),
