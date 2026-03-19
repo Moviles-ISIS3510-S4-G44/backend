@@ -21,6 +21,10 @@ otel = [
     "opentelemetry-instrumentation-sqlalchemy>=0.60b1",
 ]
 
+[project.scripts]
+seed-db = "src.marketplace_andes_backend.db_maintenance:run_seed_database"
+clear-db = "src.marketplace_andes_backend.db_maintenance:run_clear_database"
+
 [tool.fastapi]
 entrypoint = "src.marketplace_andes_backend.app:app"
 
