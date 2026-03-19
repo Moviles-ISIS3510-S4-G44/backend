@@ -1,0 +1,43 @@
+classDiagram
+
+class User {
+  +String id
+  +String name
+  +String email
+  +Double rating <<derived>>
+}
+
+class Category {
+  +String id
+  +String name
+}
+
+class Listing {
+  +String id
+  +String sellerId
+  +String categoryId
+  +String title
+  +String description
+  +Decimal price
+  +ListingCondition condition
+  +List~String~ images
+  +ListingStatus status
+  +String location
+}
+
+class ListingCondition {
+  <<enumeration>>
+  NEW
+  LIKE_NEW
+  USED
+}
+
+class ListingStatus {
+  <<enumeration>>
+  ACTIVE
+  RESERVED
+  SOLD
+}
+
+User "1" --> "0..*" Listing : creates
+Category "1" --> "0..*" Listing : classifies
