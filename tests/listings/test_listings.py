@@ -60,9 +60,11 @@ def listing_category(session: Session) -> Category:
 def test_listing(
     session: Session, listing_seller: User, listing_category: Category
 ) -> Listing:
+    assert listing_seller.id is not None
+    assert listing_category.id is not None
     listing = Listing(
-        seller_id=listing_seller.id,  # ty: ignore[invalid-argument-type]
-        category_id=listing_category.id,  # ty: ignore[invalid-argument-type]
+        seller_id=listing_seller.id,
+        category_id=listing_category.id,
         title="Macbook Pro",
         description="M3, 16GB RAM",
         price=Decimal("4500.00"),
