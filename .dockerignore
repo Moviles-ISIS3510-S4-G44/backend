@@ -28,5 +28,12 @@ LICENSE
 README.md
 
 **/.env
-.env.template
-.env.test
+.env.server
+.env.migrations
+.env.pg
+.env.pgadmin
+
+junit/
+
+coverage.xml
+htmlcov/
