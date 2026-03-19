@@ -26,6 +26,7 @@ class ListingService:
                     condition=listing.condition,
                     status=listing.status,
                     images=[image.url for image in sorted_images],
+                    created_at=listing.created_at,
                     category=CategoryResponse.model_validate(listing.category),
                     location=LocationResponse.model_validate(listing.location),
                 )

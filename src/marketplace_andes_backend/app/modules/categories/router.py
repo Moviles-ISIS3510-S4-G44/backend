@@ -24,3 +24,8 @@ def create_category(
     category_create: CategoryCreate,
 ) -> CategoryResponse:
     return service.create_category(category_create)
+
+
+@router.get("", response_model=list[CategoryResponse])
+def list_categories(service: CategoryServiceDep) -> list[CategoryResponse]:
+    return service.get_categories()

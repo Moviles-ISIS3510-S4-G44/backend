@@ -24,3 +24,8 @@ def create_location(
     location_create: LocationCreate,
 ) -> LocationResponse:
     return service.create_location(location_create)
+
+
+@router.get("", response_model=list[LocationResponse])
+def list_locations(service: LocationServiceDep) -> list[LocationResponse]:
+    return service.get_locations()

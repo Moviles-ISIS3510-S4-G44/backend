@@ -1,4 +1,4 @@
-from sqlmodel import Session
+from sqlmodel import Session, select
 
 from .models import Category
 
@@ -12,3 +12,7 @@ class CategoryRepository:
         self.session.commit()
         self.session.refresh(category)
         return category
+
+    def list_categories(self) -> list[Category]:
+        statement = select(Category).order_by(Category.name.asc())
+        return list(self.session.exec(statement))

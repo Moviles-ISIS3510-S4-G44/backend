@@ -1,4 +1,4 @@
-from sqlmodel import Session
+from sqlmodel import Session, select
 
 from .models import Location
 
@@ -12,3 +12,7 @@ class LocationRepository:
         self.session.commit()
         self.session.refresh(location)
         return location
+
+    def list_locations(self) -> list[Location]:
+        statement = select(Location).order_by(Location.name.asc())
+        return list(self.session.exec(statement))

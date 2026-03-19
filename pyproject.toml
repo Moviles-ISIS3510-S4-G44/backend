@@ -12,6 +12,10 @@ dependencies = [
     "sqlmodel>=0.0.37",
 ]
 
+[project.scripts]
+seed-db = "marketplace_andes_backend.scripts.seed_db:main"
+clear-db = "marketplace_andes_backend.scripts.clear_db:main"
+
 [project.optional-dependencies]
 otel = [
     "opentelemetry-exporter-otlp-proto-grpc>=1.40.0",

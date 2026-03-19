@@ -13,3 +13,7 @@ class CategoryService:
         category = Category(id=uuid4(), name=category_create.name)
         created_category = self.repository.create_category(category)
         return CategoryResponse.model_validate(created_category)
+
+    def get_categories(self) -> list[CategoryResponse]:
+        categories = self.repository.list_categories()
+        return [CategoryResponse.model_validate(category) for category in categories]

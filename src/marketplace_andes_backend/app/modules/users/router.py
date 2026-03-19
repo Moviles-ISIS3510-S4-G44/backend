@@ -21,3 +21,8 @@ UserServiceDep = Annotated[UserService, Depends(get_user_service)]
 @router.post("", response_model=UserResponse)
 def create_user(service: UserServiceDep, user_create: UserCreate) -> UserResponse:
     return service.create_user(user_create)
+
+
+@router.get("", response_model=list[UserResponse])
+def list_users(service: UserServiceDep) -> list[UserResponse]:
+    return service.get_users()

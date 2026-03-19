@@ -1,4 +1,4 @@
-from sqlmodel import Session
+from sqlmodel import Session, select
 
 from .models import User
 
@@ -12,3 +12,7 @@ class UserRepository:
         self.session.commit()
         self.session.refresh(user)
         return user
+
+    def list_users(self) -> list[User]:
+        statement = select(User).order_by(User.name.asc())
+        return list(self.session.exec(statement))

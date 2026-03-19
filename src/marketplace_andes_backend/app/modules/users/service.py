@@ -13,3 +13,7 @@ class UserService:
         user = User(id=uuid4(), name=user_create.name)
         created_user = self.repository.create_user(user)
         return UserResponse.model_validate(created_user)
+
+    def get_users(self) -> list[UserResponse]:
+        users = self.repository.list_users()
+        return [UserResponse.model_validate(user) for user in users]

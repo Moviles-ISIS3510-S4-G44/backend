@@ -13,3 +13,7 @@ class LocationService:
         location = Location(id=uuid4(), name=location_create.name)
         created_location = self.repository.create_location(location)
         return LocationResponse.model_validate(created_location)
+
+    def get_locations(self) -> list[LocationResponse]:
+        locations = self.repository.list_locations()
+        return [LocationResponse.model_validate(location) for location in locations]
