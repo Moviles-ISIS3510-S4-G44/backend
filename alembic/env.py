@@ -11,11 +11,15 @@ from src.marketplace_andes_backend.users.models import User  # noqa: F401
 
 
 def get_db_url():
+    PG_BACKEND_MIGRATION_USER = os.getenv(
+        "PG_BACKEND_MIGRATION_USER", "backend_migration_user"
+    )
     PG_BACKEND_MIGRATION_PASSWORD = os.getenv(
         "PG_BACKEND_MIGRATION_PASSWORD", "password"
     )
     PG_BACKEND_MIGRATION_HOST = os.getenv("PG_BACKEND_MIGRATION_HOST", "db")
-    return f"postgresql+psycopg://backend_migration_user:{PG_BACKEND_MIGRATION_PASSWORD}@{PG_BACKEND_MIGRATION_HOST}:5432/marketplace"
+    PG_BACKEND_MIGRATION_PORT = os.getenv("PG_BACKEND_MIGRATION_PORT", "5432")
+    return f"postgresql+psycopg://{PG_BACKEND_MIGRATION_USER}:{PG_BACKEND_MIGRATION_PASSWORD}@{PG_BACKEND_MIGRATION_HOST}:{PG_BACKEND_MIGRATION_PORT}/marketplace"
 
 
 config = context.config

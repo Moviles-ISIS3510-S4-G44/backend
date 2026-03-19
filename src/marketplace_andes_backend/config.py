@@ -7,6 +7,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
     db_host: str = Field(default="db")
+    db_port: int = Field(default=5432)
     db_password: str = Field(default="password")
 
     db_echo: bool = Field(default=False)
@@ -18,7 +19,7 @@ class Settings(BaseSettings):
     )
 
     def get_db_url(self) -> str:
-        return f"postgresql+psycopg://backend_user:{self.db_password}@{self.db_host}:5432/marketplace"
+        return f"postgresql+psycopg://backend_user:{self.db_password}@{self.db_host}:{self.db_port}/marketplace"
 
 
 @lru_cache
