@@ -1,3 +1,4 @@
+from urllib.parse import urlparse
 from uuid import uuid4
 
 from sqlmodel import SQLModel, Session, create_engine, delete, select
@@ -7,6 +8,15 @@ from ..modules.listings.models import Listing, ListingImage
 from ..modules.locations.models import Location
 from ..modules.users.models import User
 from ..shared.enums import ListingCondition, ListingStatus
+
+
+def _is_local_database_url(database_url: str) -> bool:
+    if database_url.startswith("sqlite"):
+        return True
+
+    parsed_url = urlparse(database_url)
+    host = parsed_url.hostname
+    return host in {"localhost", "127.0.0.1", "db"}
 
 
 def seed_database(database_url: str) -> None:
@@ -60,13 +70,16 @@ def seed_database(database_url: str) -> None:
 
 
 def clear_database(database_url: str) -> None:
+    if not _is_local_database_url(database_url):
+        raise ValueError("clear_database is allowed only for local database URLs.")
+
     engine = create_engine(database_url)
     SQLModel.metadata.create_all(engine)
 
     with Session(engine) as session:
         session.exec(delete(ListingImage))
         session.exec(delete(Listing))
+        session.exec(delete(User))
         session.exec(delete(Category))
         session.exec(delete(Location))
-        session.exec(delete(User))
         session.commit()

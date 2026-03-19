@@ -1,6 +1,7 @@
 from collections.abc import Generator
 from pathlib import Path
 
+import pytest
 from fastapi.testclient import TestClient
 from sqlmodel import SQLModel, Session, create_engine, select
 from sqlmodel.pool import StaticPool
@@ -55,27 +56,33 @@ def test_get_users_categories_locations_returns_created_items() -> None:
     assert locations_response.json()[0]["name"] == "Uniandes"
 
 
-def test_seed_and_clear_database_scripts_behaviour() -> None:
+def test_seed_and_clear_database_scripts_behavior() -> None:
     db_file = Path.cwd() / "test_seed_and_clear.db"
     db_url = f"sqlite:///{db_file}"
-    seed_database(db_url)
+    try:
+        seed_database(db_url)
 
-    engine = create_engine(db_url, connect_args={"check_same_thread": False})
+        engine = create_engine(db_url, connect_args={"check_same_thread": False})
 
-    with Session(engine) as session:
-        assert session.exec(select(User)).first() is not None
-        assert session.exec(select(Category)).first() is not None
-        assert session.exec(select(Location)).first() is not None
-        assert session.exec(select(Listing)).first() is not None
-        assert session.exec(select(ListingImage)).first() is not None
+        with Session(engine) as session:
+            assert session.exec(select(User)).first() is not None
+            assert session.exec(select(Category)).first() is not None
+            assert session.exec(select(Location)).first() is not None
+            assert session.exec(select(Listing)).first() is not None
+            assert session.exec(select(ListingImage)).first() is not None
 
-    clear_database(db_url)
+        clear_database(db_url)
 
-    with Session(engine) as session:
-        assert session.exec(select(User)).first() is None
-        assert session.exec(select(Category)).first() is None
-        assert session.exec(select(Location)).first() is None
-        assert session.exec(select(Listing)).first() is None
-        assert session.exec(select(ListingImage)).first() is None
+        with Session(engine) as session:
+            assert session.exec(select(User)).first() is None
+            assert session.exec(select(Category)).first() is None
+            assert session.exec(select(Location)).first() is None
+            assert session.exec(select(Listing)).first() is None
+            assert session.exec(select(ListingImage)).first() is None
+    finally:
+        db_file.unlink(missing_ok=True)
 
-    db_file.unlink(missing_ok=True)
+
+def test_clear_database_rejects_non_local_database_url() -> None:
+    with pytest.raises(ValueError, match="allowed only for local database URLs"):
+        clear_database("postgresql+psycopg://user:pass@prod-db.example.com:5432/db")
