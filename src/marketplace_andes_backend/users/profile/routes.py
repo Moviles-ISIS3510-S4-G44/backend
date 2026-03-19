@@ -1,5 +1,8 @@
+from uuid import UUID
+
 from fastapi import APIRouter, HTTPException
 
+from src.marketplace_andes_backend.auth.dependencies import CurrentUserDep
 from src.marketplace_andes_backend.db import SessionDep
 
 from .schemas import UserProfileResponse
@@ -10,7 +13,8 @@ router = APIRouter(prefix="/profile", tags=["users"])
 
 @router.get("/{user_id}")
 async def get_user_profile(
-    user_id: int,
+    user_id: UUID,
+    _current_user: CurrentUserDep,
     session: SessionDep,
 ) -> UserProfileResponse:
     service = UserProfileService(session)

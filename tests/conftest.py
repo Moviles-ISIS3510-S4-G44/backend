@@ -5,9 +5,12 @@ from urllib.parse import urlsplit
 import pytest
 from alembic import command
 from alembic.config import Config
+from fastapi.testclient import TestClient
+from sqlmodel import Session
 
+from src.marketplace_andes_backend.app import app
 from src.marketplace_andes_backend.config import get_settings
-from src.marketplace_andes_backend.db import get_engine
+from src.marketplace_andes_backend.db import get_engine, get_session
 from testcontainers.postgres import PostgresContainer
 
 
@@ -59,3 +62,30 @@ def setup_postgres(request):
     request.addfinalizer(remove_container)
 
     return conn_url
+
+
+@pytest.fixture
+def session():
+    engine = get_engine()
+    connection = engine.connect()
+    transaction = connection.begin()
+
+    session = Session(bind=connection)
+    yield session
+
+    session.close()
+    transaction.rollback()
+    connection.close()
+
+
+@pytest.fixture
+def client(session: Session):
+    def get_test_session():
+        yield session
+
+    app.dependency_overrides[get_session] = get_test_session
+
+    client = TestClient(app)
+    yield client
+
+    app.dependency_overrides.clear()

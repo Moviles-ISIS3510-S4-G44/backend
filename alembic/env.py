@@ -7,6 +7,7 @@ from sqlmodel import SQLModel
 
 from alembic import context
 
+from src.marketplace_andes_backend.auth.models import UserAuth  # noqa: F401
 from src.marketplace_andes_backend.users.models import User  # noqa: F401
 
 
