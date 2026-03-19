@@ -21,13 +21,14 @@ PG_CONTAINER = PostgresContainer(
 
 
 @pytest.fixture(scope="session", autouse=True)
-def setup(request):
+def setup_postgres(request):
     PG_CONTAINER.start()
 
     conn_url = PG_CONTAINER.get_connection_url()
-    os.environ["DATABASE_URL"] = conn_url
 
     def remove_container():
         PG_CONTAINER.stop()
 
     request.addfinalizer(remove_container)
+
+    return conn_url

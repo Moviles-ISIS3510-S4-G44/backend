@@ -25,6 +25,16 @@ alembic upgrade head
 docker stop $(docker ps -aq)
 ```
 
+```bash
+gh pr create --base main \
+--head <branch> \
+--title "feat(xxx): XXX" \
+--body "Closes <#xxxx>"
+
+# example
+#gh pr create --base master --head orpheezt/feat/user-domain --title "feat(user): introduce User API" --body "Closes #123"
+```
+
 ## Notes
 
 ### env files
