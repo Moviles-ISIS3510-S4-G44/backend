@@ -22,15 +22,28 @@ depends_on: str | Sequence[str] | None = None
 def upgrade() -> None:
     op.create_table(
         "user",
-        sa.Column("id", sa.Integer(), nullable=False),
+        sa.Column("id", sa.Uuid(), nullable=False),
         sa.Column("name", AutoString(), nullable=False),
         sa.Column("email", AutoString(), nullable=False),
         sa.Column("rating", sa.Integer(), nullable=False),
         sa.PrimaryKeyConstraint("id"),
     )
     op.create_index(op.f("ix_user_email"), "user", ["email"], unique=True)
+    op.create_table(
+        "user_auth",
+        sa.Column("id", sa.Uuid(), nullable=False),
+        sa.Column("user_id", sa.Uuid(), nullable=False),
+        sa.Column("hashed_password", AutoString(), nullable=False),
+        sa.CheckConstraint("id = user_id", name="ck_user_auth_id_matches_user_id"),
+        sa.ForeignKeyConstraint(["id"], ["user.id"]),
+        sa.ForeignKeyConstraint(["user_id"], ["user.id"]),
+        sa.PrimaryKeyConstraint("id"),
+    )
+    op.create_index(op.f("ix_user_auth_user_id"), "user_auth", ["user_id"], unique=True)
 
 
 def downgrade() -> None:
+    op.drop_index(op.f("ix_user_auth_user_id"), table_name="user_auth")
+    op.drop_table("user_auth")
     op.drop_index(op.f("ix_user_email"), table_name="user")
     op.drop_table("user")
