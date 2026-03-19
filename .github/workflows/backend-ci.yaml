@@ -48,7 +48,7 @@ jobs:
         uses: astral-sh/setup-uv@v7.6.0
 
       - name: Install dependencies
-        run: uv sync --locked --dev
+        run: uv sync --locked --all-groups
 
       - name: Run tests
         run: CI=1 uv run pytest --junitxml=junit/test-results.xml --cov src.marketplace_andes_backend --cov-report=xml --cov-report=html
