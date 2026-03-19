@@ -19,4 +19,9 @@ class ListingRepository:
             .order_by(Listing.created_at.desc())
         )
         return list(self.session.exec(statement))
+    def create_listing(self, listing: Listing) -> Listing:
+        self.session.add(listing)
+        self.session.commit()
+        self.session.refresh(listing)
+        return listing
 
