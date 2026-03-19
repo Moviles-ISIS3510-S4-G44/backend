@@ -6,16 +6,19 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    database_url: str = Field(
-        default="postgresql+psycopg://backend_user:password@db:5432/marketplace"
-    )
-    database_echo: bool = Field(default=False)
+    db_host: str = Field(default="db")
+    db_password: str = Field(default="password")
+
+    db_echo: bool = Field(default=False)
     enable_otel: bool = Field(default=False)
     model_config = SettingsConfigDict(
         env_file=os.getenv("ENV_FILE", ".env"),
         env_file_encoding="utf-8",
         extra="ignore",
     )
+
+    def get_db_url(self) -> str:
+        return f"postgresql+psycopg://backend_user:{self.db_password}@{self.db_host}:5432/marketplace"
 
 
 @lru_cache

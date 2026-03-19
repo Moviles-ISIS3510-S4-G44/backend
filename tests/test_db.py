@@ -1,10 +1,10 @@
-from sqlmodel import Session, text
-
-from src.marketplace_andes_backend.db import get_engine
+from sqlmodel import Session, create_engine, text
 
 
-def test_db_connection():
-    with Session(get_engine()) as session:
+def test_db_connection(setup_postgres):
+    engine = create_engine(setup_postgres)
+
+    with Session(engine) as session:
         connection = session.connection()
 
         current_user = connection.execute(text("SELECT current_user")).scalar_one()
