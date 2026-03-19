@@ -12,7 +12,7 @@ from .config import get_settings
 @lru_cache
 def get_engine() -> Engine:
     settings = get_settings()
-    return create_engine(settings.database_url, echo=settings.database_echo)
+    return create_engine(settings.get_db_url(), echo=settings.db_echo)
 
 
 def get_session() -> Generator[Session, None, None]:

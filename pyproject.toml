@@ -26,10 +26,21 @@ entrypoint = "src.marketplace_andes_backend.app:app"
 
 [dependency-groups]
 dev = [
-    "alembic>=1.18.4",
     "pytest>=9.0.2",
     "pytest-cov>=7.0.0",
     "ruff>=0.15.6",
     "testcontainers[postgres]>=4.14.2",
     "ty>=0.0.23",
 ]
+migrations = ["alembic>=1.18.4", "sqlmodel>=0.0.37", "psycopg[binary]>=3.3.3"]
+
+[tool.alembic]
+script_location = "%(here)s/alembic"
+prepend_sys_path = ["."]
+output_encoding = "utf-8"
+
+[[tool.alembic.post_write_hooks]]
+name = "ruff"
+type = "module"
+module = "ruff"
+options = "check --fix REVISION_SCRIPT_FILENAME"

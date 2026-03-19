@@ -579,12 +579,16 @@ otel = [
 
 [package.dev-dependencies]
 dev = [
-    { name = "alembic" },
     { name = "pytest" },
     { name = "pytest-cov" },
     { name = "ruff" },
     { name = "testcontainers" },
     { name = "ty" },
+]
+migrations = [
+    { name = "alembic" },
+    { name = "psycopg", extra = ["binary"] },
+    { name = "sqlmodel" },
 ]
 
 [package.metadata]
@@ -604,12 +608,16 @@ provides-extras = ["otel"]
 
 [package.metadata.requires-dev]
 dev = [
-    { name = "alembic", specifier = ">=1.18.4" },
     { name = "pytest", specifier = ">=9.0.2" },
     { name = "pytest-cov", specifier = ">=7.0.0" },
     { name = "ruff", specifier = ">=0.15.6" },
     { name = "testcontainers", extras = ["postgres"], specifier = ">=4.14.2" },
     { name = "ty", specifier = ">=0.0.23" },
+]
+migrations = [
+    { name = "alembic", specifier = ">=1.18.4" },
+    { name = "psycopg", extras = ["binary"], specifier = ">=3.3.3" },
+    { name = "sqlmodel", specifier = ">=0.0.37" },
 ]
 
 [[package]]
