@@ -17,6 +17,7 @@ from testcontainers.postgres import PostgresContainer
 TOP_LEVEL_DIR = Path(__file__).resolve().parent
 
 os.environ["ENV_FILE"] = str(TOP_LEVEL_DIR / ".env.test")
+os.environ.setdefault("TESTCONTAINERS_RYUK_DISABLED", "true")
 
 
 PG_CONTAINER = PostgresContainer(

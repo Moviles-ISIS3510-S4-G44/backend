@@ -7,6 +7,10 @@ class SignupRequest(BaseModel):
     name: str = Field(min_length=1)
     email: str = Field(min_length=1)
     password: str = Field(min_length=8)
+    university_id: UUID | None = None
+    program_id: UUID | None = None
+    is_verified: bool = False
+    student_code: str | None = None
 
 
 class TokenResponse(BaseModel):

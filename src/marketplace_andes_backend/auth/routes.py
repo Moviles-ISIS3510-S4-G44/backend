@@ -17,6 +17,10 @@ def signup(payload: SignupRequest, auth_service: AuthServiceDep) -> CurrentUserR
             name=payload.name,
             email=payload.email,
             password=payload.password,
+            university_id=payload.university_id,
+            program_id=payload.program_id,
+            is_verified=payload.is_verified,
+            student_code=payload.student_code,
         )
     except DuplicateEmailError as exc:
         raise HTTPException(

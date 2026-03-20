@@ -5,6 +5,10 @@
 ## Useful Commands
 
 ```bash
+uv run viz/run_pipeline.py
+```
+
+```bash
 docker compose up --build
 docker compose down -v
 

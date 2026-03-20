@@ -8,6 +8,7 @@ from jwt import ExpiredSignatureError, InvalidTokenError as JWTInvalidTokenError
 from sqlmodel import Session, select
 
 from ..config import get_settings
+from ..marketplace.service import MarketplaceService
 from ..users.models import User
 from .models import UserAuth
 
@@ -71,12 +72,28 @@ class AuthService:
 
         return payload
 
-    def signup(self, name: str, email: str, password: str) -> User:
+    def signup(
+        self,
+        name: str,
+        email: str,
+        password: str,
+        university_id: UUID | None = None,
+        program_id: UUID | None = None,
+        is_verified: bool = False,
+        student_code: str | None = None,
+    ) -> User:
         existing_user = self.session.exec(select(User).where(User.email == email)).first()
         if existing_user is not None:
             raise DuplicateEmailError()
 
-        user = User(name=name, email=email)
+        user = User(
+            name=name,
+            email=email,
+            university_id=university_id,
+            program_id=program_id,
+            is_verified=is_verified,
+            student_code=student_code,
+        )
         self.session.add(user)
         self.session.flush()
         if user.id is None:
@@ -103,6 +120,7 @@ class AuthService:
         if user_auth is None or not self.verify_password(password, user_auth.hashed_password):
             raise InvalidCredentialsError()
 
+        MarketplaceService(self.session).record_login(user)
         return self.create_access_token(user)
 
     def get_user_by_token(self, token: str) -> User:

@@ -8,6 +8,18 @@ from sqlmodel import SQLModel
 from alembic import context
 
 from src.marketplace_andes_backend.auth.models import UserAuth  # noqa: F401
+from src.marketplace_andes_backend.marketplace.models import Category  # noqa: F401
+from src.marketplace_andes_backend.marketplace.models import Listing  # noqa: F401
+from src.marketplace_andes_backend.marketplace.models import ListingMedia  # noqa: F401
+from src.marketplace_andes_backend.marketplace.models import ListingStatusHistory  # noqa: F401
+from src.marketplace_andes_backend.marketplace.models import MarketplaceTransaction  # noqa: F401
+from src.marketplace_andes_backend.marketplace.models import Message  # noqa: F401
+from src.marketplace_andes_backend.marketplace.models import MessageThread  # noqa: F401
+from src.marketplace_andes_backend.marketplace.models import Program  # noqa: F401
+from src.marketplace_andes_backend.marketplace.models import Review  # noqa: F401
+from src.marketplace_andes_backend.marketplace.models import SearchEvent  # noqa: F401
+from src.marketplace_andes_backend.marketplace.models import University  # noqa: F401
+from src.marketplace_andes_backend.marketplace.models import UserActivityEvent  # noqa: F401
 from src.marketplace_andes_backend.users.models import User  # noqa: F401
 
 
