@@ -11,7 +11,7 @@ class ListingCreateRequest(BaseModel):
     description: str
     price: Decimal
     condition: str
-    images: str
+    images: list[str]
     status: str
     location: str
 
@@ -26,6 +26,6 @@ class ListingResponse(BaseModel):
     description: str
     price: Decimal
     condition: str
-    images: str
+    images: list[str]
     status: str
     location: str

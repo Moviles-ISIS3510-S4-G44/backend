@@ -18,7 +18,7 @@ REQUIRED_USERS: tuple[dict[str, str | int], ...] = (
 
 REQUIRED_CATEGORIES: tuple[str, ...] = ("Books", "Electronics", "Furniture")
 
-REQUIRED_LISTINGS: tuple[dict[str, str | Decimal], ...] = (
+REQUIRED_LISTINGS: tuple[dict[str, str | Decimal | list[str]], ...] = (
     {
         "seller_email": "diego@marketplace.test",
         "category_name": "Electronics",
@@ -26,7 +26,7 @@ REQUIRED_LISTINGS: tuple[dict[str, str | Decimal], ...] = (
         "description": "Unlocked, 91% battery health, incluye cargador.",
         "price": Decimal("3300000.00"),
         "condition": "used",
-        "images": '["https://picsum.photos/seed/iphone14pro/800/600"]',
+        "images": ["https://picsum.photos/seed/iphone14pro/800/600"],
         "status": "active",
         "location": "Bogotá",
     },
@@ -37,7 +37,7 @@ REQUIRED_LISTINGS: tuple[dict[str, str | Decimal], ...] = (
         "description": "Tapa dura, excelente estado, sin anotaciones.",
         "price": Decimal("85000.00"),
         "condition": "used",
-        "images": '["https://picsum.photos/seed/cien-anos/800/600"]',
+        "images": ["https://picsum.photos/seed/cien-anos/800/600"],
         "status": "active",
         "location": "Medellín",
     },
@@ -48,7 +48,7 @@ REQUIRED_LISTINGS: tuple[dict[str, str | Decimal], ...] = (
         "description": "140x70 cm, ideal para home office.",
         "price": Decimal("420000.00"),
         "condition": "used",
-        "images": '["https://picsum.photos/seed/escritorio-roble/800/600"]',
+        "images": ["https://picsum.photos/seed/escritorio-roble/800/600"],
         "status": "active",
         "location": "Cali",
     },
@@ -59,7 +59,7 @@ REQUIRED_LISTINGS: tuple[dict[str, str | Decimal], ...] = (
         "description": "Resolución Full HD, perfecto para productividad.",
         "price": Decimal("760000.00"),
         "condition": "used",
-        "images": '["https://picsum.photos/seed/lg-ultrawide/800/600"]',
+        "images": ["https://picsum.photos/seed/lg-ultrawide/800/600"],
         "status": "active",
         "location": "Barranquilla",
     },
@@ -70,7 +70,7 @@ REQUIRED_LISTINGS: tuple[dict[str, str | Decimal], ...] = (
         "description": "Soporte lumbar ajustable y reposabrazos 3D.",
         "price": Decimal("390000.00"),
         "condition": "used",
-        "images": '["https://picsum.photos/seed/silla-ergonomica/800/600"]',
+        "images": ["https://picsum.photos/seed/silla-ergonomica/800/600"],
         "status": "active",
         "location": "Bucaramanga",
     },
@@ -81,7 +81,7 @@ REQUIRED_LISTINGS: tuple[dict[str, str | Decimal], ...] = (
         "description": "Libro de ingeniería de software, como nuevo.",
         "price": Decimal("120000.00"),
         "condition": "new",
-        "images": '["https://picsum.photos/seed/clean-code/800/600"]',
+        "images": ["https://picsum.photos/seed/clean-code/800/600"],
         "status": "active",
         "location": "Cartagena",
     },
@@ -92,7 +92,7 @@ REQUIRED_LISTINGS: tuple[dict[str, str | Decimal], ...] = (
         "description": "Switches brown, conexión Bluetooth y USB-C.",
         "price": Decimal("280000.00"),
         "condition": "used",
-        "images": '["https://picsum.photos/seed/keychron-k2/800/600"]',
+        "images": ["https://picsum.photos/seed/keychron-k2/800/600"],
         "status": "active",
         "location": "Bogotá",
     },
@@ -103,7 +103,7 @@ REQUIRED_LISTINGS: tuple[dict[str, str | Decimal], ...] = (
         "description": "Luz cálida regulable, base metálica negra.",
         "price": Decimal("160000.00"),
         "condition": "new",
-        "images": '["https://picsum.photos/seed/lampara-pie/800/600"]',
+        "images": ["https://picsum.photos/seed/lampara-pie/800/600"],
         "status": "active",
         "location": "Medellín",
     },
@@ -114,7 +114,7 @@ REQUIRED_LISTINGS: tuple[dict[str, str | Decimal], ...] = (
         "description": "Edición 20 aniversario en inglés.",
         "price": Decimal("145000.00"),
         "condition": "used",
-        "images": '["https://picsum.photos/seed/pragmatic-programmer/800/600"]',
+        "images": ["https://picsum.photos/seed/pragmatic-programmer/800/600"],
         "status": "active",
         "location": "Cali",
     },
@@ -169,7 +169,7 @@ def seed_database(session: Session) -> None:
                 description=str(listing_data["description"]),
                 price=Decimal(str(listing_data["price"])),
                 condition=str(listing_data["condition"]),
-                images=str(listing_data["images"]),
+                images=list(listing_data["images"]),
                 status=str(listing_data["status"]),
                 location=str(listing_data["location"]),
             )
@@ -179,7 +179,7 @@ def seed_database(session: Session) -> None:
         listing.description = str(listing_data["description"])
         listing.price = Decimal(str(listing_data["price"]))
         listing.condition = str(listing_data["condition"])
-        listing.images = str(listing_data["images"])
+        listing.images = list(listing_data["images"])
         listing.status = str(listing_data["status"])
         listing.location = str(listing_data["location"])
 
