@@ -1,0 +1,61 @@
+user_id,name,email,category_name,signal_count,interest_score,category_rank
+019d0d90-05d7-7135-879f-24c752adabb2,Ana Seller,seller1@example.com,Electronics,11,30.0,1
+019d0d90-05d7-7135-879f-24c752adabb2,Ana Seller,seller1@example.com,Books,9,24.0,2
+019d0d90-05d7-7135-879f-24c752adabb2,Ana Seller,seller1@example.com,Fashion,4,11.0,3
+019d0d90-078e-7252-a121-0f83bde18e42,Andres Buyer,buyer6@example.com,Books,13,37.0,1
+019d0d90-078e-7252-a121-0f83bde18e42,Andres Buyer,buyer6@example.com,Mobility,9,15.0,2
+019d0d90-078e-7252-a121-0f83bde18e42,Andres Buyer,buyer6@example.com,Furniture,6,9.0,3
+019d0d90-0729-7034-aa28-ec5237e0011a,Camila Buyer,buyer3@example.com,Lab Gear,20,65.0,1
+019d0d90-0729-7034-aa28-ec5237e0011a,Camila Buyer,buyer3@example.com,Electronics,9,15.0,2
+019d0d90-0729-7034-aa28-ec5237e0011a,Camila Buyer,buyer3@example.com,Books,6,9.0,3
+019d0d90-05fb-731a-8f9f-680f939c7cc7,Carlos Seller,seller2@example.com,Lab Gear,8,22.0,1
+019d0d90-05fb-731a-8f9f-680f939c7cc7,Carlos Seller,seller2@example.com,Furniture,8,20.0,2
+019d0d90-05fb-731a-8f9f-680f939c7cc7,Carlos Seller,seller2@example.com,Mobility,6,17.0,3
+019d0d90-061b-714e-a5e8-91e7293069b3,Daniela Seller,seller3@example.com,Electronics,12,34.0,1
+019d0d90-061b-714e-a5e8-91e7293069b3,Daniela Seller,seller3@example.com,Fashion,7,18.0,2
+019d0d90-061b-714e-a5e8-91e7293069b3,Daniela Seller,seller3@example.com,Books,4,10.0,3
+019d0d90-064e-706d-92c2-884a08873947,Felipe Seller,seller4@example.com,Mobility,12,34.0,1
+019d0d90-064e-706d-92c2-884a08873947,Felipe Seller,seller4@example.com,Furniture,9,24.0,2
+019d0d90-064e-706d-92c2-884a08873947,Felipe Seller,seller4@example.com,Lab Gear,3,7.0,3
+019d0d90-0824-71a3-8817-7aa0a7b68247,Juan Buyer,buyer10@example.com,Electronics,9,21.0,1
+019d0d90-0824-71a3-8817-7aa0a7b68247,Juan Buyer,buyer10@example.com,Furniture,7,10.0,2
+019d0d90-0824-71a3-8817-7aa0a7b68247,Juan Buyer,buyer10@example.com,Mobility,7,10.0,3
+019d0d90-0748-7417-99d1-f48270c9ca64,Julian Buyer,buyer4@example.com,Mobility,12,27.0,1
+019d0d90-0748-7417-99d1-f48270c9ca64,Julian Buyer,buyer4@example.com,Lab Gear,7,10.0,2
+019d0d90-0748-7417-99d1-f48270c9ca64,Julian Buyer,buyer4@example.com,Furniture,6,9.0,3
+019d0d90-066d-75ae-85c7-685a28100604,Laura Seller,seller5@example.com,Electronics,6,17.0,1
+019d0d90-066d-75ae-85c7-685a28100604,Laura Seller,seller5@example.com,Fashion,6,14.0,2
+019d0d90-066d-75ae-85c7-685a28100604,Laura Seller,seller5@example.com,Books,5,14.0,3
+019d0d90-06ea-7749-bb33-fd5897207fb9,Luis Buyer,buyer1@example.com,Books,19,55.0,1
+019d0d90-06ea-7749-bb33-fd5897207fb9,Luis Buyer,buyer1@example.com,Electronics,7,10.0,2
+019d0d90-06ea-7749-bb33-fd5897207fb9,Luis Buyer,buyer1@example.com,Fashion,7,10.0,3
+019d0d90-0843-72b5-8d5b-6a353cb1c89a,Maria Buyer,buyer11@example.com,Mobility,22,67.0,1
+019d0d90-0843-72b5-8d5b-6a353cb1c89a,Maria Buyer,buyer11@example.com,Electronics,5,8.0,2
+019d0d90-0843-72b5-8d5b-6a353cb1c89a,Maria Buyer,buyer11@example.com,Fashion,5,8.0,3
+019d0d90-0709-7542-9fa2-7098aa905ec4,Marta Buyer,buyer2@example.com,Lab Gear,5,8.0,1
+019d0d90-0709-7542-9fa2-7098aa905ec4,Marta Buyer,buyer2@example.com,Mobility,4,7.0,2
+019d0d90-0709-7542-9fa2-7098aa905ec4,Marta Buyer,buyer2@example.com,Books,3,3.0,3
+019d0d90-068c-7296-8b95-f69b5bf1f51c,Mateo Seller,seller6@example.com,Mobility,11,30.0,1
+019d0d90-068c-7296-8b95-f69b5bf1f51c,Mateo Seller,seller6@example.com,Furniture,5,14.0,2
+019d0d90-068c-7296-8b95-f69b5bf1f51c,Mateo Seller,seller6@example.com,Lab Gear,3,7.0,3
+019d0d90-07e5-70c4-96c9-e1a2faddb136,Miguel Buyer,buyer8@example.com,Mobility,5,8.0,1
+019d0d90-07e5-70c4-96c9-e1a2faddb136,Miguel Buyer,buyer8@example.com,Lab Gear,4,7.0,2
+019d0d90-07e5-70c4-96c9-e1a2faddb136,Miguel Buyer,buyer8@example.com,Books,3,3.0,3
+019d0d90-0805-7183-aaa4-498ad12f844d,Natalia Buyer,buyer9@example.com,Fashion,25,73.0,1
+019d0d90-0805-7183-aaa4-498ad12f844d,Natalia Buyer,buyer9@example.com,Electronics,9,15.0,2
+019d0d90-0805-7183-aaa4-498ad12f844d,Natalia Buyer,buyer9@example.com,Books,6,9.0,3
+019d0d90-06ac-75a9-b042-12365b39c0c3,Paula Seller,seller7@example.com,Books,10,28.0,1
+019d0d90-06ac-75a9-b042-12365b39c0c3,Paula Seller,seller7@example.com,Electronics,5,13.0,2
+019d0d90-06ac-75a9-b042-12365b39c0c3,Paula Seller,seller7@example.com,Fashion,4,11.0,3
+019d0d90-06cb-770c-b630-4b4388c07767,Sara Seller,seller8@example.com,Lab Gear,8,22.0,1
+019d0d90-06cb-770c-b630-4b4388c07767,Sara Seller,seller8@example.com,Furniture,5,14.0,2
+019d0d90-06cb-770c-b630-4b4388c07767,Sara Seller,seller8@example.com,Mobility,5,13.0,3
+019d0d90-07ae-7340-9a41-eef21de065a5,Sofia Buyer,buyer7@example.com,Furniture,17,53.0,1
+019d0d90-07ae-7340-9a41-eef21de065a5,Sofia Buyer,buyer7@example.com,Books,7,10.0,2
+019d0d90-07ae-7340-9a41-eef21de065a5,Sofia Buyer,buyer7@example.com,Fashion,7,10.0,3
+019d0d90-0862-7618-9ae1-50674faa7d30,Tomas Buyer,buyer12@example.com,Furniture,18,45.0,1
+019d0d90-0862-7618-9ae1-50674faa7d30,Tomas Buyer,buyer12@example.com,Mobility,9,15.0,2
+019d0d90-0862-7618-9ae1-50674faa7d30,Tomas Buyer,buyer12@example.com,Lab Gear,6,9.0,3
+019d0d90-0767-779e-b51b-b98ee67802a4,Valentina Buyer,buyer5@example.com,Electronics,24,72.0,1
+019d0d90-0767-779e-b51b-b98ee67802a4,Valentina Buyer,buyer5@example.com,Fashion,5,8.0,2
+019d0d90-0767-779e-b51b-b98ee67802a4,Valentina Buyer,buyer5@example.com,Furniture,3,3.0,3

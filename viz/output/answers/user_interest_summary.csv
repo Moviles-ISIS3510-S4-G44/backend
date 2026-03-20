@@ -1,0 +1,21 @@
+user_id,name,email,top_category,interest_score,suggested_chip
+019d0d90-05d7-7135-879f-24c752adabb2,Ana Seller,seller1@example.com,Electronics,30.0,You seem interested in Electronics
+019d0d90-078e-7252-a121-0f83bde18e42,Andres Buyer,buyer6@example.com,Books,37.0,You seem interested in Books
+019d0d90-0729-7034-aa28-ec5237e0011a,Camila Buyer,buyer3@example.com,Lab Gear,65.0,You seem interested in Lab Gear
+019d0d90-05fb-731a-8f9f-680f939c7cc7,Carlos Seller,seller2@example.com,Lab Gear,22.0,You seem interested in Lab Gear
+019d0d90-061b-714e-a5e8-91e7293069b3,Daniela Seller,seller3@example.com,Electronics,34.0,You seem interested in Electronics
+019d0d90-064e-706d-92c2-884a08873947,Felipe Seller,seller4@example.com,Mobility,34.0,You seem interested in Mobility
+019d0d90-0824-71a3-8817-7aa0a7b68247,Juan Buyer,buyer10@example.com,Electronics,21.0,You seem interested in Electronics
+019d0d90-0748-7417-99d1-f48270c9ca64,Julian Buyer,buyer4@example.com,Mobility,27.0,You seem interested in Mobility
+019d0d90-066d-75ae-85c7-685a28100604,Laura Seller,seller5@example.com,Electronics,17.0,You seem interested in Electronics
+019d0d90-06ea-7749-bb33-fd5897207fb9,Luis Buyer,buyer1@example.com,Books,55.0,You seem interested in Books
+019d0d90-0843-72b5-8d5b-6a353cb1c89a,Maria Buyer,buyer11@example.com,Mobility,67.0,You seem interested in Mobility
+019d0d90-0709-7542-9fa2-7098aa905ec4,Marta Buyer,buyer2@example.com,Lab Gear,8.0,You seem interested in Lab Gear
+019d0d90-068c-7296-8b95-f69b5bf1f51c,Mateo Seller,seller6@example.com,Mobility,30.0,You seem interested in Mobility
+019d0d90-07e5-70c4-96c9-e1a2faddb136,Miguel Buyer,buyer8@example.com,Mobility,8.0,You seem interested in Mobility
+019d0d90-0805-7183-aaa4-498ad12f844d,Natalia Buyer,buyer9@example.com,Fashion,73.0,You seem interested in Fashion
+019d0d90-06ac-75a9-b042-12365b39c0c3,Paula Seller,seller7@example.com,Books,28.0,You seem interested in Books
+019d0d90-06cb-770c-b630-4b4388c07767,Sara Seller,seller8@example.com,Lab Gear,22.0,You seem interested in Lab Gear
+019d0d90-07ae-7340-9a41-eef21de065a5,Sofia Buyer,buyer7@example.com,Furniture,53.0,You seem interested in Furniture
+019d0d90-0862-7618-9ae1-50674faa7d30,Tomas Buyer,buyer12@example.com,Furniture,45.0,You seem interested in Furniture
+019d0d90-0767-779e-b51b-b98ee67802a4,Valentina Buyer,buyer5@example.com,Electronics,72.0,You seem interested in Electronics

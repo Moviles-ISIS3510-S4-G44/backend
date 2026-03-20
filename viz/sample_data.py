@@ -331,7 +331,7 @@ def _seed_sample_data(session: Session) -> None:
             days=listing_index,
             hours=(listing_index % 4) * 3,
         )
-        published_at = created_at + timedelta(hours=1)
+        published_at = created_at + timedelta(minutes=30 + (listing_index % 5) * 20)
         price = blueprint[4] + Decimal((listing_index % 5) * 7000 + (listing_index // 6) * 3000)
 
         listing = Listing(
@@ -377,11 +377,36 @@ def _seed_sample_data(session: Session) -> None:
         session.add(
             _create_activity(
                 user_id=seller.id,
+                event_type="listing_creation_attempt",
+                created_at=created_at,
+                listing_id=listing.id,
+            )
+        )
+        session.add(
+            _create_activity(
+                user_id=seller.id,
                 event_type="listing_created",
                 created_at=published_at,
                 listing_id=listing.id,
             )
         )
+
+        for failure_index in range(1 if listing_index % 6 == 0 else 0):
+            failed_attempt_time = created_at - timedelta(hours=6 + failure_index)
+            session.add(
+                _create_activity(
+                    user_id=seller.id,
+                    event_type="listing_creation_attempt",
+                    created_at=failed_attempt_time,
+                )
+            )
+            session.add(
+                _create_activity(
+                    user_id=seller.id,
+                    event_type="listing_creation_failed_system_error",
+                    created_at=failed_attempt_time + timedelta(minutes=3),
+                )
+            )
 
         for search_index in range(2 + (listing_index % 3)):
             search_user = buyers[(listing_index + search_index * 2) % len(buyers)]
@@ -400,6 +425,18 @@ def _seed_sample_data(session: Session) -> None:
                     user_id=search_user.id,
                     event_type="search",
                     created_at=search_time,
+                )
+            )
+
+        for view_index in range(3 + (listing_index % 5)):
+            viewer = buyers[(listing_index * 3 + view_index) % len(buyers)]
+            view_time = published_at + timedelta(hours=2 + view_index * 6)
+            session.add(
+                _create_activity(
+                    user_id=viewer.id,
+                    event_type="listing_view",
+                    created_at=view_time,
+                    listing_id=listing.id,
                 )
             )
 

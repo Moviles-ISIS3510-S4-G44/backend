@@ -483,6 +483,76 @@ def build_metric_views(connection: duckdb.DuckDBPyConnection) -> None:
     )
     connection.execute(
         """
+        CREATE OR REPLACE VIEW metric_best_reputation_students AS
+        SELECT
+            r.seller_user_id AS user_id,
+            u.name,
+            u.email,
+            AVG(r.rating_value) AS average_rating,
+            COUNT(*) AS review_count,
+            AVG(r.rating_value) * COUNT(*) AS reputation_score
+        FROM fact_reviews AS r
+        LEFT JOIN dim_user AS u ON r.seller_user_id = u.user_id
+        GROUP BY r.seller_user_id, u.name, u.email
+        ORDER BY average_rating DESC, review_count DESC, name
+        """
+    )
+    connection.execute(
+        """
+        CREATE OR REPLACE VIEW metric_most_viewed_products_week AS
+        WITH date_bounds AS (
+            SELECT MAX(full_date) AS max_date
+            FROM dim_date
+        ), weekly_views AS (
+            SELECT
+                a.listing_id,
+                COUNT(*) AS view_count,
+                COUNT(DISTINCT a.user_id) AS unique_viewers
+            FROM raw_user_activity_event AS a
+            CROSS JOIN date_bounds
+            WHERE a.event_type = 'listing_view'
+                AND a.listing_id IS NOT NULL
+                AND CAST(CAST(a.created_at AS TIMESTAMP) AS DATE)
+                    BETWEEN date_bounds.max_date - INTERVAL 6 DAY AND date_bounds.max_date
+            GROUP BY a.listing_id
+        )
+        SELECT
+            weekly_views.listing_id,
+            dl.title,
+            c.category_name,
+            weekly_views.view_count,
+            weekly_views.unique_viewers
+        FROM weekly_views
+        LEFT JOIN dim_listing AS dl ON weekly_views.listing_id = dl.listing_id
+        LEFT JOIN dim_category AS c ON dl.category_id = c.category_id
+        ORDER BY weekly_views.view_count DESC, weekly_views.unique_viewers DESC, dl.title
+        """
+    )
+    connection.execute(
+        """
+        CREATE OR REPLACE VIEW metric_average_listing_publish_time AS
+        SELECT
+            COUNT(*) AS published_listing_count,
+            AVG(
+                datediff(
+                    'minute',
+                    CAST(created_at AS TIMESTAMP),
+                    CAST(published_at AS TIMESTAMP)
+                )
+            ) AS average_minutes_to_publish,
+            AVG(
+                datediff(
+                    'minute',
+                    CAST(created_at AS TIMESTAMP),
+                    CAST(published_at AS TIMESTAMP)
+                )
+            ) / 60.0 AS average_hours_to_publish
+        FROM raw_listing
+        WHERE published_at IS NOT NULL
+        """
+    )
+    connection.execute(
+        """
         CREATE OR REPLACE VIEW metric_cancel_rate AS
         SELECT
             CASE
@@ -490,6 +560,33 @@ def build_metric_views(connection: duckdb.DuckDBPyConnection) -> None:
                 ELSE SUM(cancellation_count)::DOUBLE / COUNT(*)
             END AS cancel_rate
         FROM fact_transactions
+        """
+    )
+    connection.execute(
+        """
+        CREATE OR REPLACE VIEW metric_listing_creation_failure_rate AS
+        WITH attempt_totals AS (
+            SELECT
+                COUNT(*) FILTER (
+                    WHERE event_type = 'listing_creation_attempt'
+                ) AS total_attempts,
+                COUNT(*) FILTER (
+                    WHERE event_type = 'listing_creation_failed_system_error'
+                ) AS failed_attempts
+            FROM raw_user_activity_event
+        )
+        SELECT
+            total_attempts,
+            failed_attempts,
+            CASE
+                WHEN total_attempts = 0 THEN 0
+                ELSE failed_attempts::DOUBLE / total_attempts
+            END AS failure_rate,
+            CASE
+                WHEN total_attempts = 0 THEN 0
+                ELSE failed_attempts::DOUBLE * 100.0 / total_attempts
+            END AS failure_percentage
+        FROM attempt_totals
         """
     )
     connection.execute(
@@ -510,6 +607,107 @@ def build_metric_views(connection: duckdb.DuckDBPyConnection) -> None:
                 ) AS completed_sales
             FROM fact_messages
         ) AS base
+        """
+    )
+    connection.execute(
+        """
+        CREATE OR REPLACE VIEW metric_user_top_categories AS
+        WITH category_signals AS (
+            SELECT
+                s.user_id,
+                s.category_id,
+                'search' AS signal_source,
+                2 AS signal_weight
+            FROM fact_search_events AS s
+            WHERE s.category_id IS NOT NULL
+
+            UNION ALL
+
+            SELECT
+                a.user_id,
+                l.category_id,
+                a.activity_type AS signal_source,
+                CASE
+                    WHEN a.activity_type = 'listing_view' THEN 1
+                    WHEN a.activity_type = 'listing_created' THEN 3
+                    WHEN a.activity_type = 'message' THEN 3
+                    WHEN a.activity_type = 'transaction' THEN 4
+                    ELSE 1
+                END AS signal_weight
+            FROM fact_user_activity AS a
+            LEFT JOIN dim_listing AS l ON a.listing_id = l.listing_id
+            WHERE a.listing_id IS NOT NULL
+                AND l.category_id IS NOT NULL
+        ), aggregated_categories AS (
+            SELECT
+                signals.user_id,
+                u.name,
+                u.email,
+                c.category_name,
+                COUNT(*) AS signal_count,
+                SUM(signals.signal_weight) AS interest_score
+            FROM category_signals AS signals
+            LEFT JOIN dim_user AS u ON signals.user_id = u.user_id
+            LEFT JOIN dim_category AS c ON signals.category_id = c.category_id
+            GROUP BY signals.user_id, u.name, u.email, c.category_name
+        ), ranked_categories AS (
+            SELECT
+                user_id,
+                name,
+                email,
+                category_name,
+                signal_count,
+                interest_score,
+                ROW_NUMBER() OVER (
+                    PARTITION BY user_id
+                    ORDER BY interest_score DESC, signal_count DESC, category_name
+                ) AS category_rank
+            FROM aggregated_categories
+        )
+        SELECT
+            user_id,
+            name,
+            email,
+            category_name,
+            signal_count,
+            interest_score,
+            category_rank
+        FROM ranked_categories
+        WHERE category_rank <= 3
+        ORDER BY name, category_rank
+        """
+    )
+    connection.execute(
+        """
+        CREATE OR REPLACE VIEW metric_user_interest_summary AS
+        SELECT
+            user_id,
+            name,
+            email,
+            category_name AS top_category,
+            interest_score,
+            'You seem interested in ' || category_name AS suggested_chip
+        FROM metric_user_top_categories
+        WHERE category_rank = 1
+        ORDER BY name
+        """
+    )
+    connection.execute(
+        """
+        CREATE OR REPLACE VIEW metric_posts_created_last_week AS
+        WITH date_bounds AS (
+            SELECT MAX(full_date) AS max_date
+            FROM dim_date
+        )
+        SELECT
+            d.full_date,
+            COUNT(l.listing_id) AS posts_created
+        FROM dim_date AS d
+        CROSS JOIN date_bounds
+        LEFT JOIN fact_listings AS l ON d.date_key = l.created_date_key
+        WHERE d.full_date BETWEEN date_bounds.max_date - INTERVAL 6 DAY AND date_bounds.max_date
+        GROUP BY d.full_date
+        ORDER BY d.full_date
         """
     )
 
