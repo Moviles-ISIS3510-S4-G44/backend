@@ -9,6 +9,9 @@ from alembic import context
 
 from src.marketplace_andes_backend.auth.models import UserAuth  # noqa: F401
 from src.marketplace_andes_backend.categories.models import Category  # noqa: F401
+from src.marketplace_andes_backend.interactions.models import (  # noqa: F401
+    UserListingInteraction,
+)
 from src.marketplace_andes_backend.listings.models import Listing  # noqa: F401
 from src.marketplace_andes_backend.users.models import User  # noqa: F401
 
