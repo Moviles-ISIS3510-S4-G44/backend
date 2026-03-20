@@ -1,4 +1,7 @@
-from fastapi import APIRouter, HTTPException
+from typing import Annotated
+from uuid import UUID
+
+from fastapi import APIRouter, HTTPException, Path
 
 from src.marketplace_andes_backend.db import SessionDep
 
@@ -33,7 +36,7 @@ async def list_listings(session: SessionDep) -> list[ListingResponse]:
 
 @router.get("/{listing_id}")
 async def get_listing(
-    listing_id: int,
+    listing_id: Annotated[UUID, Path()],
     session: SessionDep,
 ) -> ListingResponse:
     service = ListingService(session)

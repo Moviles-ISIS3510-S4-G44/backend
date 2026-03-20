@@ -1,3 +1,5 @@
+from uuid import UUID
+
 from sqlmodel import Session, select
 
 from src.marketplace_andes_backend.categories.models import Category
@@ -20,14 +22,14 @@ class ListingService:
         statement = select(Listing)
         return list(self.session.exec(statement).all())
 
-    def get_by_id(self, listing_id: int) -> Listing | None:
+    def get_by_id(self, listing_id: UUID) -> Listing | None:
         statement = select(Listing).where(Listing.id == listing_id)
         return self.session.exec(statement).first()
 
-    def user_exists(self, user_id: int) -> bool:
+    def user_exists(self, user_id: UUID) -> bool:
         statement = select(User).where(User.id == user_id)
         return self.session.exec(statement).first() is not None
 
-    def category_exists(self, category_id: int) -> bool:
+    def category_exists(self, category_id: UUID) -> bool:
         statement = select(Category).where(Category.id == category_id)
         return self.session.exec(statement).first() is not None
