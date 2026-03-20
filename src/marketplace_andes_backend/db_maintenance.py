@@ -28,7 +28,7 @@ REQUIRED_LISTINGS: tuple[dict[str, str | Decimal | list[str]], ...] = (
         "condition": "used",
         "images": ["https://picsum.photos/seed/iphone14pro/800/600"],
         "status": "active",
-        "location": "Bogotá",
+        "location": "4.7110,-74.0721",  # Bogotá centro
     },
     {
         "seller_email": "maria.camila@marketplace.test",
@@ -39,7 +39,7 @@ REQUIRED_LISTINGS: tuple[dict[str, str | Decimal | list[str]], ...] = (
         "condition": "used",
         "images": ["https://picsum.photos/seed/cien-anos/800/600"],
         "status": "active",
-        "location": "Medellín",
+        "location": "4.6486,-74.2479",  # Bogotá occidente
     },
     {
         "seller_email": "yesid@marketplace.test",
@@ -50,7 +50,7 @@ REQUIRED_LISTINGS: tuple[dict[str, str | Decimal | list[str]], ...] = (
         "condition": "used",
         "images": ["https://picsum.photos/seed/escritorio-roble/800/600"],
         "status": "active",
-        "location": "Cali",
+        "location": "4.6097,-74.0817",  # Bogotá sur-centro
     },
     {
         "seller_email": "isaac@marketplace.test",
@@ -61,7 +61,7 @@ REQUIRED_LISTINGS: tuple[dict[str, str | Decimal | list[str]], ...] = (
         "condition": "used",
         "images": ["https://picsum.photos/seed/lg-ultrawide/800/600"],
         "status": "active",
-        "location": "Barranquilla",
+        "location": "4.6816,-74.0470",  # Chapinero / zona oriente
     },
     {
         "seller_email": "santiago@marketplace.test",
@@ -72,7 +72,7 @@ REQUIRED_LISTINGS: tuple[dict[str, str | Decimal | list[str]], ...] = (
         "condition": "used",
         "images": ["https://picsum.photos/seed/silla-ergonomica/800/600"],
         "status": "active",
-        "location": "Bucaramanga",
+        "location": "4.6584,-74.0937",  # Teusaquillo aprox
     },
     {
         "seller_email": "louise@marketplace.test",
@@ -83,7 +83,7 @@ REQUIRED_LISTINGS: tuple[dict[str, str | Decimal | list[str]], ...] = (
         "condition": "new",
         "images": ["https://picsum.photos/seed/clean-code/800/600"],
         "status": "active",
-        "location": "Cartagena",
+        "location": "4.7006,-74.1469",  # Bogotá noroccidente
     },
     {
         "seller_email": "diego@marketplace.test",
@@ -94,7 +94,7 @@ REQUIRED_LISTINGS: tuple[dict[str, str | Decimal | list[str]], ...] = (
         "condition": "used",
         "images": ["https://picsum.photos/seed/keychron-k2/800/600"],
         "status": "active",
-        "location": "Bogotá",
+        "location": "4.7211,-74.0315",  # Usaquén aprox
     },
     {
         "seller_email": "maria.camila@marketplace.test",
@@ -105,7 +105,7 @@ REQUIRED_LISTINGS: tuple[dict[str, str | Decimal | list[str]], ...] = (
         "condition": "new",
         "images": ["https://picsum.photos/seed/lampara-pie/800/600"],
         "status": "active",
-        "location": "Medellín",
+        "location": "4.7419,-74.0841",  # Suba aprox
     },
     {
         "seller_email": "yesid@marketplace.test",
@@ -116,7 +116,7 @@ REQUIRED_LISTINGS: tuple[dict[str, str | Decimal | list[str]], ...] = (
         "condition": "used",
         "images": ["https://picsum.photos/seed/pragmatic-programmer/800/600"],
         "status": "active",
-        "location": "Cali",
+        "location": "4.5978,-74.0758",  # Bogotá sur
     },
 )
 
