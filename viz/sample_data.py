@@ -195,28 +195,68 @@ def _seed_sample_data(session: Session) -> None:
     session.flush()
 
     seller_names = [
-        "Ana Seller",
-        "Carlos Seller",
-        "Daniela Seller",
-        "Felipe Seller",
-        "Laura Seller",
-        "Mateo Seller",
-        "Paula Seller",
-        "Sara Seller",
+        f"{name} Seller"
+        for name in [
+            "Ana",
+            "Carlos",
+            "Daniela",
+            "Felipe",
+            "Laura",
+            "Mateo",
+            "Paula",
+            "Sara",
+            "Andres",
+            "Valeria",
+            "Sebastian",
+            "Natalia",
+            "Juliana",
+            "David",
+            "Manuela",
+            "Santiago",
+            "Camilo",
+            "Isabella",
+        ]
     ]
     buyer_names = [
-        "Luis Buyer",
-        "Marta Buyer",
-        "Camila Buyer",
-        "Julian Buyer",
-        "Valentina Buyer",
-        "Andres Buyer",
-        "Sofia Buyer",
-        "Miguel Buyer",
-        "Natalia Buyer",
-        "Juan Buyer",
-        "Maria Buyer",
-        "Tomas Buyer",
+        f"{name} Buyer"
+        for name in [
+            "Luis",
+            "Marta",
+            "Camila",
+            "Julian",
+            "Valentina",
+            "Andres",
+            "Sofia",
+            "Miguel",
+            "Natalia",
+            "Juan",
+            "Maria",
+            "Tomas",
+            "Alejandra",
+            "Nicolas",
+            "Gabriela",
+            "Esteban",
+            "Fernanda",
+            "Ricardo",
+            "Lucia",
+            "Samuel",
+            "Paola",
+            "Emilio",
+            "Mariana",
+            "Juanita",
+            "Martin",
+            "Catalina",
+            "Gabriel",
+            "Elena",
+            "Pablo",
+            "Lorena",
+            "Carmen",
+            "Jeronimo",
+            "Beatriz",
+            "Mateo",
+            "Salome",
+            "Cristian",
+        ]
     ]
 
     sellers: list[User] = []
@@ -249,16 +289,16 @@ def _seed_sample_data(session: Session) -> None:
             is_verified=index % 3 != 0,
             student_code=f"BUY{index + 1:03d}",
         )
-        buyer.created_at = BASE_TIME - timedelta(days=58 - index * 2)
+        buyer.created_at = BASE_TIME - timedelta(days=96 - index)
         buyers.append(buyer)
 
     all_users = sellers + buyers
     for index, user in enumerate(all_users):
         login_times: list[datetime] = []
-        for login_index in range(4):
+        for login_index in range(8):
             login_time = max(
                 user.created_at + timedelta(hours=6 + login_index),
-                BASE_TIME - timedelta(days=18) + timedelta(days=index + login_index * 9),
+                BASE_TIME - timedelta(days=30) + timedelta(days=index + login_index * 7),
             )
             session.add(
                 _create_activity(
@@ -320,7 +360,7 @@ def _seed_sample_data(session: Session) -> None:
         "North Gate",
     ]
 
-    total_listings = 36
+    total_listings = 216
     for listing_index in range(total_listings):
         seller = sellers[listing_index % len(sellers)]
         category = leaf_categories[listing_index % len(leaf_categories)]
@@ -354,7 +394,7 @@ def _seed_sample_data(session: Session) -> None:
         session.add(listing)
         session.flush()
 
-        for media_index in range(1 + (listing_index % 2)):
+        for media_index in range(1 + (listing_index % 3)):
             session.add(
                 ListingMedia(
                     listing_id=listing.id,
@@ -391,7 +431,7 @@ def _seed_sample_data(session: Session) -> None:
             )
         )
 
-        for failure_index in range(1 if listing_index % 6 == 0 else 0):
+        for failure_index in range((1 + (listing_index % 18 == 0)) if listing_index % 5 == 0 else 0):
             failed_attempt_time = created_at - timedelta(hours=6 + failure_index)
             session.add(
                 _create_activity(
@@ -408,7 +448,7 @@ def _seed_sample_data(session: Session) -> None:
                 )
             )
 
-        for search_index in range(2 + (listing_index % 3)):
+        for search_index in range(4 + (listing_index % 5)):
             search_user = buyers[(listing_index + search_index * 2) % len(buyers)]
             search_time = created_at + timedelta(hours=2 + search_index * 5)
             search_event = SearchEvent(
@@ -428,9 +468,9 @@ def _seed_sample_data(session: Session) -> None:
                 )
             )
 
-        for view_index in range(3 + (listing_index % 5)):
-            viewer = buyers[(listing_index * 3 + view_index) % len(buyers)]
-            view_time = published_at + timedelta(hours=2 + view_index * 6)
+        for view_index in range(8 + (listing_index % 7)):
+            viewer = buyers[(listing_index * 5 + view_index) % len(buyers)]
+            view_time = published_at + timedelta(hours=2 + view_index * 3)
             session.add(
                 _create_activity(
                     user_id=viewer.id,
@@ -443,8 +483,9 @@ def _seed_sample_data(session: Session) -> None:
         interested_buyers = [
             buyers[(listing_index * 2) % len(buyers)],
             buyers[(listing_index * 2 + 5) % len(buyers)],
+            buyers[(listing_index * 2 + 11) % len(buyers)],
         ]
-        thread_total = 1 + (listing_index % 3 != 1)
+        thread_total = 2 + (listing_index % 4 == 0)
         for thread_index in range(thread_total):
             buyer = interested_buyers[thread_index]
             thread_time = created_at + timedelta(hours=6 + thread_index * 3)
@@ -458,7 +499,7 @@ def _seed_sample_data(session: Session) -> None:
             session.flush()
 
             last_message_at = thread_time
-            message_total = 2 + ((listing_index + thread_index) % 3)
+            message_total = 3 + ((listing_index + thread_index) % 4)
             for message_index in range(message_total):
                 sender = buyer if message_index % 2 == 0 else seller
                 message_time = thread_time + timedelta(hours=message_index * 4)

@@ -1,21 +1,55 @@
 user_id,name,email,top_category,interest_score,suggested_chip
-019d0d90-05d7-7135-879f-24c752adabb2,Ana Seller,seller1@example.com,Electronics,30.0,You seem interested in Electronics
-019d0d90-078e-7252-a121-0f83bde18e42,Andres Buyer,buyer6@example.com,Books,37.0,You seem interested in Books
-019d0d90-0729-7034-aa28-ec5237e0011a,Camila Buyer,buyer3@example.com,Lab Gear,65.0,You seem interested in Lab Gear
-019d0d90-05fb-731a-8f9f-680f939c7cc7,Carlos Seller,seller2@example.com,Lab Gear,22.0,You seem interested in Lab Gear
-019d0d90-061b-714e-a5e8-91e7293069b3,Daniela Seller,seller3@example.com,Electronics,34.0,You seem interested in Electronics
-019d0d90-064e-706d-92c2-884a08873947,Felipe Seller,seller4@example.com,Mobility,34.0,You seem interested in Mobility
-019d0d90-0824-71a3-8817-7aa0a7b68247,Juan Buyer,buyer10@example.com,Electronics,21.0,You seem interested in Electronics
-019d0d90-0748-7417-99d1-f48270c9ca64,Julian Buyer,buyer4@example.com,Mobility,27.0,You seem interested in Mobility
-019d0d90-066d-75ae-85c7-685a28100604,Laura Seller,seller5@example.com,Electronics,17.0,You seem interested in Electronics
-019d0d90-06ea-7749-bb33-fd5897207fb9,Luis Buyer,buyer1@example.com,Books,55.0,You seem interested in Books
-019d0d90-0843-72b5-8d5b-6a353cb1c89a,Maria Buyer,buyer11@example.com,Mobility,67.0,You seem interested in Mobility
-019d0d90-0709-7542-9fa2-7098aa905ec4,Marta Buyer,buyer2@example.com,Lab Gear,8.0,You seem interested in Lab Gear
-019d0d90-068c-7296-8b95-f69b5bf1f51c,Mateo Seller,seller6@example.com,Mobility,30.0,You seem interested in Mobility
-019d0d90-07e5-70c4-96c9-e1a2faddb136,Miguel Buyer,buyer8@example.com,Mobility,8.0,You seem interested in Mobility
-019d0d90-0805-7183-aaa4-498ad12f844d,Natalia Buyer,buyer9@example.com,Fashion,73.0,You seem interested in Fashion
-019d0d90-06ac-75a9-b042-12365b39c0c3,Paula Seller,seller7@example.com,Books,28.0,You seem interested in Books
-019d0d90-06cb-770c-b630-4b4388c07767,Sara Seller,seller8@example.com,Lab Gear,22.0,You seem interested in Lab Gear
-019d0d90-07ae-7340-9a41-eef21de065a5,Sofia Buyer,buyer7@example.com,Furniture,53.0,You seem interested in Furniture
-019d0d90-0862-7618-9ae1-50674faa7d30,Tomas Buyer,buyer12@example.com,Furniture,45.0,You seem interested in Furniture
-019d0d90-0767-779e-b51b-b98ee67802a4,Valentina Buyer,buyer5@example.com,Electronics,72.0,You seem interested in Electronics
+019d0db1-b8f7-7153-971c-991a0eb3746c,Alejandra Buyer,buyer13@example.com,Books,187.0,You seem interested in Books
+019d0db1-b514-73e2-84b1-623a9e547b68,Ana Seller,seller1@example.com,Books,256.0,You seem interested in Books
+019d0db1-b80a-744d-ae98-2ff448092019,Andres Buyer,buyer6@example.com,Books,98.0,You seem interested in Books
+019d0db1-b626-74f0-a7ff-18dd2e2f194c,Andres Seller,seller9@example.com,Electronics,256.0,You seem interested in Electronics
+019d0db1-bb8d-728a-b7e8-7f1c43f75040,Beatriz Buyer,buyer33@example.com,Fashion,180.0,You seem interested in Fashion
+019d0db1-b7af-7778-89b7-e0445c19067e,Camila Buyer,buyer3@example.com,Lab Gear,156.0,You seem interested in Lab Gear
+019d0db1-b722-7662-b81f-978878fe6e45,Camilo Seller,seller17@example.com,Fashion,256.0,You seem interested in Fashion
+019d0db1-b537-710e-991d-9ca1eb28c6f5,Carlos Seller,seller2@example.com,Lab Gear,220.0,You seem interested in Lab Gear
+019d0db1-bb4f-7771-88b8-15bf00e66613,Carmen Buyer,buyer31@example.com,Furniture,160.0,You seem interested in Furniture
+019d0db1-ba9d-7108-95a6-08d55b378bb3,Catalina Buyer,buyer26@example.com,Fashion,99.0,You seem interested in Fashion
+019d0db1-bbea-711b-aad5-b556d84743b2,Cristian Buyer,buyer36@example.com,Furniture,125.0,You seem interested in Furniture
+019d0db1-b556-758f-b941-d0ba081715c1,Daniela Seller,seller3@example.com,Electronics,260.0,You seem interested in Electronics
+019d0db1-b6c2-72b2-9c27-1df71ae5e8ab,David Seller,seller14@example.com,Lab Gear,220.0,You seem interested in Lab Gear
+019d0db1-bada-7597-98ec-19c603582832,Elena Buyer,buyer28@example.com,Mobility,121.0,You seem interested in Mobility
+019d0db1-ba1f-76b2-879c-b5b180bec2c6,Emilio Buyer,buyer22@example.com,Electronics,99.0,You seem interested in Electronics
+019d0db1-b953-73e6-bce4-ded2db8f19d6,Esteban Buyer,buyer16@example.com,Mobility,119.0,You seem interested in Mobility
+019d0db1-b576-71a3-88e8-73ebb4b74cf3,Felipe Seller,seller4@example.com,Furniture,220.0,You seem interested in Furniture
+019d0db1-b972-765b-810e-ec0332fa1b68,Fernanda Buyer,buyer17@example.com,Electronics,188.0,You seem interested in Electronics
+019d0db1-babc-70c9-9549-7e0c18cd8479,Gabriel Buyer,buyer27@example.com,Lab Gear,160.0,You seem interested in Lab Gear
+019d0db1-b934-7500-ae85-f29ec2608707,Gabriela Buyer,buyer15@example.com,Lab Gear,157.0,You seem interested in Lab Gear
+019d0db1-b752-73d7-afd9-d07c11a2b68c,Isabella Seller,seller18@example.com,Mobility,224.0,You seem interested in Mobility
+019d0db1-bb70-771d-b135-63e4b13dc222,Jeronimo Buyer,buyer32@example.com,Lab Gear,131.0,You seem interested in Lab Gear
+019d0db1-b887-74a0-b654-5bb639dfdb2e,Juan Buyer,buyer10@example.com,Electronics,98.0,You seem interested in Electronics
+019d0db1-ba60-77e4-984a-2f1158052725,Juanita Buyer,buyer24@example.com,Furniture,125.0,You seem interested in Furniture
+019d0db1-b7ce-72e7-a6e6-70d5d5b90015,Julian Buyer,buyer4@example.com,Mobility,121.0,You seem interested in Mobility
+019d0db1-b6a4-74ab-bad1-742c1df274f5,Juliana Seller,seller13@example.com,Books,260.0,You seem interested in Books
+019d0db1-b5a3-75fe-9c3f-a5e1c4df3d04,Laura Seller,seller5@example.com,Fashion,256.0,You seem interested in Fashion
+019d0db1-bb2f-7730-94dd-0e78746b727d,Lorena Buyer,buyer30@example.com,Books,99.0,You seem interested in Books
+019d0db1-b9ae-718d-9b7e-daf7549381c8,Lucia Buyer,buyer19@example.com,Furniture,157.0,You seem interested in Furniture
+019d0db1-b771-7539-88ec-cbe91e253f80,Luis Buyer,buyer1@example.com,Books,194.0,You seem interested in Books
+019d0db1-b6e3-73ec-9d6c-45e29a7f30d4,Manuela Seller,seller15@example.com,Electronics,256.0,You seem interested in Electronics
+019d0db1-b8b8-740b-95d5-0ec7c5f0cef8,Maria Buyer,buyer11@example.com,Mobility,161.0,You seem interested in Mobility
+019d0db1-ba3f-719e-8f28-855f643cd335,Mariana Buyer,buyer23@example.com,Mobility,156.0,You seem interested in Mobility
+019d0db1-b790-70f1-a70c-02ce2f572aaa,Marta Buyer,buyer2@example.com,Fashion,98.0,You seem interested in Fashion
+019d0db1-ba7e-7799-a222-5af70d890ce4,Martin Buyer,buyer25@example.com,Books,188.0,You seem interested in Books
+019d0db1-bbad-76f7-83b3-aad744323645,Mateo Buyer,buyer34@example.com,Electronics,98.0,You seem interested in Electronics
+019d0db1-b5c5-71cf-a172-4bcca5effdeb,Mateo Seller,seller6@example.com,Mobility,220.0,You seem interested in Mobility
+019d0db1-b847-74cc-a966-caa977677539,Miguel Buyer,buyer8@example.com,Lab Gear,129.0,You seem interested in Lab Gear
+019d0db1-b866-762b-99b0-fc66deb6c300,Natalia Buyer,buyer9@example.com,Fashion,179.0,You seem interested in Fashion
+019d0db1-b685-7110-9dee-9be54f4b4d8c,Natalia Seller,seller12@example.com,Mobility,220.0,You seem interested in Mobility
+019d0db1-b915-71d0-b808-2de6e2b3729c,Nicolas Buyer,buyer14@example.com,Fashion,99.0,You seem interested in Fashion
+019d0db1-baf9-72ec-9b0d-b9c598ef9bd6,Pablo Buyer,buyer29@example.com,Electronics,184.0,You seem interested in Electronics
+019d0db1-b9ec-70ff-969d-6d196f546fa7,Paola Buyer,buyer21@example.com,Fashion,182.0,You seem interested in Fashion
+019d0db1-b5e5-752c-9343-320cff679c3d,Paula Seller,seller7@example.com,Books,256.0,You seem interested in Books
+019d0db1-b98f-77d6-9e8b-979a3f3f9df4,Ricardo Buyer,buyer18@example.com,Books,99.0,You seem interested in Books
+019d0db1-bbcc-72a3-a2b9-1197379eafcf,Salome Buyer,buyer35@example.com,Mobility,156.0,You seem interested in Mobility
+019d0db1-b9cd-703c-8397-1602425948ad,Samuel Buyer,buyer20@example.com,Lab Gear,129.0,You seem interested in Lab Gear
+019d0db1-b703-7028-9bb5-653e877fa7a5,Santiago Seller,seller16@example.com,Furniture,220.0,You seem interested in Furniture
+019d0db1-b606-73d3-b0db-32592e279f58,Sara Seller,seller8@example.com,Lab Gear,224.0,You seem interested in Lab Gear
+019d0db1-b666-7220-a143-0959b1d6784b,Sebastian Seller,seller11@example.com,Fashion,256.0,You seem interested in Fashion
+019d0db1-b828-72a4-94de-cbd4177d8d0a,Sofia Buyer,buyer7@example.com,Furniture,160.0,You seem interested in Furniture
+019d0db1-b8d8-7054-9f03-ffcd5f4ad545,Tomas Buyer,buyer12@example.com,Furniture,126.0,You seem interested in Furniture
+019d0db1-b7ec-770a-ae8d-8cae58b7dec4,Valentina Buyer,buyer5@example.com,Electronics,183.0,You seem interested in Electronics
+019d0db1-b645-7184-aece-94bba2e54bd4,Valeria Seller,seller10@example.com,Furniture,220.0,You seem interested in Furniture
