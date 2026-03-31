@@ -1,52 +1,42 @@
 # Marketplace Andes Backend
 
-[![Backend CI](https://github.com/Moviles-ISIS3510-S4-G44/backend/actions/workflows/backend-ci.yaml/badge.svg)](https://github.com/Moviles-ISIS3510-S4-G44/backend/actions/workflows/backend-ci.yaml)
+[![CI](https://github.com/Moviles-ISIS3510-S4-G44/backend/actions/workflows/ci.yaml/badge.svg)](https://github.com/Moviles-ISIS3510-S4-G44/backend/actions/workflows/ci.yaml)
 
-## Useful Commands
-
-```bash
-uv run viz/run_pipeline.py
-```
+## Commands
 
 ```bash
-docker compose up --build
-docker compose down -v
-
-# with pgadmin
-docker compose --profile pgadmin up --build
-docker compose --profile pgadmin down -v
+docker compose --profile dev --profile load_fake --profile pgadmin up --build
+docker compose --profile dev --profile pgadmin up --build --watch
+docker compose --profile dev --profile pgadmin down -v
 ```
 
-```bash
-pytest
+## Learning
+
+When doint commits on the session, it expires. And subsequent accesses to it
+may trigger additional SQL queries.
+
+In my case it was
+
+```python
+    def register_user(self, username: str, password: str, anon_ip: str) -> UUID:
+        if self.__user_repository.get_id_from_username(username):
+            self.__logger.warning(
+                f"Registration attempted with existing username: {username} at IP: {anon_ip}"
+            )
+            raise DuplicateUserError("Username already exists")
+
+        user = self.__user_repository.create_user(username)
+        self.__session.flush()
+
+        self.__auth_repository.create_auth_user(
+            user.id, self.__password_hasher.hash(password)
+        )
+        self.__session.commit()
+        self.__logger.info(
+            f"User: {username} registered successfully with id: {user.id} at IP: {anon_ip}"
+        )
+        return user.id
 ```
 
-```bash
-alembic upgrade head
-```
-
-```bash
-docker stop $(docker ps -aq)
-```
-
-```bash
-gh pr create --base main \
---head <branch> \
---title "feat(xxx): XXX" \
---body "Closes <#xxxx>"
-
-# example
-#gh pr create --base master --head orpheezt/feat/user-domain --title "feat(user): introduce User API" --body "Closes #123"
-```
-
-## Notes
-
-### env files
-
-For use docker compose you need env files
-
-run
-
-```bash
-for f in *.template; do cp -n "$f" "${f%.template}"; done
-```
+So in short if retrieved data from DB save it to an DTO.
+And dont use the SQLModel entity object.

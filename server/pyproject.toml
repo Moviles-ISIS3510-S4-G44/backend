@@ -1,0 +1,34 @@
+[project]
+name = "marketplace_andes"
+version = "0.0.1"
+requires-python = ">=3.14"
+dependencies = [
+    "argon2-cffi>=25.1.0",
+    "fastapi[standard]>=0.135.1",
+    "psycopg[binary]>=3.3.3",
+    "pyjwt[crypto]>=2.12.1",
+    "sqlmodel>=0.0.37",
+]
+
+[tool.fastapi]
+entrypoint = "marketplace_andes.app:app"
+
+[dependency-groups]
+otel = [
+    "opentelemetry-exporter-otlp-proto-grpc>=1.40.0",
+    "opentelemetry-instrumentation-fastapi>=0.60b1",
+    "opentelemetry-instrumentation-logging>=0.60b1",
+    "opentelemetry-instrumentation-psycopg>=0.60b1",
+    "opentelemetry-instrumentation-sqlalchemy>=0.60b1",
+]
+dev = ["ruff>=0.15.7", "ty>=0.0.24"]
+integration-tests = [
+    "pytest>=9.0.2",
+    "testcontainers[postgres]>=4.14.2",
+    "pytest-cov>=7.1.0",
+]
+unit-tests = ["pytest>=9.0.2", "pytest-cov>=7.1.0"]
+
+[build-system]
+requires = ["uv_build>=0.11.2,<0.12"]
+build-backend = "uv_build"

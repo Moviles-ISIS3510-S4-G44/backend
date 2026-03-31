@@ -1,0 +1,5 @@
+sources:
+  - name: dlt_raw
+    schema: marketplace_andes_analytics_raw
+    tables:
+      - name: users

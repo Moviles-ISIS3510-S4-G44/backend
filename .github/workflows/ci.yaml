@@ -1,0 +1,76 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  lint-and-format:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: server
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6.0.2
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v7.6.0
+
+      - name: Install dependencies
+        run: uv sync --locked --dev --group unit-tests --group integration-tests
+
+      - name: Run ruff linting
+        run: uv run ruff check --output-format=github src
+
+      - name: Check ruff formatting
+        run: uv run ruff format --diff --output-format=github --preview src integration tests
+
+      - name: Ty check
+        run: uv run ty check --output-format=github src integration tests
+
+  unit-tests:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: server
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6.0.2
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v7.6.0
+
+      - name: Install dependencies
+        run: uv sync --locked --group unit-tests
+
+      - name: Run tests
+        run: CI=1 uv run pytest tests --junitxml=junit/test-results.xml --cov src.marketplace_andes --cov-report=xml --cov-report=html
+
+  integration-tests:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: server
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6.0.2
+
+      - name: Set up Docker
+        uses: docker/setup-docker-action@v5
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v7.6.0
+
+      - name: Install dependencies
+        run: uv sync --locked --group integration-tests
+
+      - name: Run tests
+        run: CI=1 uv run pytest integration --junitxml=junit/test-results.xml --cov src.marketplace_andes --cov-report=xml --cov-report=html

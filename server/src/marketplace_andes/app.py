@@ -1,0 +1,16 @@
+from fastapi import FastAPI
+
+
+from .lifecycle import lifespan
+from .exception_handlers import register_exception_handlers
+from .health.routes import router as health_router
+from .auth.routes import router as auth_router
+from .users.routes import router as users_router
+
+
+app = FastAPI(lifespan=lifespan)
+register_exception_handlers(app)
+
+app.include_router(health_router)
+app.include_router(auth_router)
+app.include_router(users_router)

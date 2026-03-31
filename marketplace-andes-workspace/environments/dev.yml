@@ -1,6 +1,0 @@
-name: dev
-variables:
-  - name: server
-    value: 127.0.0.1
-  - name: port
-    value: "8000"

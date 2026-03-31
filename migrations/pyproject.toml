@@ -1,0 +1,22 @@
+[project]
+name = "migrations"
+version = "0.0.1"
+requires-python = ">=3.14"
+dependencies = [
+    "alembic>=1.18.4",
+    "psycopg[binary]>=3.3.3",
+]
+
+
+[tool.alembic]
+script_location = "%(here)s/alembic"
+prepend_sys_path = ["."]
+output_encoding = "utf-8"
+[[tool.alembic.post_write_hooks]]
+name = "ruff"
+type = "module"
+module = "ruff"
+options = "check --fix REVISION_SCRIPT_FILENAME"
+
+[dependency-groups]
+dev = ["ruff>=0.15.7"]

@@ -14,6 +14,7 @@ wheels/
 .env.migrations
 .env.pg
 .env.pgadmin
+.env.load_fake
 
 .ruff_cache/
 
@@ -22,3 +23,5 @@ junit/
 .coverage
 coverage.xml
 htmlcov/
+
+**/.pytest_cache/
