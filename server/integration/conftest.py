@@ -9,12 +9,12 @@ from sqlalchemy.engine import make_url
 from sqlmodel import Session, create_engine
 from testcontainers.postgres import PostgresContainer
 
-from marketpace_andes.app import app
-from marketpace_andes.db.config import EngineConfig
-from marketpace_andes.db.dependencies import get_db_config
-from marketpace_andes.auth.user.repository import AuthUserRepository
-from marketpace_andes.users.repository import UserRepository
-from marketpace_andes.auth.password.dependencies import get_password_hasher
+from marketplace_andes.app import app
+from marketplace_andes.db.config import EngineConfig
+from marketplace_andes.db.dependencies import get_db_config
+from marketplace_andes.auth.user.repository import AuthUserRepository
+from marketplace_andes.users.repository import UserRepository
+from marketplace_andes.auth.password.dependencies import get_password_hasher
 
 
 @pytest.fixture(scope="session")
