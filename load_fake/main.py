@@ -1,12 +1,14 @@
 import os
 import random
 from uuid import UUID, uuid7
-from datetime import datetime, UTC
+from datetime import datetime, UTC, timedelta
 
 from sqlalchemy import Connection, create_engine, text
 
 from argon2 import PasswordHasher
 
+
+from fake import FAKE_NAMES, FAKE_SURNAMES
 
 DB_HOST = os.getenv("PG_HOST", "postgres")
 DB_PORT = os.getenv("PG_PORT", "5432")
@@ -27,6 +29,59 @@ USERS_DEV = [
     "mc.martinezm1",
     "s.tenjov",
     "y.pineros",
+]
+
+USER_DEV_PROFILES = [
+    {
+        "name": "Diego",
+        "surname": "Rodríguez",
+        "status": "student",
+        "university": "Universidad de los Andes",
+    },
+    {
+        "name": "Louise",
+        "surname": "Fussien",
+        "status": "student",
+        "university": "Universidad de los Andes",
+    },
+    {
+        "name": "Isaac",
+        "surname": "Bermúdez",
+        "status": "student",
+        "university": "Universidad de los Andes",
+    },
+    {
+        "name": "María Camila",
+        "surname": "Martínez",
+        "status": "student",
+        "university": "Universidad de los Andes",
+    },
+    {
+        "name": "Santiago",
+        "surname": "Tenjov",
+        "status": "student",
+        "university": "Universidad de los Andes",
+    },
+    {
+        "name": "Yesid",
+        "surname": "Pineros",
+        "status": "student",
+        "university": "Universidad de los Andes",
+    },
+]
+
+
+STATUSES = ["student", "professor", "admin", "assistant"]
+
+UNIVERSITIES = [
+    "Universidad de los Andes",
+    "Universidad Nacional",
+    "Pontificia Universidad Javeriana",
+    "Universidad del Valle",
+    "Universidad de Antioquia",
+    "Universidad Industrial de Santander",
+    "Universidad del Norte",
+    "Universidad del Cauca",
 ]
 
 
@@ -69,6 +124,63 @@ def create_fake_uwu_user(conn: Connection):
     return user_id
 
 
+def create_user_profile(
+    conn: Connection,
+    user_id: UUID,
+    name: str,
+    surname: str,
+    status: str,
+    university: str,
+):
+    """Create a user profile for the given user_id"""
+    conn.execute(
+        text(
+            """
+            INSERT INTO user_profiles (id, name, surname, status, university)
+            VALUES (:id, :name, :surname, :status, :university)
+            """
+        ),
+        {
+            "id": user_id,
+            "name": name,
+            "surname": surname,
+            "status": status,
+            "university": university,
+        },
+    )
+
+
+def create_fake_uwu_user_profile(conn: Connection, user_id: UUID):
+    """Create profile for the uwu user"""
+    create_user_profile(
+        conn, user_id, None, None, "student", "The Academy of Advanced Procrastination"
+    )
+
+
+def create_fake_dev_user_profiles(conn: Connection, user_ids: list[UUID]):
+    """Create profiles for dev users"""
+    for user_id, profile in zip(user_ids, USER_DEV_PROFILES):
+        create_user_profile(
+            conn,
+            user_id,
+            profile["name"],
+            profile["surname"],
+            profile["status"],
+            profile["university"],
+        )
+
+
+def create_fake_user_profiles(conn: Connection, user_ids: list[UUID]):
+    """Create profiles for fake users"""
+    for user_id in user_ids:
+        name = random.choice(FAKE_NAMES)
+        surname = random.choice(FAKE_SURNAMES)
+        status = random.choice(STATUSES)
+        university = random.choice(UNIVERSITIES)
+
+        create_user_profile(conn, user_id, name, surname, status, university)
+
+
 def create_fake_dev_users(conn: Connection) -> list[UUID]:
     user_ids: list[UUID] = []
     for username in USERS_DEV:
@@ -98,7 +210,7 @@ def create_fake_dev_users(conn: Connection) -> list[UUID]:
             ),
             {
                 "id": user_id,
-                "hashed_password": PASSWORD_HASHER.hash(f"{username}_pwd"),
+                "hashed_password": PASSWORD_HASHER.hash("password"),
             },
         )
         user_ids.append(user_id)
@@ -144,6 +256,75 @@ def create_fake_users(conn: Connection) -> list[UUID]:
     return user_ids
 
 
+def create_fake_users_spread(conn: Connection) -> list[UUID]:
+    """Create 2000+ users with creation dates from yesterday to 2 years ago, some with deleted_at"""
+    user_ids: list[UUID] = []
+    users_data = []
+    auth_users_data = []
+
+    now = datetime.now(UTC)
+
+    for i in range(2000):
+        # Random creation date between 2 years ago and yesterday
+        days_ago = random.randint(1, 730)
+        created_at = now - timedelta(days=days_ago)
+
+        # 15% chance of being deleted
+        is_deleted = random.random() < 0.15
+
+        # If deleted, calculate deleted_at between created_at and yesterday
+        deleted_at = None
+        if is_deleted:
+            max_days_for_deletion = days_ago - 1  # Can't delete before creation
+            if max_days_for_deletion > 0:
+                deletion_days_ago = random.randint(1, max_days_for_deletion)
+                deleted_at = now - timedelta(days=deletion_days_ago)
+
+        user_id = uuid7()
+        username = f"spread_user_{i + 1:04d}"
+
+        users_data.append(
+            {
+                "id": user_id,
+                "username": username,
+                "created_at": created_at,
+                "updated_at": deleted_at if deleted_at else created_at,
+                "deleted_at": deleted_at,
+            }
+        )
+
+        auth_users_data.append(
+            {
+                "id": user_id,
+                "hashed_password": PASSWORD_HASHER.hash(f"{username}_pwd"),
+            }
+        )
+
+        user_ids.append(user_id)
+
+    conn.execute(
+        text(
+            """
+            INSERT INTO users (id, username, created_at, updated_at, deleted_at)
+            VALUES (:id, :username, :created_at, :updated_at, :deleted_at)
+            """
+        ),
+        users_data,
+    )
+
+    conn.execute(
+        text(
+            """
+            INSERT INTO auth_users (id, hashed_password)
+            VALUES (:id, :hashed_password)
+            """
+        ),
+        auth_users_data,
+    )
+
+    return user_ids
+
+
 def main():
     engine = create_engine(
         f"postgresql+psycopg://postgres:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/marketplace",  # do it as root
@@ -151,8 +332,16 @@ def main():
     )
     with engine.begin() as conn:
         uwu_user_id = create_fake_uwu_user(conn)
+        create_fake_uwu_user_profile(conn, uwu_user_id)
+
         dev_user_ids = create_fake_dev_users(conn)
+        create_fake_dev_user_profiles(conn, dev_user_ids)
+
         user_ids = create_fake_users(conn)
+        create_fake_user_profiles(conn, user_ids)
+
+        spread_user_ids = create_fake_users_spread(conn)
+        create_fake_user_profiles(conn, spread_user_ids)
 
 
 if __name__ == "__main__":
