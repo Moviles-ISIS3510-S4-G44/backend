@@ -1,0 +1,14 @@
+name: marketplace_andes_analytics
+
+model-paths: ["models"]
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+models:
+  marketplace_andes_analytics:
+    +static_analysis: strict
+    staging:
+      +materialized: view
+    marts:
+      +materialized: table

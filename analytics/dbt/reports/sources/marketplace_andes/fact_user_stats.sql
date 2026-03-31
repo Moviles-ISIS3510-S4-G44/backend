@@ -1,0 +1,2 @@
+select *
+from marketplace_andes_analytics.fact_user_stats

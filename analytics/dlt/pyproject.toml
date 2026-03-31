@@ -1,0 +1,9 @@
+[project]
+name = "marketplace_andes_dlt"
+version = "0.0.1"
+requires-python = ">=3.13"
+dependencies = [
+    "dlt[duckdb,sql_database,workspace]>=1.24.0",
+    "numpy>=2.4.4",
+    "psycopg[binary]>=3.3.3",
+]

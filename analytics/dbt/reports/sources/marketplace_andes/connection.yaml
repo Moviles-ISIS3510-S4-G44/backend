@@ -1,0 +1,4 @@
+name: marketplace_andes
+type: duckdb
+options:
+  filename: analytics.duckdb
