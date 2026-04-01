@@ -256,9 +256,10 @@ def create_fake_users(conn: Connection) -> list[UUID]:
     return user_ids
 
 
-def create_fake_users_spread(conn: Connection) -> list[UUID]:
+def create_fake_users_spread(conn: Connection) -> tuple[list[UUID], list[UUID]]:
     """Create 2000+ users with creation dates from yesterday to 2 years ago, some with deleted_at"""
     user_ids: list[UUID] = []
+    active_user_ids: list[UUID] = []
     users_data = []
     auth_users_data = []
 
@@ -301,6 +302,8 @@ def create_fake_users_spread(conn: Connection) -> list[UUID]:
         )
 
         user_ids.append(user_id)
+        if deleted_at is None:
+            active_user_ids.append(user_id)
 
     conn.execute(
         text(
@@ -322,7 +325,127 @@ def create_fake_users_spread(conn: Connection) -> list[UUID]:
         auth_users_data,
     )
 
-    return user_ids
+    return user_ids, active_user_ids
+
+
+def _create_follow_rows(
+    user_ids: list[UUID],
+    follow_pairs_state: set[tuple[UUID, UUID]],
+    created_at_factory,
+) -> list[dict]:
+    follows_data = []
+
+    for follower_id in user_ids:
+        possible_followed_ids = [
+            user_id for user_id in user_ids if user_id != follower_id
+        ]
+        if not possible_followed_ids:
+            continue
+
+        follow_count = random.randint(0, min(10, len(possible_followed_ids)))
+        if follow_count == 0:
+            continue
+
+        for followed_id in random.sample(possible_followed_ids, follow_count):
+            pair = (follower_id, followed_id)
+            if pair in follow_pairs_state:
+                continue
+
+            follows_data.append(
+                {
+                    "follower_id": follower_id,
+                    "followed_id": followed_id,
+                    "created_at": created_at_factory(),
+                }
+            )
+            follow_pairs_state.add(pair)
+
+    return follows_data
+
+
+def create_fake_follows_now(
+    conn: Connection,
+    user_ids: list[UUID],
+    follow_pairs_state: set[tuple[UUID, UUID]],
+):
+    follows_data = _create_follow_rows(
+        user_ids,
+        follow_pairs_state,
+        created_at_factory=lambda: datetime.now(UTC),
+    )
+
+    if follows_data:
+        conn.execute(
+            text(
+                """
+                INSERT INTO user_follows (follower_id, followed_id, created_at)
+                VALUES (:follower_id, :followed_id, :created_at)
+                """
+            ),
+            follows_data,
+        )
+
+
+def create_fake_follows_now_spread(
+    conn: Connection,
+    user_ids: list[UUID],
+    follow_pairs_state: set[tuple[UUID, UUID]],
+):
+    now = datetime.now(UTC)
+    follows_data = _create_follow_rows(
+        user_ids,
+        follow_pairs_state,
+        created_at_factory=lambda: now - timedelta(days=random.randint(1, 730)),
+    )
+
+    if follows_data:
+        conn.execute(
+            text(
+                """
+                INSERT INTO user_follows (follower_id, followed_id, created_at)
+                VALUES (:follower_id, :followed_id, :created_at)
+                """
+            ),
+            follows_data,
+        )
+
+
+def create_fake_dev_follows(
+    conn: Connection,
+    dev_user_ids: list[UUID],
+    follow_pairs_state: set[tuple[UUID, UUID]],
+):
+    """Make every dev user follow every other dev user."""
+    follows_data = []
+
+    for follower_id in dev_user_ids:
+        for followed_id in dev_user_ids:
+            if follower_id == followed_id:
+                continue
+
+            pair = (follower_id, followed_id)
+            if pair in follow_pairs_state:
+                continue
+
+            follows_data.append(
+                {
+                    "follower_id": follower_id,
+                    "followed_id": followed_id,
+                    "created_at": datetime.now(UTC),
+                }
+            )
+            follow_pairs_state.add(pair)
+
+    if follows_data:
+        conn.execute(
+            text(
+                """
+                INSERT INTO user_follows (follower_id, followed_id, created_at)
+                VALUES (:follower_id, :followed_id, :created_at)
+                """
+            ),
+            follows_data,
+        )
 
 
 def main():
@@ -331,17 +454,28 @@ def main():
         echo=DB_ECHO,
     )
     with engine.begin() as conn:
+        active_user_ids: list[UUID] = []
+        follow_pairs_state: set[tuple[UUID, UUID]] = set()
+
         uwu_user_id = create_fake_uwu_user(conn)
+        active_user_ids.append(uwu_user_id)
         create_fake_uwu_user_profile(conn, uwu_user_id)
 
         dev_user_ids = create_fake_dev_users(conn)
+        active_user_ids.extend(dev_user_ids)
         create_fake_dev_user_profiles(conn, dev_user_ids)
 
         user_ids = create_fake_users(conn)
+        active_user_ids.extend(user_ids)
         create_fake_user_profiles(conn, user_ids)
 
-        spread_user_ids = create_fake_users_spread(conn)
+        spread_user_ids, spread_active_user_ids = create_fake_users_spread(conn)
+        active_user_ids.extend(spread_active_user_ids)
         create_fake_user_profiles(conn, spread_user_ids)
+
+        create_fake_dev_follows(conn, dev_user_ids, follow_pairs_state)
+        create_fake_follows_now(conn, active_user_ids, follow_pairs_state)
+        create_fake_follows_now_spread(conn, spread_active_user_ids, follow_pairs_state)
 
 
 if __name__ == "__main__":
