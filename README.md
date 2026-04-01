@@ -6,6 +6,25 @@
 
 ## How to
 
+## Submit changes in github
+
+Create an PR with the changes you want to perform to `master`
+
+**NOTE: only do this when the feature branch is COMPLETE and you want to merge with master"
+
+Then when it is ready perform an rebase with
+
+```bash
+git checkout <feature-branch>
+git rebase master
+```
+
+Probably this will as you to `git push -f` to your feature branch
+
+> This will make your changes atop the latest master commit
+
+Then in the PR preferably use (**This isnt an option :D**) `squash`
+
 ## Create an migration
 
 Go to `migrations`
