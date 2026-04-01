@@ -6,6 +6,19 @@
 
 ## How to
 
+## Create an migration
+
+Go to `migrations`
+
+And run
+
+```bash
+uv run alembic revision -m <message>
+```
+
+Then in `schema` folder there must be an new file that you can edit
+for the migration
+
 ## Run the server
 
 `Requisites: Docker`
