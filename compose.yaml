@@ -23,7 +23,7 @@ services:
     env_file:
       - .env.migrations
     profiles:
-      - dev
+      - migrations
     restart: no
     depends_on:
       postgres:
