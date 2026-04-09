@@ -59,23 +59,22 @@ def listing_publish_time_viz(db_path: Path, out_dir: Path):
 
     output_path = out_dir / "listing_publish_time_viz.png"
 
-    _, (time_ax, count_ax) = plt.subplots(1, 2, figsize=(14, 6))
+    _, (bar_ax, count_ax) = plt.subplots(1, 2, figsize=(14, 6))
 
-    labels = ["Avg", "Median", "Min", "Max"]
+    metrics = ["Avg", "Median", "Min", "Max"]
     values = [
         df["avg_minutes_to_publish"].iloc[0],
         df["median_minutes_to_publish"].iloc[0],
         df["min_minutes_to_publish"].iloc[0],
         df["max_minutes_to_publish"].iloc[0],
     ]
-    colors = ["#4c72b0", "#55a868", "#c44e52", "#8172b2"]
-    time_ax.bar(labels, values, color=colors)
-    time_ax.set_title("Time to Publish a Listing (minutes)")
-    time_ax.set_ylabel("Minutes")
+    bar_ax.bar(metrics, values, color=["steelblue", "orange", "green", "red"])
+    bar_ax.set_title("Time to Publish a Listing (minutes)")
+    bar_ax.set_ylabel("Minutes")
 
-    count_ax.bar(["Published"], [df["published_listing_count"].iloc[0]])
+    count_ax.bar(["Published Listings"], [df["published_listing_count"].iloc[0]], color="steelblue")
     count_ax.set_title("Published Listing Count")
-    count_ax.set_ylabel("Listings")
+    count_ax.set_ylabel("Count")
 
     plt.tight_layout()
     plt.savefig(output_path, dpi=600, bbox_inches="tight")
