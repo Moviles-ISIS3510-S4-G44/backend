@@ -26,7 +26,7 @@ We wanted to understand how long it actually takes a seller to go from creating 
 | Table | Role |
 |-------|------|
 | `listings` | Provides `created_at` (listing creation timestamp) |
-| `listing_status_history` | Provides lifecycle events; first `to_status = 'published'` row gives the publish timestamp |
+| `listing_status_history` | Stores every status change; the first `to_status = 'published'` row gives the publish timestamp |
 
 ## Pipeline Flow
 

@@ -366,7 +366,7 @@ LISTING_CONDITIONS = ["new", "used", "refurbished"]
 
 
 def create_fake_listings(conn: Connection, seller_ids: list[UUID]) -> None:
-    """Create listings with lifecycle status history for BQ5 analytics"""
+    """Seed listings and status history."""
     now = datetime.now(UTC)
     listings_data: list[dict] = []
     history_data: list[dict] = []
