@@ -8,10 +8,7 @@
 
 ## Purpose
 
-Measures how long the listing flow takes from the seller's creation action
-until the listing reaches the `published` state.
-Helps the team identify whether publishing is fast, slow, or blocked by
-process issues, and quantifies listing lifecycle bottlenecks.
+We wanted to understand how long it actually takes a seller to go from creating a listing to having it live on the platform. If that process is taking too long, it means there's a bottleneck somewhere — maybe the form is confusing, maybe sellers abandon midway, or maybe there's a step that adds unnecessary friction. Tracking this over time lets us see if changes to the listing flow actually make things faster or not.
 
 ## Metric Definition
 
