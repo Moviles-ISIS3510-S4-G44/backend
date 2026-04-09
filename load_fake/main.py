@@ -37,38 +37,47 @@ USER_DEV_PROFILES = [
         "surname": "Rodríguez",
         "status": "student",
         "university": "Universidad de los Andes",
+        "rating": 5,
     },
     {
         "name": "Louise",
         "surname": "Fussien",
         "status": "student",
         "university": "Universidad de los Andes",
+        "rating": 4,
     },
     {
         "name": "Isaac",
         "surname": "Bermúdez",
         "status": "student",
         "university": "Universidad de los Andes",
+        "rating": 5,
     },
     {
         "name": "María Camila",
         "surname": "Martínez",
         "status": "student",
         "university": "Universidad de los Andes",
+        "rating": 4,
     },
     {
         "name": "Santiago",
         "surname": "Tenjov",
         "status": "student",
         "university": "Universidad de los Andes",
+        "rating": 3,
     },
     {
         "name": "Yesid",
         "surname": "Pineros",
         "status": "student",
         "university": "Universidad de los Andes",
+        "rating": 5,
     },
 ]
+
+# Realistic rating weights: most marketplace ratings skew high
+RATING_WEIGHTS = [2, 5, 10, 25, 58]  # 1★ through 5★
 
 
 STATUSES = ["student", "professor", "admin", "assistant"]
@@ -131,13 +140,14 @@ def create_user_profile(
     surname: str,
     status: str,
     university: str,
+    rating: int | None = None,
 ):
     """Create a user profile for the given user_id"""
     conn.execute(
         text(
             """
-            INSERT INTO user_profiles (id, name, surname, status, university)
-            VALUES (:id, :name, :surname, :status, :university)
+            INSERT INTO user_profiles (id, name, surname, status, university, rating)
+            VALUES (:id, :name, :surname, :status, :university, :rating)
             """
         ),
         {
@@ -146,6 +156,7 @@ def create_user_profile(
             "surname": surname,
             "status": status,
             "university": university,
+            "rating": rating,
         },
     )
 
@@ -167,6 +178,7 @@ def create_fake_dev_user_profiles(conn: Connection, user_ids: list[UUID]):
             profile["surname"],
             profile["status"],
             profile["university"],
+            profile["rating"],
         )
 
 
@@ -177,8 +189,9 @@ def create_fake_user_profiles(conn: Connection, user_ids: list[UUID]):
         surname = random.choice(FAKE_SURNAMES)
         status = random.choice(STATUSES)
         university = random.choice(UNIVERSITIES)
+        rating = random.choices([1, 2, 3, 4, 5], weights=RATING_WEIGHTS)[0]
 
-        create_user_profile(conn, user_id, name, surname, status, university)
+        create_user_profile(conn, user_id, name, surname, status, university, rating)
 
 
 def create_fake_dev_users(conn: Connection) -> list[UUID]:
@@ -331,6 +344,11 @@ def main():
         echo=DB_ECHO,
     )
     with engine.begin() as conn:
+        existing = conn.execute(text("SELECT COUNT(*) FROM users")).scalar_one()
+        if existing > 0:
+            print(f"Database already has {existing} users — skipping seed. Run 'docker compose down -v' to reset.")
+            return
+
         uwu_user_id = create_fake_uwu_user(conn)
         create_fake_uwu_user_profile(conn, uwu_user_id)
 
