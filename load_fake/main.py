@@ -364,9 +364,6 @@ LISTING_TITLES = [
 
 LISTING_CONDITIONS = ["new", "used", "refurbished"]
 
-# Status flow: draft → published (some stay as draft forever)
-LISTING_STATUSES = ["draft", "published", "sold", "archived"]
-
 
 def create_fake_listings(conn: Connection, seller_ids: list[UUID]) -> None:
     """Create listings with lifecycle status history for BQ5 analytics"""

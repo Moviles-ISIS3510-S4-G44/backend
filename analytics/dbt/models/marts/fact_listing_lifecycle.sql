@@ -1,5 +1,4 @@
--- Fact table: one row per published listing with time-to-publish metric.
--- Supports BQ5 aggregation and per-seller drill-down.
+-- one row per published listing, with time_to_publish_minutes
 
 WITH first_publish AS (
     SELECT

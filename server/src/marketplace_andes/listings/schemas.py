@@ -10,7 +10,6 @@ class ListingCreateRequest(BaseModel):
     description: str
     condition: str
     price: int
-    status: str
 
 
 class ListingResponse(BaseModel):

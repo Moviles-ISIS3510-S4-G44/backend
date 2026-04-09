@@ -34,7 +34,7 @@ async def create_listing(
         description=payload.description,
         condition=payload.condition,
         price=payload.price,
-        status=payload.status,
+        status="draft",
         created_at=now,
         updated_at=now,
     )

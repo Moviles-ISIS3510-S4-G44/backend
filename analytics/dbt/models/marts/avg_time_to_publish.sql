@@ -1,6 +1,4 @@
--- BQ5: Average time required for a seller to create and publish a listing
--- Computes the elapsed time between listing creation and first publication.
--- Listings that were never published are excluded from the average.
+-- BQ5: avg time from listing creation to first publication
 
 WITH first_publish AS (
     SELECT
