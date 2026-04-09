@@ -1,7 +1,7 @@
 from datetime import UTC, datetime
 from uuid import UUID, uuid7
 
-from sqlmodel import Session, select
+from sqlmodel import Session, col, select
 
 from marketplace_andes.users.models import User
 
@@ -64,7 +64,7 @@ class ListingService:
         statement = (
             select(ListingStatusHistory)
             .where(ListingStatusHistory.listing_id == listing_id)
-            .order_by(ListingStatusHistory.changed_at)
+            .order_by(col(ListingStatusHistory.changed_at))
         )
         return list(self.session.exec(statement).all())
 
