@@ -19,6 +19,7 @@ RANDOM_SEED = os.getenv("RANDOM_SEED", "42")
 random.seed(int(RANDOM_SEED))
 
 N_USERS = 10
+N_LISTINGS = 500
 
 PASSWORD_HASHER = PasswordHasher()
 
@@ -338,6 +339,122 @@ def create_fake_users_spread(conn: Connection) -> list[UUID]:
     return user_ids
 
 
+LISTING_TITLES = [
+    "iPhone 14 Pro 256GB",
+    "MacBook Air M2",
+    "Cien años de soledad",
+    "Escritorio en madera de roble",
+    "Monitor LG UltraWide 29\"",
+    "Silla ergonómica para oficina",
+    "Clean Code en español",
+    "Teclado mecánico Keychron K2",
+    "AirPods Pro 2da gen",
+    "Kindle Paperwhite",
+    "Mochila Samsonite para laptop",
+    "Cálculo de Larson 12a edición",
+    "Arduino Starter Kit",
+    "Raspberry Pi 4 Model B",
+    "Audífonos Sony WH-1000XM5",
+    "Cámara Canon EOS M50",
+    "Álgebra lineal de Grossman",
+    "Mesa auxiliar plegable",
+    "Lámpara de escritorio LED",
+    "Cable USB-C a HDMI 4K",
+]
+
+LISTING_CONDITIONS = ["new", "used", "refurbished"]
+
+
+def create_fake_listings(conn: Connection, seller_ids: list[UUID]) -> None:
+    """Seed listings and status history."""
+    now = datetime.now(UTC)
+    listings_data: list[dict] = []
+    history_data: list[dict] = []
+
+    for i in range(N_LISTINGS):
+        listing_id = uuid7()
+        seller_id = random.choice(seller_ids)
+
+        # Random creation date between 1 year ago and 3 days ago
+        days_ago = random.randint(3, 365)
+        created_at = now - timedelta(days=days_ago)
+
+        title = f"{random.choice(LISTING_TITLES)} #{i + 1:03d}"
+        condition = random.choice(LISTING_CONDITIONS)
+        price = random.randint(10000, 5000000)
+
+        # 80% of listings reach published, 20% stay as draft
+        reaches_published = random.random() < 0.80
+
+        if reaches_published:
+            status = "published"
+            # Time to publish: between 5 minutes and 72 hours
+            publish_delay_minutes = random.randint(5, 4320)
+            published_at = created_at + timedelta(minutes=publish_delay_minutes)
+            updated_at = published_at
+        else:
+            status = "draft"
+            updated_at = created_at
+
+        listings_data.append(
+            {
+                "id": listing_id,
+                "seller_id": seller_id,
+                "title": title,
+                "description": f"Listing #{i + 1} — {condition} item.",
+                "condition": condition,
+                "price": price,
+                "status": status,
+                "created_at": created_at,
+                "updated_at": updated_at,
+            }
+        )
+
+        # Status history: always record the initial draft event
+        history_data.append(
+            {
+                "id": uuid7(),
+                "listing_id": listing_id,
+                "from_status": None,
+                "to_status": "draft",
+                "changed_at": created_at,
+            }
+        )
+
+        if reaches_published:
+            history_data.append(
+                {
+                    "id": uuid7(),
+                    "listing_id": listing_id,
+                    "from_status": "draft",
+                    "to_status": "published",
+                    "changed_at": published_at,
+                }
+            )
+
+    conn.execute(
+        text(
+            """
+            INSERT INTO listings (id, seller_id, title, description, condition, price, status, created_at, updated_at)
+            VALUES (:id, :seller_id, :title, :description, :condition, :price, :status, :created_at, :updated_at)
+            """
+        ),
+        listings_data,
+    )
+
+    conn.execute(
+        text(
+            """
+            INSERT INTO listing_status_history (id, listing_id, from_status, to_status, changed_at)
+            VALUES (:id, :listing_id, :from_status, :to_status, :changed_at)
+            """
+        ),
+        history_data,
+    )
+
+    print(f"Seeded {len(listings_data)} listings with {len(history_data)} status history entries.")
+
+
 def main():
     engine = create_engine(
         f"postgresql+psycopg://postgres:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/marketplace",  # do it as root
@@ -360,6 +477,9 @@ def main():
 
         spread_user_ids = create_fake_users_spread(conn)
         create_fake_user_profiles(conn, spread_user_ids)
+
+        all_seller_ids = [uwu_user_id] + dev_user_ids + user_ids
+        create_fake_listings(conn, all_seller_ids)
 
 
 if __name__ == "__main__":

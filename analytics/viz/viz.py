@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import Annotated
 
-from analytics import user_retention_viz
+from analytics import user_retention_viz, listing_publish_time_viz
 
 
 import typer
@@ -28,6 +28,13 @@ def visualize(
     db_path: PathOption,
 ):
     user_retention_viz(db_path, OUT_DIR)
+
+
+@app.command()
+def listing_publish(
+    db_path: PathOption,
+):
+    listing_publish_time_viz(db_path, OUT_DIR)
 
 
 def main():

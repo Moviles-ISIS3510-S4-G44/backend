@@ -4,3 +4,5 @@ sources:
     tables:
       - name: users
       - name: user_profiles
+      - name: listings
+      - name: listing_status_history
