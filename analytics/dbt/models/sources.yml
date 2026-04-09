@@ -3,3 +3,4 @@ sources:
     schema: marketplace_andes_analytics_raw
     tables:
       - name: users
+      - name: user_profiles

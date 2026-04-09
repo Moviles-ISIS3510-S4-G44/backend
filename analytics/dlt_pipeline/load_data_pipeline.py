@@ -7,7 +7,7 @@ ANALYTICS_DB = Path("../dbt/reports/sources/marketplace_andes/analytics.duckdb")
 
 
 def run_pipeline():
-    source = sql_database().with_resources("users").parallelize()
+    source = sql_database().with_resources("users", "user_profiles").parallelize()
 
     source.users.apply_hints(
         incremental=dlt.sources.incremental("updated_at"),
