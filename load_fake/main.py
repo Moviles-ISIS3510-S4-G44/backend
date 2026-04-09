@@ -364,6 +364,9 @@ LISTING_TITLES = [
 
 LISTING_CONDITIONS = ["new", "used", "refurbished"]
 
+PUBLISHED_RATIO = 0.80
+SOLD_AFTER_PUBLISH_RATIO = 0.35
+
 
 def create_fake_listings(conn: Connection, seller_ids: list[UUID]) -> None:
     """Seed listings and status history."""
@@ -384,14 +387,30 @@ def create_fake_listings(conn: Connection, seller_ids: list[UUID]) -> None:
         price = random.randint(10000, 5000000)
 
         # 80% of listings reach published, 20% stay as draft
-        reaches_published = random.random() < 0.80
+        reaches_published = random.random() < PUBLISHED_RATIO
 
+        published_at = None
+        sold_at = None
         if reaches_published:
             status = "published"
             # Time to publish: between 5 minutes and 72 hours
             publish_delay_minutes = random.randint(5, 4320)
             published_at = created_at + timedelta(minutes=publish_delay_minutes)
-            updated_at = published_at
+
+            # Some published listings are sold after publication.
+            reaches_sold = random.random() < SOLD_AFTER_PUBLISH_RATIO
+            if reaches_sold:
+                # Sold between 1 hour and 120 days after publication.
+                sold_delay_minutes = random.randint(60, 172800)
+                sold_at = published_at + timedelta(minutes=sold_delay_minutes)
+                if sold_at > now:
+                    sold_at = now - timedelta(minutes=random.randint(1, 180))
+                if sold_at <= published_at:
+                    sold_at = published_at + timedelta(minutes=1)
+                status = "sold"
+                updated_at = sold_at
+            else:
+                updated_at = published_at
         else:
             status = "draft"
             updated_at = created_at
@@ -429,6 +448,17 @@ def create_fake_listings(conn: Connection, seller_ids: list[UUID]) -> None:
                     "from_status": "draft",
                     "to_status": "published",
                     "changed_at": published_at,
+                }
+            )
+
+        if sold_at is not None:
+            history_data.append(
+                {
+                    "id": uuid7(),
+                    "listing_id": listing_id,
+                    "from_status": "published",
+                    "to_status": "sold",
+                    "changed_at": sold_at,
                 }
             )
 

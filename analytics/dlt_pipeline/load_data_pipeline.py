@@ -22,6 +22,10 @@ def run_pipeline():
         incremental=dlt.sources.incremental("updated_at"),
     )
 
+    source.listing_status_history.apply_hints(
+        incremental=dlt.sources.incremental("changed_at"),
+    )
+
     pipeline = dlt.pipeline(
         pipeline_name="marketplace_andes_to_analytics_pipeline",
         destination=dlt.destinations.duckdb(ANALYTICS_DB),
