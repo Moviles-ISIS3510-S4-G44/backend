@@ -40,3 +40,43 @@ def user_retention_viz(db_path: Path, out_dir: Path):
     plt.tight_layout()
     plt.savefig(output_path, dpi=600, bbox_inches="tight")
     plt.close()
+
+
+def listing_publish_time_viz(db_path: Path, out_dir: Path):
+    conn = duckdb.connect(db_path)
+
+    query = """
+        SELECT
+            avg_minutes_to_publish,
+            median_minutes_to_publish,
+            min_minutes_to_publish,
+            max_minutes_to_publish,
+            published_listing_count
+        FROM marketplace_andes_analytics.avg_time_to_publish
+    """
+    df = conn.execute(query).df()
+    conn.close()
+
+    output_path = out_dir / "listing_publish_time_viz.png"
+
+    _, (time_ax, count_ax) = plt.subplots(1, 2, figsize=(14, 6))
+
+    labels = ["Avg", "Median", "Min", "Max"]
+    values = [
+        df["avg_minutes_to_publish"].iloc[0],
+        df["median_minutes_to_publish"].iloc[0],
+        df["min_minutes_to_publish"].iloc[0],
+        df["max_minutes_to_publish"].iloc[0],
+    ]
+    colors = ["#4c72b0", "#55a868", "#c44e52", "#8172b2"]
+    time_ax.bar(labels, values, color=colors)
+    time_ax.set_title("Time to Publish a Listing (minutes)")
+    time_ax.set_ylabel("Minutes")
+
+    count_ax.bar(["Published"], [df["published_listing_count"].iloc[0]])
+    count_ax.set_title("Published Listing Count")
+    count_ax.set_ylabel("Listings")
+
+    plt.tight_layout()
+    plt.savefig(output_path, dpi=600, bbox_inches="tight")
+    plt.close()
