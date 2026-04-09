@@ -53,3 +53,8 @@ title: User Retention Overview
     x=metric
     y=value
 />
+
+## Business Questions
+
+- [Best Reputation Students](best-reputation)
+- [Active Listings per Day](active-listings-per-day)
