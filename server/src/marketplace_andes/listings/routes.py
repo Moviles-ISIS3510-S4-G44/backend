@@ -25,16 +25,21 @@ async def create_listing(
     service = ListingService(session)
     if not service.seller_exists(payload.seller_id):
         raise HTTPException(status_code=404, detail="Seller not found")
+    if not service.category_exists(payload.category_id):
+        raise HTTPException(status_code=404, detail="Category not found")
 
     now = datetime.now(UTC)
     listing = Listing(
         id=uuid7(),
         seller_id=payload.seller_id,
+        category_id=payload.category_id,
         title=payload.title,
         description=payload.description,
-        condition=payload.condition,
         price=payload.price,
+        condition=payload.condition,
+        images=payload.images,
         status="draft",
+        location=payload.location,
         created_at=now,
         updated_at=now,
     )

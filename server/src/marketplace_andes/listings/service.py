@@ -3,6 +3,7 @@ from uuid import UUID, uuid7
 
 from sqlmodel import Session, col, select
 
+from marketplace_andes.categories.models import Category
 from marketplace_andes.users.models import User
 
 from .models import Listing, ListingStatusHistory
@@ -70,4 +71,8 @@ class ListingService:
 
     def seller_exists(self, seller_id: UUID) -> bool:
         statement = select(User).where(User.id == seller_id)
+        return self.session.exec(statement).first() is not None
+
+    def category_exists(self, category_id: UUID) -> bool:
+        statement = select(Category).where(Category.id == category_id)
         return self.session.exec(statement).first() is not None
