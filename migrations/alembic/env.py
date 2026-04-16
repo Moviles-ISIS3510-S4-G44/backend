@@ -16,7 +16,7 @@ def get_db_url():
 
     return (
         f"postgresql+psycopg://{pg_user}:{pg_password}"
-        f"@{pg_host}:{pg_port}/{pg_db}"
+        f"@{pg_host}:{pg_port}/{pg_db}?sslmode=require"
     )
 
 
