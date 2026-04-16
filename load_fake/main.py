@@ -137,8 +137,8 @@ def create_fake_uwu_user(conn: Connection):
 def create_user_profile(
     conn: Connection,
     user_id: UUID,
-    name: str,
-    surname: str,
+    name: str | None,
+    surname: str | None,
     status: str,
     university: str,
     rating: int | None = None,
@@ -344,7 +344,7 @@ LISTING_TITLES = [
     "MacBook Air M2",
     "Cien años de soledad",
     "Escritorio en madera de roble",
-    "Monitor LG UltraWide 29\"",
+    'Monitor LG UltraWide 29"',
     "Silla ergonómica para oficina",
     "Clean Code en español",
     "Teclado mecánico Keychron K2",
@@ -482,7 +482,9 @@ def create_fake_listings(conn: Connection, seller_ids: list[UUID]) -> None:
         history_data,
     )
 
-    print(f"Seeded {len(listings_data)} listings with {len(history_data)} status history entries.")
+    print(
+        f"Seeded {len(listings_data)} listings with {len(history_data)} status history entries."
+    )
 
 
 def main():
@@ -491,9 +493,24 @@ def main():
         echo=DB_ECHO,
     )
     with engine.begin() as conn:
-        existing = conn.execute(text("SELECT COUNT(*) FROM users")).scalar_one()
-        if existing > 0:
-            print(f"Database already has {existing} users — skipping seed. Run 'docker compose down -v' to reset.")
+        existing_users = conn.execute(text("SELECT COUNT(*) FROM users")).scalar_one()
+        existing_listings = conn.execute(
+            text("SELECT COUNT(*) FROM listings")
+        ).scalar_one()
+
+        if existing_users > 0 and existing_listings > 0:
+            print(
+                f"Database already has {existing_users} users and {existing_listings} listings — skipping seed. "
+                "Run 'docker compose down -v' to reset."
+            )
+            return
+
+        if existing_users > 0 and existing_listings == 0:
+            seller_ids = [
+                row[0] for row in conn.execute(text("SELECT id FROM users")).all()
+            ]
+            create_fake_listings(conn, seller_ids)
+            print(f"Database already had users; seeded {N_LISTINGS} listings.")
             return
 
         uwu_user_id = create_fake_uwu_user(conn)
@@ -508,7 +525,7 @@ def main():
         spread_user_ids = create_fake_users_spread(conn)
         create_fake_user_profiles(conn, spread_user_ids)
 
-        all_seller_ids = [uwu_user_id] + dev_user_ids + user_ids
+        all_seller_ids = [uwu_user_id] + dev_user_ids + user_ids + spread_user_ids
         create_fake_listings(conn, all_seller_ids)
 
 
