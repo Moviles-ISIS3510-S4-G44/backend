@@ -8,15 +8,16 @@ from alembic import context
 
 
 def get_db_url():
-    PG_BACKEND_MIGRATION_USER = os.getenv(
-        "PG_BACKEND_MIGRATION_USER", "backend_migration_user"
+    pg_user = os.getenv("PG_BACKEND_MIGRATION_USER", "backend_migration_user")
+    pg_password = os.getenv("PG_BACKEND_MIGRATION_PASSWORD", "password")
+    pg_host = os.getenv("PG_BACKEND_MIGRATION_HOST", "db")
+    pg_port = os.getenv("PG_BACKEND_MIGRATION_PORT", "5432")
+    pg_db = os.getenv("PG_BACKEND_MIGRATION_DB", "marketplace")
+
+    return (
+        f"postgresql+psycopg://{pg_user}:{pg_password}"
+        f"@{pg_host}:{pg_port}/{pg_db}"
     )
-    PG_BACKEND_MIGRATION_PASSWORD = os.getenv(
-        "PG_BACKEND_MIGRATION_PASSWORD", "password"
-    )
-    PG_BACKEND_MIGRATION_HOST = os.getenv("PG_BACKEND_MIGRATION_HOST", "db")
-    PG_BACKEND_MIGRATION_PORT = os.getenv("PG_BACKEND_MIGRATION_PORT", "5432")
-    return f"postgresql+psycopg://{PG_BACKEND_MIGRATION_USER}:{PG_BACKEND_MIGRATION_PASSWORD}@{PG_BACKEND_MIGRATION_HOST}:{PG_BACKEND_MIGRATION_PORT}/marketplace"
 
 
 config = context.config
