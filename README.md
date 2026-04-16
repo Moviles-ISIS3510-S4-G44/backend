@@ -92,55 +92,54 @@ If you want to delete volumes (Mostly if you want to delete database state use)
 docker compose down -v
 ```
 
-Mmmmm here is where the things get complicated
+There are several Docker Compose `profiles`:
 
-There are several Docker Compose `profiles`
+- `migrations`: executes DB migrations.
+- `load_fake`: loads initial fake data (users, profiles and listings).
+- `pgadmin`: starts pgAdmin UI.
 
-- pgadmin (setups and graphical panel for postgres usable from the browser)
-- migrations (performs db migrations)
-- load_fake (well... loads the fake data, and happens after migrations)
+### Run initial fake data (`load_fake`)
 
-You use it as:
+Use profiles to run migrations and fake data load in one flow:
 
 ```bash
-docker compose --profile <x> --profile <y> ... <command>
+# service name is `migration` (profile name is `migrations`)
+docker compose --profile migrations --profile load_fake up --build migration load_fake
 ```
 
-So the command for doing an initial setup would be
+If you also want the API running at the same time:
 
 ```bash
-docker compose --profile migrations --profile load_fake --profile pgadmin up --build --watch
+docker compose --profile migrations --profile load_fake up --build
 ```
 
-and to tear down
+To reset DB state and run from scratch:
 
 ```bash
-docker compose --profile migrations --profile load_fake --profile pgadmin down -v
+docker compose down -v
+# service name is `migration` (profile name is `migrations`)
+docker compose --profile migrations --profile load_fake up --build migration load_fake
 ```
 
 ## Run the analytics pipeline
 
-`Requisites: uv & Bun & How to run the server`
+`Requisites: uv, Bun and PostgreSQL with data (use migrations + load_fake first)`
 
-## 1. Run the ELT
-
-This will run `dlt` (Data load tool) and `dbt` altogether
-
-Go to `analytics/dlt_pipeline`
-
-And run
+1. Run ELT (`dlt` + `dbt`) from `analytics/dlt_pipeline`:
 
 ```bash
+cd analytics/dlt_pipeline
+uv sync
 uv run load_data_pipeline.py
 ```
 
-Then go to `analytics/dbt/reports`
-
-And run
+2. Run the reports app from `analytics/dbt/reports`:
 
 ```bash
+cd analytics/dbt/reports
+bun install
 bun run sources
-bun run dev # this runs an server with the viz dashboard
+bun run dev
 ```
 
 ## Learning
