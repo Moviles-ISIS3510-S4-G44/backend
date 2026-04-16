@@ -8,9 +8,7 @@ from sqlmodel import Field, SQLModel
 
 class Category(SQLModel, table=True):
     __tablename__ = "categories"
-    __table_args__ = (
-        sa.Index("idx_categories_name", "name", unique=True),
-    )
+    __table_args__ = (sa.Index("idx_categories_name", "name", unique=True),)
 
     id: UUID = Field(
         sa_column=sa.Column(
