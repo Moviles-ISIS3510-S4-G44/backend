@@ -509,6 +509,7 @@ def main():
             return
 
         if existing_users > 0 and existing_listings == 0:
+            # In this fake dataset every existing user can act as seller.
             seller_ids = [
                 row[0] for row in conn.execute(text("SELECT id FROM users")).all()
             ]
