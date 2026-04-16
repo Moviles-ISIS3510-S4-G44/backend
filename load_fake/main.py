@@ -1,5 +1,6 @@
 import os
 import random
+from enum import StrEnum
 from uuid import UUID, uuid7
 from datetime import datetime, UTC, timedelta
 
@@ -365,7 +366,14 @@ LISTING_TITLES = [
     "Cable USB-C a HDMI 4K",
 ]
 
-LISTING_CONDITIONS = ["new", "used", "refurbished"]
+
+class ListingCondition(StrEnum):
+    NEW = "new"
+    USED = "used"
+    REFURBISHED = "refurbished"
+
+
+LISTING_CONDITIONS = list(ListingCondition)
 LISTING_LOCATIONS = [
     "Bogotá",
     "Medellín",
@@ -433,7 +441,7 @@ def create_fake_listings(
         created_at = now - timedelta(days=days_ago)
 
         title = f"{random.choice(LISTING_TITLES)} #{i + 1:03d}"
-        condition = random.choice(LISTING_CONDITIONS)
+        condition = random.choice(LISTING_CONDITIONS).value
         price = random.randint(10000, 5000000)
         location = random.choice(LISTING_LOCATIONS)
         images = [

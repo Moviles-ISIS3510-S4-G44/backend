@@ -3,6 +3,8 @@ from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict
 
+from .enums import ListingCondition
+
 
 class ListingCreateRequest(BaseModel):
     seller_id: UUID
@@ -10,7 +12,7 @@ class ListingCreateRequest(BaseModel):
     title: str
     description: str
     price: int
-    condition: str
+    condition: ListingCondition
     images: list[str]
     location: str
 
@@ -24,7 +26,7 @@ class ListingResponse(BaseModel):
     title: str
     description: str
     price: int
-    condition: str
+    condition: ListingCondition
     images: list[str]
     status: str
     location: str

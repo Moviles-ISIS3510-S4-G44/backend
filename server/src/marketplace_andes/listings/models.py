@@ -5,6 +5,8 @@ import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 from sqlmodel import Field, SQLModel
 
+from .enums import ListingCondition
+
 
 class Listing(SQLModel, table=True):
     __tablename__ = "listings"
@@ -41,7 +43,7 @@ class Listing(SQLModel, table=True):
     description: str = Field(
         sa_column=sa.Column(sa.Text(), nullable=False),
     )
-    condition: str = Field(
+    condition: ListingCondition = Field(
         sa_column=sa.Column(sa.String(length=32), nullable=False),
     )
     price: int = Field(
