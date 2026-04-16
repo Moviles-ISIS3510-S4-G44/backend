@@ -103,6 +103,7 @@ There are several Docker Compose `profiles`:
 Use profiles to run migrations and fake data load in one flow:
 
 ```bash
+# service name is `migration` (profile name is `migrations`)
 docker compose --profile migrations --profile load_fake up --build migration load_fake
 ```
 
@@ -116,6 +117,7 @@ To reset DB state and run from scratch:
 
 ```bash
 docker compose down -v
+# service name is `migration` (profile name is `migrations`)
 docker compose --profile migrations --profile load_fake up --build migration load_fake
 ```
 
