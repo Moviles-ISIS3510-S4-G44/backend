@@ -5,11 +5,14 @@ import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 from sqlmodel import Field, SQLModel
 
+from .enums import ListingCondition
+
 
 class Listing(SQLModel, table=True):
     __tablename__ = "listings"
     __table_args__ = (
         sa.Index("idx_listings_seller_id", "seller_id"),
+        sa.Index("idx_listings_category_id", "category_id"),
         sa.Index("idx_listings_status", "status"),
     )
 
@@ -27,17 +30,30 @@ class Listing(SQLModel, table=True):
             nullable=False,
         ),
     )
+    category_id: UUID = Field(
+        sa_column=sa.Column(
+            postgresql.UUID(as_uuid=True),
+            sa.ForeignKey("categories.id", ondelete="RESTRICT"),
+            nullable=False,
+        ),
+    )
     title: str = Field(
         sa_column=sa.Column(sa.String(length=255), nullable=False),
     )
     description: str = Field(
         sa_column=sa.Column(sa.Text(), nullable=False),
     )
-    condition: str = Field(
+    condition: ListingCondition = Field(
         sa_column=sa.Column(sa.String(length=32), nullable=False),
     )
     price: int = Field(
         sa_column=sa.Column(sa.Integer(), nullable=False),
+    )
+    images: list[str] = Field(
+        sa_column=sa.Column(postgresql.ARRAY(sa.Text()), nullable=False),
+    )
+    location: str = Field(
+        sa_column=sa.Column(sa.String(length=255), nullable=False),
     )
     status: str = Field(
         sa_column=sa.Column(sa.String(length=32), nullable=False),

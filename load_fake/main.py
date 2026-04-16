@@ -1,5 +1,6 @@
 import os
 import random
+from enum import StrEnum
 from uuid import UUID, uuid7
 from datetime import datetime, UTC, timedelta
 
@@ -365,13 +366,66 @@ LISTING_TITLES = [
     "Cable USB-C a HDMI 4K",
 ]
 
-LISTING_CONDITIONS = ["new", "used", "refurbished"]
+
+class ListingCondition(StrEnum):
+    NEW = "new"
+    USED = "used"
+    REFURBISHED = "refurbished"
+
+
+LISTING_CONDITIONS = list(ListingCondition)
+LISTING_LOCATIONS = [
+    "Bogotá",
+    "Medellín",
+    "Cali",
+    "Barranquilla",
+    "Bucaramanga",
+]
+DEFAULT_CATEGORIES = [
+    "Electronics",
+    "Books",
+    "Furniture",
+    "Accessories",
+    "Home",
+]
 
 PUBLISHED_RATIO = 0.80
 SOLD_AFTER_PUBLISH_RATIO = 0.35
 
 
-def create_fake_listings(conn: Connection, seller_ids: list[UUID]) -> None:
+def ensure_categories(conn: Connection) -> list[UUID]:
+    existing_category_ids = [
+        row[0] for row in conn.execute(text("SELECT id FROM categories")).all()
+    ]
+    if existing_category_ids:
+        return existing_category_ids
+
+    categories_data = [
+        {
+            "id": uuid7(),
+            "name": name,
+            "created_at": datetime.now(UTC),
+            "updated_at": datetime.now(UTC),
+        }
+        for name in DEFAULT_CATEGORIES
+    ]
+    conn.execute(
+        text(
+            """
+            INSERT INTO categories (id, name, created_at, updated_at)
+            VALUES (:id, :name, :created_at, :updated_at)
+            """
+        ),
+        categories_data,
+    )
+    return [item["id"] for item in categories_data]
+
+
+def create_fake_listings(
+    conn: Connection,
+    seller_ids: list[UUID],
+    category_ids: list[UUID],
+) -> None:
     """Seed listings and status history."""
     now = datetime.now(UTC)
     listings_data: list[dict] = []
@@ -380,14 +434,20 @@ def create_fake_listings(conn: Connection, seller_ids: list[UUID]) -> None:
     for i in range(N_LISTINGS):
         listing_id = uuid7()
         seller_id = random.choice(seller_ids)
+        category_id = random.choice(category_ids)
 
         # Random creation date between 1 year ago and 3 days ago
         days_ago = random.randint(3, 365)
         created_at = now - timedelta(days=days_ago)
 
         title = f"{random.choice(LISTING_TITLES)} #{i + 1:03d}"
-        condition = random.choice(LISTING_CONDITIONS)
+        condition = random.choice(LISTING_CONDITIONS).value
         price = random.randint(10000, 5000000)
+        location = random.choice(LISTING_LOCATIONS)
+        images = [
+            f"https://picsum.photos/seed/{listing_id.hex}-{img}/900/900"
+            for img in range(1, random.randint(2, 5))
+        ]
 
         # 80% of listings reach published, 20% stay as draft
         reaches_published = random.random() < PUBLISHED_RATIO
@@ -422,11 +482,14 @@ def create_fake_listings(conn: Connection, seller_ids: list[UUID]) -> None:
             {
                 "id": listing_id,
                 "seller_id": seller_id,
+                "category_id": category_id,
                 "title": title,
                 "description": f"Listing #{i + 1} — {condition} item.",
                 "condition": condition,
                 "price": price,
+                "images": images,
                 "status": status,
+                "location": location,
                 "created_at": created_at,
                 "updated_at": updated_at,
             }
@@ -468,8 +531,8 @@ def create_fake_listings(conn: Connection, seller_ids: list[UUID]) -> None:
     conn.execute(
         text(
             """
-            INSERT INTO listings (id, seller_id, title, description, condition, price, status, created_at, updated_at)
-            VALUES (:id, :seller_id, :title, :description, :condition, :price, :status, :created_at, :updated_at)
+            INSERT INTO listings (id, seller_id, category_id, title, description, condition, price, images, status, location, created_at, updated_at)
+            VALUES (:id, :seller_id, :category_id, :title, :description, :condition, :price, :images, :status, :location, :created_at, :updated_at)
             """
         ),
         listings_data,
@@ -500,6 +563,7 @@ def main():
         existing_listings = conn.execute(
             text("SELECT COUNT(*) FROM listings")
         ).scalar_one()
+        category_ids = ensure_categories(conn)
 
         if existing_users > 0 and existing_listings > 0:
             print(
@@ -513,7 +577,7 @@ def main():
             seller_ids = [
                 row[0] for row in conn.execute(text("SELECT id FROM users")).all()
             ]
-            create_fake_listings(conn, seller_ids)
+            create_fake_listings(conn, seller_ids, category_ids)
             print(f"Database already had users; seeded {N_LISTINGS} listings.")
             return
 
@@ -530,7 +594,7 @@ def main():
         create_fake_user_profiles(conn, spread_user_ids)
 
         all_seller_ids = [uwu_user_id] + dev_user_ids + user_ids
-        create_fake_listings(conn, all_seller_ids)
+        create_fake_listings(conn, all_seller_ids, category_ids)
 
 
 if __name__ == "__main__":
