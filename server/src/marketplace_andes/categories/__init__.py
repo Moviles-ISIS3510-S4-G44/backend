@@ -1,1 +1,1 @@
-
+"""Categories domain package."""
