@@ -54,15 +54,6 @@ def upgrade() -> None:
             server_default=sa.text("'Unknown'"),
         ),
     )
-    op.alter_column(
-        "listings",
-        "price",
-        existing_type=sa.Integer(),
-        type_=sa.String(length=64),
-        postgresql_using="price::text",
-        existing_nullable=False,
-    )
-
     conn.execute(
         sa.text(
             """
@@ -98,14 +89,6 @@ def downgrade() -> None:
         "fk_listings_category_id_categories",
         "listings",
         type_="foreignkey",
-    )
-    op.alter_column(
-        "listings",
-        "price",
-        existing_type=sa.String(length=64),
-        type_=sa.Integer(),
-        postgresql_using="price::integer",
-        existing_nullable=False,
     )
     op.drop_column("listings", "location")
     op.drop_column("listings", "images")

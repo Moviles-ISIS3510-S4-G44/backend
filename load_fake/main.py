@@ -434,7 +434,7 @@ def create_fake_listings(
 
         title = f"{random.choice(LISTING_TITLES)} #{i + 1:03d}"
         condition = random.choice(LISTING_CONDITIONS)
-        price = str(random.randint(10000, 5000000))
+        price = random.randint(10000, 5000000)
         location = random.choice(LISTING_LOCATIONS)
         images = [
             f"https://picsum.photos/seed/{listing_id.hex}-{img}/900/900"

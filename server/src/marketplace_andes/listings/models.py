@@ -44,8 +44,8 @@ class Listing(SQLModel, table=True):
     condition: str = Field(
         sa_column=sa.Column(sa.String(length=32), nullable=False),
     )
-    price: str = Field(
-        sa_column=sa.Column(sa.String(length=64), nullable=False),
+    price: int = Field(
+        sa_column=sa.Column(sa.Integer(), nullable=False),
     )
     images: list[str] = Field(
         sa_column=sa.Column(postgresql.ARRAY(sa.Text()), nullable=False),

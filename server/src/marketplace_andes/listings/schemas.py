@@ -9,7 +9,7 @@ class ListingCreateRequest(BaseModel):
     category_id: UUID
     title: str
     description: str
-    price: str
+    price: int
     condition: str
     images: list[str]
     location: str
@@ -23,7 +23,7 @@ class ListingResponse(BaseModel):
     category_id: UUID
     title: str
     description: str
-    price: str
+    price: int
     condition: str
     images: list[str]
     status: str
