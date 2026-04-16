@@ -143,7 +143,10 @@ def create_user_profile(
     university: str,
     rating: int | None = None,
 ):
-    """Create a user profile for the given user_id"""
+    """Create a user profile for the given user_id.
+
+    name and surname can be None for placeholder/system users.
+    """
     conn.execute(
         text(
             """
@@ -525,7 +528,7 @@ def main():
         spread_user_ids = create_fake_users_spread(conn)
         create_fake_user_profiles(conn, spread_user_ids)
 
-        all_seller_ids = [uwu_user_id] + dev_user_ids + user_ids + spread_user_ids
+        all_seller_ids = [uwu_user_id] + dev_user_ids + user_ids
         create_fake_listings(conn, all_seller_ids)
 
 
