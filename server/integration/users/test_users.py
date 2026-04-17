@@ -3,6 +3,7 @@ from uuid import uuid7
 
 from sqlmodel import Session, select
 
+from marketplace_andes.auth.session.models import AuthSession
 from marketplace_andes.users.models import User
 
 
@@ -48,3 +49,4 @@ def test_delete_all_users(
     assert response.status_code == 200
     assert response.json() == {"deleted_count": users_before_deletion}
     assert get_db_test_session.exec(select(User)).all() == []
+    assert get_db_test_session.exec(select(AuthSession)).all() == []
