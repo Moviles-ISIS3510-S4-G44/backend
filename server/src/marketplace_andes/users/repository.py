@@ -34,5 +34,4 @@ class UserRepository:
     def delete_all_users(self) -> int:
         stmt = delete(User)
         result = self.session.exec(stmt)
-        self.session.commit()
         return result.rowcount or 0
