@@ -27,7 +27,11 @@ class RegisterUserRequest(BaseModel):
 
     @property
     def identifier(self) -> str:
-        return self.email if self.email is not None else self.username or ""
+        if self.email is not None:
+            return self.email
+        if self.username is not None:
+            return self.username
+        raise ValueError("Either email or username must be provided")
 
 
 class RegisterUserResponse(BaseModel):
