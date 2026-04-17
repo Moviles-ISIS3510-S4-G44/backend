@@ -1,4 +1,4 @@
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, model_validator
 
 
 from uuid import UUID
@@ -14,8 +14,20 @@ class LoggedUser(BaseModel):
 class RegisterUserRequest(BaseModel):
     model_config = ConfigDict(from_attributes=True, frozen=True)
 
-    username: str
+    name: str | None = None
+    email: str | None = None
+    username: str | None = None
     password: str
+
+    @model_validator(mode="after")
+    def validate_identifier(self):
+        if self.email is None and self.username is None:
+            raise ValueError("Either email or username must be provided")
+        return self
+
+    @property
+    def identifier(self) -> str:
+        return self.email if self.email is not None else self.username or ""
 
 
 class RegisterUserResponse(BaseModel):
