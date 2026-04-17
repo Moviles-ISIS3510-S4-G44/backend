@@ -15,6 +15,12 @@ class User(SQLModel, table=True):
             unique=True,
             postgresql_where=sa.text("deleted_at IS NULL"),
         ),
+        sa.Index(
+            "idx_user_email_active",
+            "email",
+            unique=True,
+            postgresql_where=sa.text("deleted_at IS NULL"),
+        ),
         sa.Index("idx_users_deleted_at", "deleted_at"),
     )
 
@@ -25,22 +31,55 @@ class User(SQLModel, table=True):
             nullable=False,
         ),
     )
+
     username: str = Field(
-        sa_column=sa.Column(sa.String(length=32), nullable=False),
+        sa_column=sa.Column(
+            sa.String(length=32),
+            nullable=False,
+        ),
     )
+
+    name: str = Field(
+        sa_column=sa.Column(
+            sa.String(length=100),
+            nullable=False,
+        ),
+    )
+
+    email: str = Field(
+        sa_column=sa.Column(
+            sa.String(length=255),
+            nullable=False,
+        ),
+    )
+
+    rating: int = Field(
+        default=0,
+        sa_column=sa.Column(
+            sa.Integer,
+            nullable=False,
+            server_default="0",
+        ),
+    )
+
     created_at: datetime = Field(
         sa_column=sa.Column(
             sa.TIMESTAMP(timezone=True),
             nullable=False,
         ),
     )
+
     updated_at: datetime = Field(
         sa_column=sa.Column(
             sa.TIMESTAMP(timezone=True),
             nullable=False,
         ),
     )
+
     deleted_at: datetime | None = Field(
         default=None,
-        sa_column=sa.Column(sa.TIMESTAMP(timezone=True), nullable=True),
+        sa_column=sa.Column(
+            sa.TIMESTAMP(timezone=True),
+            nullable=True,
+        ),
     )

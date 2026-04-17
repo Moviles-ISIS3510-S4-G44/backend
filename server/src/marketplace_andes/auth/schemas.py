@@ -9,6 +9,9 @@ class LoggedUser(BaseModel):
 
     id: UUID
     username: str
+    name: str
+    email: str
+    rating: int
 
 
 class RegisterUserRequest(BaseModel):
