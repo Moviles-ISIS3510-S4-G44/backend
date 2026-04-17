@@ -29,9 +29,8 @@ class RegisterUserRequest(BaseModel):
     def identifier(self) -> str:
         if self.email is not None:
             return self.email
-        if self.username is not None:
-            return self.username
-        raise ValueError("Either email or username must be provided")
+        assert self.username is not None
+        return self.username
 
 
 class RegisterUserResponse(BaseModel):
