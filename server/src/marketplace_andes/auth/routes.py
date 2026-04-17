@@ -72,7 +72,7 @@ async def logout(
 
 
 @router.post(
-    "/register",
+    "/signup",
     status_code=status.HTTP_201_CREATED,
 )
 async def register(
