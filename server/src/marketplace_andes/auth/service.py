@@ -201,11 +201,11 @@ class AuthService:
     def retrieve_user_session(self, token: str) -> LoggedUser:
         user_id = self.__jwt_service.verify_access_token(token)
 
-        username = self.__user_repository.get_username_from_id(user_id)
-        if not username:
+        user = self.__user_repository.get_user_by_id(user_id)
+        if not user:
             self.__logger.warning(
                 f"Token validation failed: User with id {user_id} does not exist"
             )
             raise InternalAuthError("Valid token for inexistent user")
 
-        return LoggedUser(id=user_id, username=username)
+        return LoggedUser.model_validate(user)

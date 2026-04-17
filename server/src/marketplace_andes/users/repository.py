@@ -20,9 +20,21 @@ class UserRepository:
         result = self.session.exec(stmt).first()
         return result
 
+    def get_user_by_id(self, user_id: UUID) -> User | None:
+        stmt = select(User).where(User.id == user_id)
+        return self.session.exec(stmt).first()
+
     def create_user(self, username: str) -> User:
         now = datetime.now(UTC)
-        user = User(id=uuid7(), username=username, created_at=now, updated_at=now)
+        user = User(
+            id=uuid7(),
+            username=username,
+            name=username,
+            email=f"{username}@marketplace.local",
+            rating=0,
+            created_at=now,
+            updated_at=now,
+        )
         self.session.add(user)
         return user
 

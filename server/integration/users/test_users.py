@@ -19,12 +19,16 @@ def test_delete_all_users(
     first_user = User(
         id=uuid7(),
         username="test-delete-users-1",
+        name="test-delete-users-1",
+        email="test-delete-users-1@marketplace.local",
         created_at=now,
         updated_at=now,
     )
     second_user = User(
         id=uuid7(),
         username="test-delete-users-2",
+        name="test-delete-users-2",
+        email="test-delete-users-2@marketplace.local",
         created_at=now,
         updated_at=now,
     )
