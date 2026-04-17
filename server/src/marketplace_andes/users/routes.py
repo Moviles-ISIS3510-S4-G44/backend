@@ -1,7 +1,13 @@
 from fastapi import APIRouter
+from sqlmodel import delete
 
 from marketplace_andes.auth.dependencies import CurrentUserDep
+from marketplace_andes.auth.session.models import AuthSession
 from marketplace_andes.auth.schemas import LoggedUser
+from marketplace_andes.db.dependencies import SessionDep
+
+from .dependencies import UserRepositoryDep
+from .schemas import DeleteAllUsersResponse
 
 
 router = APIRouter(prefix="/user", tags=["users"])
@@ -9,4 +15,16 @@ router = APIRouter(prefix="/user", tags=["users"])
 
 @router.get("/me", response_model=LoggedUser)
 async def me(current_user: CurrentUserDep) -> LoggedUser:
-    return LoggedUser.model_validate(current_user)
+    return current_user
+
+
+@router.delete("")
+async def delete_all_users(
+    session: SessionDep,
+    user_repository: UserRepositoryDep,
+    _current_user: CurrentUserDep,
+) -> DeleteAllUsersResponse:
+    session.exec(delete(AuthSession))
+    deleted_count = user_repository.delete_all_users()
+    session.commit()
+    return DeleteAllUsersResponse(deleted_count=deleted_count)
