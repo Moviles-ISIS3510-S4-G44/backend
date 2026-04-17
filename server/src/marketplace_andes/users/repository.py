@@ -30,3 +30,8 @@ class UserRepository:
         stmt = delete(User).where(col(User.id) == user_id)
         result = self.session.exec(stmt)
         return result.rowcount == 1
+
+    def delete_all_users(self) -> int:
+        stmt = delete(User)
+        result = self.session.exec(stmt)
+        return result.rowcount or 0
