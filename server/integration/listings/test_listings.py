@@ -17,12 +17,16 @@ def test_delete_all_listings(get_test_client, get_db_test_session: Session):
     first_user = User(
         id=uuid7(),
         username="test-delete-listings-user-1",
+        name="test-delete-listings-user-1",
+        email="test-delete-listings-user-1@marketplace.local",
         created_at=now,
         updated_at=now,
     )
     second_user = User(
         id=uuid7(),
         username="test-delete-listings-user-2",
+        name="test-delete-listings-user-2",
+        email="test-delete-listings-user-2@marketplace.local",
         created_at=now,
         updated_at=now,
     )
