@@ -1,3 +1,5 @@
+from typing import cast
+
 from pydantic import BaseModel, ConfigDict, model_validator
 
 
@@ -29,8 +31,7 @@ class RegisterUserRequest(BaseModel):
     def identifier(self) -> str:
         if self.email is not None:
             return self.email
-        assert self.username is not None
-        return self.username
+        return cast(str, self.username)
 
 
 class RegisterUserResponse(BaseModel):
