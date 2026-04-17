@@ -8,6 +8,7 @@ from marketplace_andes.db.dependencies import SessionDep
 
 from .models import Listing
 from .schemas import (
+    DeleteAllListingsResponse,
     ListingCreateRequest,
     ListingResponse,
     StatusHistoryResponse,
@@ -52,6 +53,13 @@ async def list_listings(session: SessionDep) -> list[ListingResponse]:
     service = ListingService(session)
     listings = service.list_all()
     return [ListingResponse.model_validate(listing) for listing in listings]
+
+
+@router.delete("")
+async def delete_all_listings(session: SessionDep) -> DeleteAllListingsResponse:
+    service = ListingService(session)
+    deleted_count = service.delete_all()
+    return DeleteAllListingsResponse(deleted_count=deleted_count)
 
 
 @router.get("/{listing_id}")

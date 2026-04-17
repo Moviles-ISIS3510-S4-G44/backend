@@ -42,3 +42,7 @@ class StatusHistoryResponse(BaseModel):
     from_status: str | None
     to_status: str
     changed_at: datetime
+
+
+class DeleteAllListingsResponse(BaseModel):
+    deleted_count: int

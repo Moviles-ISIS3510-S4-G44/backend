@@ -1,7 +1,7 @@
 from datetime import UTC, datetime
 from uuid import UUID, uuid7
 
-from sqlmodel import Session, col, select
+from sqlmodel import Session, col, delete, select
 
 from marketplace_andes.categories.models import Category
 from marketplace_andes.users.models import User
@@ -76,3 +76,9 @@ class ListingService:
     def category_exists(self, category_id: UUID) -> bool:
         statement = select(Category).where(Category.id == category_id)
         return self.session.exec(statement).first() is not None
+
+    def delete_all(self) -> int:
+        statement = delete(Listing)
+        result = self.session.exec(statement)
+        self.session.commit()
+        return result.rowcount or 0
