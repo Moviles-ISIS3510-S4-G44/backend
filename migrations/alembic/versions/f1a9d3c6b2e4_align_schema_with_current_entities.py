@@ -18,10 +18,46 @@ branch_labels: str | Sequence[str] | None = None
 depends_on: str | Sequence[str] | None = None
 
 UNKNOWN_IP_ADDRESS = "0.0.0.0"
+USERS_LEGACY_BACKUP_TABLE = "_users_legacy_backup_f1a9d3c6b2e4"
+USER_PROFILES_LEGACY_BACKUP_TABLE = "_user_profiles_legacy_backup_f1a9d3c6b2e4"
 
 
 def upgrade() -> None:
     conn = op.get_bind()
+
+    op.create_table(
+        USERS_LEGACY_BACKUP_TABLE,
+        sa.Column("id", sa.UUID(), primary_key=True, nullable=False),
+        sa.Column("username", sa.String(length=32), nullable=False),
+        sa.Column("name", sa.String(length=100), nullable=False),
+        sa.Column("rating", sa.Integer(), nullable=False),
+    )
+    conn.execute(
+        sa.text(
+            f"""
+            INSERT INTO {USERS_LEGACY_BACKUP_TABLE} (id, username, name, rating)
+            SELECT id, username, name, rating
+            FROM users
+            """
+        )
+    )
+
+    op.create_table(
+        USER_PROFILES_LEGACY_BACKUP_TABLE,
+        sa.Column("id", sa.UUID(), primary_key=True, nullable=False),
+        sa.Column("surname", sa.String(length=63), nullable=True),
+        sa.Column("status", sa.String(length=63), nullable=True),
+        sa.Column("university", sa.String(length=63), nullable=True),
+    )
+    conn.execute(
+        sa.text(
+            f"""
+            INSERT INTO {USER_PROFILES_LEGACY_BACKUP_TABLE} (id, surname, status, university)
+            SELECT id, surname, status, university
+            FROM user_profiles
+            """
+        )
+    )
 
     op.drop_index("idx_user_username_active", table_name="users")
     op.drop_index("idx_user_email_active", table_name="users")
@@ -68,6 +104,8 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
+    conn = op.get_bind()
+
     op.alter_column("auth_sessions", "ip_address", nullable=True)
 
     op.alter_column("user_profiles", "rating", nullable=True, server_default=None)
@@ -75,6 +113,19 @@ def downgrade() -> None:
     op.add_column("user_profiles", sa.Column("university", sa.String(length=63), nullable=True))
     op.add_column("user_profiles", sa.Column("status", sa.String(length=63), nullable=True))
     op.add_column("user_profiles", sa.Column("surname", sa.String(length=63), nullable=True))
+    conn.execute(
+        sa.text(
+            f"""
+            UPDATE user_profiles AS up
+            SET
+                surname = b.surname,
+                status = b.status,
+                university = b.university
+            FROM {USER_PROFILES_LEGACY_BACKUP_TABLE} AS b
+            WHERE b.id = up.id
+            """
+        )
+    )
     op.create_check_constraint(
         "ck_user_profiles_rating_range",
         "user_profiles",
@@ -87,13 +138,31 @@ def downgrade() -> None:
         "users",
         sa.Column("username", sa.String(length=32), nullable=False, server_default=sa.text("'unknown'")),
     )
-    op.execute(
+    conn.execute(
         sa.text(
+            f"""
+            UPDATE users AS u
+            SET
+                username = COALESCE(
+                    b.username,
+                    left(split_part(u.email, '@', 1), 20) || '_' || left(replace(u.id::text, '-', ''), 11)
+                ),
+                name = COALESCE(b.name, split_part(u.email, '@', 1)),
+                rating = COALESCE(b.rating, 0)
+            FROM {USERS_LEGACY_BACKUP_TABLE} AS b
+            WHERE b.id = u.id
             """
+        )
+    )
+    conn.execute(
+        sa.text(
+            f"""
             UPDATE users
             SET
                 username = left(split_part(email, '@', 1), 20) || '_' || left(replace(id::text, '-', ''), 11),
-                name = split_part(email, '@', 1)
+                name = split_part(email, '@', 1),
+                rating = 0
+            WHERE id NOT IN (SELECT id FROM {USERS_LEGACY_BACKUP_TABLE})
             """
         )
     )
@@ -116,3 +185,6 @@ def downgrade() -> None:
         unique=True,
         postgresql_where=sa.text("deleted_at IS NULL"),
     )
+
+    op.drop_table(USER_PROFILES_LEGACY_BACKUP_TABLE)
+    op.drop_table(USERS_LEGACY_BACKUP_TABLE)
