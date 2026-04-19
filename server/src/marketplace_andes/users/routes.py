@@ -18,6 +18,15 @@ async def me(current_user: CurrentUserDep) -> LoggedUser:
     return LoggedUser.model_validate(current_user)
 
 
+@router.get("", response_model=list[LoggedUser])
+async def get_all_users(
+    user_repository: UserRepositoryDep,
+    _current_user: CurrentUserDep,
+) -> list[LoggedUser]:
+    users = user_repository.get_all_users()
+    return [LoggedUser.model_validate(user) for user in users]
+
+
 @router.delete("")
 async def delete_all_users(
     session: SessionDep,
