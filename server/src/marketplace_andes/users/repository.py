@@ -24,6 +24,10 @@ class UserRepository:
         stmt = select(User).where(User.id == user_id)
         return self.session.exec(stmt).first()
 
+    def get_all_users(self) -> list[User]:
+        stmt = select(User)
+        return list(self.session.exec(stmt).all())
+
     def create_user(self, username: str) -> User:
         now = datetime.now(UTC)
         user = User(
