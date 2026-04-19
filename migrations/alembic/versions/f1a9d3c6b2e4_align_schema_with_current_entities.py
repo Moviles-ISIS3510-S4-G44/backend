@@ -17,8 +17,12 @@ down_revision: str | Sequence[str] | None = "e8c1b0a9f2d4"
 branch_labels: str | Sequence[str] | None = None
 depends_on: str | Sequence[str] | None = None
 
+UNKNOWN_IP_ADDRESS = "0.0.0.0"
+
 
 def upgrade() -> None:
+    conn = op.get_bind()
+
     op.drop_index("idx_user_username_active", table_name="users")
     op.drop_index("idx_user_email_active", table_name="users")
     op.create_index(
@@ -50,14 +54,15 @@ def upgrade() -> None:
     op.alter_column("user_profiles", "name", type_=sa.String(length=100), nullable=False)
     op.alter_column("user_profiles", "rating", nullable=False, server_default=sa.text("0"))
 
-    op.execute(
+    conn.execute(
         sa.text(
             """
             UPDATE auth_sessions
-            SET ip_address = '0.0.0.0'
+            SET ip_address = :unknown_ip
             WHERE ip_address IS NULL
-            """
-        )
+            """,
+        ),
+        {"unknown_ip": UNKNOWN_IP_ADDRESS},
     )
     op.alter_column("auth_sessions", "ip_address", nullable=False)
 
@@ -87,7 +92,7 @@ def downgrade() -> None:
             """
             UPDATE users
             SET
-                username = split_part(email, '@', 1),
+                username = left(split_part(email, '@', 1), 20) || '_' || left(replace(id::text, '-', ''), 11),
                 name = split_part(email, '@', 1)
             """
         )
