@@ -2,10 +2,10 @@ erDiagram
 
     users {
         UUID id PK
-        VARCHAR(32) username
-        TIMESTAMP created_at
-        TIMESTAMP updated_at
-        TIMESTAMP deleted_at
+        VARCHAR(255) email
+        TIMESTAMPTZ created_at
+        TIMESTAMPTZ updated_at
+        TIMESTAMPTZ deleted_at
     }
 
     auth_users {
@@ -18,19 +18,50 @@ erDiagram
         UUID user_id FK
         TEXT refresh_token_hash
         INET ip_address
-        TIMESTAMP expires_at
-        TIMESTAMP created_at
-        TIMESTAMP revoked_at
+        TIMESTAMPTZ expires_at
+        TIMESTAMPTZ created_at
+        TIMESTAMPTZ revoked_at
     }
 
     user_profiles {
         UUID id PK, FK
-        VARCHAR(63) name
-        VARCHAR(63) surname
-        VARCHAR(63) status
-        VARCHAR(63) university
+        VARCHAR(100) name
+        INTEGER rating
+    }
+
+    categories {
+        UUID id PK
+        VARCHAR(128) name
+        TIMESTAMPTZ created_at
+        TIMESTAMPTZ updated_at
+    }
+
+    listings {
+        UUID id PK
+        UUID seller_id FK
+        UUID category_id FK
+        VARCHAR(255) title
+        TEXT description
+        VARCHAR(32) condition
+        INTEGER price
+        TEXT[] images
+        VARCHAR(255) location
+        VARCHAR(32) status
+        TIMESTAMPTZ created_at
+        TIMESTAMPTZ updated_at
+    }
+
+    listing_status_history {
+        UUID id PK
+        UUID listing_id FK
+        VARCHAR(32) from_status
+        VARCHAR(32) to_status
+        TIMESTAMPTZ changed_at
     }
 
     users ||--|| auth_users : "has credentials"
     users ||--o{ auth_sessions : "has sessions"
     users ||--|| user_profiles : "has profile"
+    users ||--o{ listings : "publishes"
+    categories ||--o{ listings : "classifies"
+    listings ||--o{ listing_status_history : "tracks state changes"
