@@ -80,7 +80,12 @@ async def register(
 ) -> RegisterUserResponse:
     try:
         return RegisterUserResponse(
-            user_id=auth_service.register_user(user.username, user.password, anon_ip)
+            user_id=auth_service.register_user(
+                user.email,
+                user.password,
+                user.name,
+                anon_ip,
+            )
         )
     except DuplicateUserError as exc:
         raise HTTPException(

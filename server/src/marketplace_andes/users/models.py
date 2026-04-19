@@ -10,13 +10,7 @@ class User(SQLModel, table=True):
     __tablename__ = "users"
     __table_args__ = (
         sa.Index(
-            "idx_user_username_active",
-            "username",
-            unique=True,
-            postgresql_where=sa.text("deleted_at IS NULL"),
-        ),
-        sa.Index(
-            "idx_user_email_active",
+            "idx_users_email_active",
             "email",
             unique=True,
             postgresql_where=sa.text("deleted_at IS NULL"),
@@ -32,33 +26,10 @@ class User(SQLModel, table=True):
         ),
     )
 
-    username: str = Field(
-        sa_column=sa.Column(
-            sa.String(length=32),
-            nullable=False,
-        ),
-    )
-
-    name: str = Field(
-        sa_column=sa.Column(
-            sa.String(length=100),
-            nullable=False,
-        ),
-    )
-
     email: str = Field(
         sa_column=sa.Column(
             sa.String(length=255),
             nullable=False,
-        ),
-    )
-
-    rating: int = Field(
-        default=0,
-        sa_column=sa.Column(
-            sa.Integer,
-            nullable=False,
-            server_default="0",
         ),
     )
 
@@ -81,5 +52,34 @@ class User(SQLModel, table=True):
         sa_column=sa.Column(
             sa.TIMESTAMP(timezone=True),
             nullable=True,
+        ),
+    )
+
+
+class UserProfile(SQLModel, table=True):
+    __tablename__ = "user_profiles"
+
+    id: UUID = Field(
+        sa_column=sa.Column(
+            postgresql.UUID(as_uuid=True),
+            sa.ForeignKey("users.id", ondelete="CASCADE"),
+            primary_key=True,
+            nullable=False,
+        ),
+    )
+
+    name: str = Field(
+        sa_column=sa.Column(
+            sa.String(length=100),
+            nullable=False,
+        ),
+    )
+
+    rating: int = Field(
+        default=0,
+        sa_column=sa.Column(
+            sa.Integer,
+            nullable=False,
+            server_default="0",
         ),
     )

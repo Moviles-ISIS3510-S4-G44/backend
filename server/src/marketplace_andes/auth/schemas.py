@@ -14,10 +14,12 @@ class LoggedUser(BaseModel):
     rating: int
 
 
+
 class RegisterUserRequest(BaseModel):
     model_config = ConfigDict(from_attributes=True, frozen=True)
 
-    username: str
+    name: str
+    email: str
     password: str
 
 
