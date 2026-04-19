@@ -2,10 +2,10 @@ erDiagram
 
     users {
         UUID id PK
-        VARCHAR(32) username
-        TIMESTAMP created_at
-        TIMESTAMP updated_at
-        TIMESTAMP deleted_at
+        VARCHAR(255) email
+        TIMESTAMPTZ created_at
+        TIMESTAMPTZ updated_at
+        TIMESTAMPTZ deleted_at
     }
 
     auth_users {
@@ -18,17 +18,15 @@ erDiagram
         UUID user_id FK
         TEXT refresh_token_hash
         INET ip_address
-        TIMESTAMP expires_at
-        TIMESTAMP created_at
-        TIMESTAMP revoked_at
+        TIMESTAMPTZ expires_at
+        TIMESTAMPTZ created_at
+        TIMESTAMPTZ revoked_at
     }
 
     user_profiles {
         UUID id PK, FK
-        VARCHAR(63) name
-        VARCHAR(63) surname
-        VARCHAR(63) status
-        VARCHAR(63) university
+        VARCHAR(100) name
+        INTEGER rating
     }
 
     users ||--|| auth_users : "has credentials"
