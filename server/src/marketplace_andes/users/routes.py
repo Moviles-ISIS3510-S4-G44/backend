@@ -10,7 +10,7 @@ from .dependencies import UserRepositoryDep
 from .schemas import DeleteAllUsersResponse
 
 
-router = APIRouter(prefix="/user", tags=["users"])
+router = APIRouter(prefix="/users", tags=["users"])
 
 
 @router.get("/me", response_model=LoggedUser)
