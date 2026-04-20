@@ -215,4 +215,16 @@ class AuthService:
             )
             raise InternalAuthError("Valid token for inexistent user")
 
-        return LoggedUser.model_validate(user)
+        profile = self.__user_repository.get_user_profile_by_id(user_id)
+        if not profile:
+            self.__logger.warning(
+                f"Token validation failed: User profile with id {user_id} does not exist"
+            )
+            raise InternalAuthError("Valid token for user without profile")
+
+        return LoggedUser(
+            id=user.id,
+            email=user.email,
+            name=profile.name,
+            rating=profile.rating,
+        )

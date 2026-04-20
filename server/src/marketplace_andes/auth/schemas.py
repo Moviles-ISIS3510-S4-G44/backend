@@ -7,6 +7,8 @@ class LoggedUser(BaseModel):
 
     id: UUID
     email: str
+    name: str
+    rating: int
 
 
 class RegisterUserRequest(BaseModel):
