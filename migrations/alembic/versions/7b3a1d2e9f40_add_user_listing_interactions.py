@@ -55,11 +55,6 @@ def upgrade() -> None:
         ["listing_id"],
         unique=False,
     )
-    op.alter_column(
-        "user_listing_interaction", "interaction_count", server_default=None
-    )
-
-
 def downgrade() -> None:
     op.drop_index(
         "idx_user_listing_interaction_listing_id",

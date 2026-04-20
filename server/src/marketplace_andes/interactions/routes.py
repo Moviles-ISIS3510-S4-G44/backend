@@ -11,7 +11,7 @@ from .service import InteractionService
 router = APIRouter(prefix="/interactions", tags=["interactions"])
 
 
-@router.post("")
+@router.post("", status_code=201)
 async def register_interaction(
     payload: InteractionRegisterRequest,
     session: SessionDep,
