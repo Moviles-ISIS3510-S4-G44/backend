@@ -1,13 +1,11 @@
 import os
 import random
+from datetime import UTC, datetime, timedelta
 from enum import StrEnum
 from uuid import UUID, uuid7
-from datetime import datetime, UTC, timedelta
-
-from sqlalchemy import Connection, create_engine, text
 
 from argon2 import PasswordHasher
-
+from sqlalchemy import Connection, create_engine, text
 
 from fake import FAKE_NAMES, FAKE_SURNAMES
 
@@ -19,329 +17,48 @@ RANDOM_SEED = os.getenv("RANDOM_SEED", "42")
 
 random.seed(int(RANDOM_SEED))
 
-N_USERS = 10
+N_USERS = 30
+N_SPREAD_USERS = 300
 N_LISTINGS = 500
+N_INTERACTIONS = 2000
 
 PASSWORD_HASHER = PasswordHasher()
 
-USERS_DEV = [
-    "da.rodriguezv1",
-    "l.fussien",
-    "i.bermudezl",
-    "mc.martinezm1",
-    "s.tenjov",
-    "y.pineros",
-]
-
-USER_DEV_PROFILES = [
+DEV_USERS: list[dict[str, str | int]] = [
     {
-        "name": "Diego",
-        "surname": "Rodríguez",
-        "status": "student",
-        "university": "Universidad de los Andes",
+        "email": "da.rodriguezv1@uniandes.edu.co",
+        "name": "Diego Rodríguez",
         "rating": 5,
     },
     {
-        "name": "Louise",
-        "surname": "Fussien",
-        "status": "student",
-        "university": "Universidad de los Andes",
+        "email": "l.fussien@uniandes.edu.co",
+        "name": "Louise Fussien",
         "rating": 4,
     },
     {
-        "name": "Isaac",
-        "surname": "Bermúdez",
-        "status": "student",
-        "university": "Universidad de los Andes",
+        "email": "i.bermudezl@uniandes.edu.co",
+        "name": "Isaac Bermúdez",
         "rating": 5,
     },
     {
-        "name": "María Camila",
-        "surname": "Martínez",
-        "status": "student",
-        "university": "Universidad de los Andes",
+        "email": "mc.martinezm1@uniandes.edu.co",
+        "name": "María Camila Martínez",
         "rating": 4,
     },
     {
-        "name": "Santiago",
-        "surname": "Tenjov",
-        "status": "student",
-        "university": "Universidad de los Andes",
+        "email": "s.tenjov@uniandes.edu.co",
+        "name": "Santiago Tenjov",
         "rating": 3,
     },
     {
-        "name": "Yesid",
-        "surname": "Pineros",
-        "status": "student",
-        "university": "Universidad de los Andes",
+        "email": "y.pineros@uniandes.edu.co",
+        "name": "Yesid Pineros",
         "rating": 5,
     },
 ]
 
 # Realistic rating weights: most marketplace ratings skew high
 RATING_WEIGHTS = [2, 5, 10, 25, 58]  # 1★ through 5★
-
-
-STATUSES = ["student", "professor", "admin", "assistant"]
-
-UNIVERSITIES = [
-    "Universidad de los Andes",
-    "Universidad Nacional",
-    "Pontificia Universidad Javeriana",
-    "Universidad del Valle",
-    "Universidad de Antioquia",
-    "Universidad Industrial de Santander",
-    "Universidad del Norte",
-    "Universidad del Cauca",
-]
-
-
-def create_fake_uwu_user(conn: Connection):
-    """This user always is created"""
-    username = "uwu"
-    password = "password"
-
-    result = conn.execute(
-        text(
-            """
-            INSERT INTO users (id, username, created_at, updated_at)
-            VALUES (:id, :username, :created_at, :updated_at)
-            RETURNING id
-            
-            """
-        ),
-        {
-            "id": uuid7(),
-            "username": username,
-            "created_at": datetime.now(UTC),
-            "updated_at": datetime.now(UTC),
-        },
-    )
-    user_id = result.scalar_one()
-
-    conn.execute(
-        text(
-            """
-            INSERT INTO auth_users (id, hashed_password)
-            VALUES (:id, :hashed_password)
-            """
-        ),
-        {
-            "id": user_id,
-            "hashed_password": PASSWORD_HASHER.hash(password),
-        },
-    )
-
-    return user_id
-
-
-def create_user_profile(
-    conn: Connection,
-    user_id: UUID,
-    name: str | None,
-    surname: str | None,
-    status: str,
-    university: str,
-    rating: int | None = None,
-):
-    """Create a user profile for the given user_id.
-
-    name and surname can be None for placeholder/system users.
-    """
-    conn.execute(
-        text(
-            """
-            INSERT INTO user_profiles (id, name, surname, status, university, rating)
-            VALUES (:id, :name, :surname, :status, :university, :rating)
-            """
-        ),
-        {
-            "id": user_id,
-            "name": name,
-            "surname": surname,
-            "status": status,
-            "university": university,
-            "rating": rating,
-        },
-    )
-
-
-def create_fake_uwu_user_profile(conn: Connection, user_id: UUID):
-    """Create profile for the uwu user"""
-    create_user_profile(
-        conn, user_id, None, None, "student", "The Academy of Advanced Procrastination"
-    )
-
-
-def create_fake_dev_user_profiles(conn: Connection, user_ids: list[UUID]):
-    """Create profiles for dev users"""
-    for user_id, profile in zip(user_ids, USER_DEV_PROFILES):
-        create_user_profile(
-            conn,
-            user_id,
-            profile["name"],
-            profile["surname"],
-            profile["status"],
-            profile["university"],
-            profile["rating"],
-        )
-
-
-def create_fake_user_profiles(conn: Connection, user_ids: list[UUID]):
-    """Create profiles for fake users"""
-    for user_id in user_ids:
-        name = random.choice(FAKE_NAMES)
-        surname = random.choice(FAKE_SURNAMES)
-        status = random.choice(STATUSES)
-        university = random.choice(UNIVERSITIES)
-        rating = random.choices([1, 2, 3, 4, 5], weights=RATING_WEIGHTS)[0]
-
-        create_user_profile(conn, user_id, name, surname, status, university, rating)
-
-
-def create_fake_dev_users(conn: Connection) -> list[UUID]:
-    user_ids: list[UUID] = []
-    for username in USERS_DEV:
-        user_result = conn.execute(
-            text(
-                """
-                INSERT INTO users (id, username, created_at, updated_at)
-                VALUES (:id, :username, :created_at, :updated_at)
-                RETURNING id
-                """
-            ),
-            {
-                "id": uuid7(),
-                "username": username,
-                "created_at": datetime.now(UTC),
-                "updated_at": datetime.now(UTC),
-            },
-        )
-        user_id = user_result.scalar_one()
-
-        conn.execute(
-            text(
-                """
-                INSERT INTO auth_users (id, hashed_password)
-                VALUES (:id, :hashed_password)
-                """
-            ),
-            {
-                "id": user_id,
-                "hashed_password": PASSWORD_HASHER.hash("password"),
-            },
-        )
-        user_ids.append(user_id)
-
-    return user_ids
-
-
-def create_fake_users(conn: Connection) -> list[UUID]:
-    user_ids: list[UUID] = []
-    for index in range(N_USERS):
-        username = f"user_{index + 1:02d}"
-        user_result = conn.execute(
-            text(
-                """
-                INSERT INTO users (id, username, created_at, updated_at)
-                VALUES (:id, :username, :created_at, :updated_at)
-                RETURNING id
-                """
-            ),
-            {
-                "id": uuid7(),
-                "username": username,
-                "created_at": datetime.now(UTC),
-                "updated_at": datetime.now(UTC),
-            },
-        )
-        user_id = user_result.scalar_one()
-
-        conn.execute(
-            text(
-                """
-                INSERT INTO auth_users (id, hashed_password)
-                VALUES (:id, :hashed_password)
-                """
-            ),
-            {
-                "id": user_id,
-                "hashed_password": PASSWORD_HASHER.hash(f"{username}_pwd"),
-            },
-        )
-        user_ids.append(user_id)
-
-    return user_ids
-
-
-def create_fake_users_spread(conn: Connection) -> list[UUID]:
-    """Create 2000+ users with creation dates from yesterday to 2 years ago, some with deleted_at"""
-    user_ids: list[UUID] = []
-    users_data = []
-    auth_users_data = []
-
-    now = datetime.now(UTC)
-
-    for i in range(2000):
-        # Random creation date between 2 years ago and yesterday
-        days_ago = random.randint(1, 730)
-        created_at = now - timedelta(days=days_ago)
-
-        # 15% chance of being deleted
-        is_deleted = random.random() < 0.15
-
-        # If deleted, calculate deleted_at between created_at and yesterday
-        deleted_at = None
-        if is_deleted:
-            max_days_for_deletion = days_ago - 1  # Can't delete before creation
-            if max_days_for_deletion > 0:
-                deletion_days_ago = random.randint(1, max_days_for_deletion)
-                deleted_at = now - timedelta(days=deletion_days_ago)
-
-        user_id = uuid7()
-        username = f"spread_user_{i + 1:04d}"
-
-        users_data.append(
-            {
-                "id": user_id,
-                "username": username,
-                "created_at": created_at,
-                "updated_at": deleted_at if deleted_at else created_at,
-                "deleted_at": deleted_at,
-            }
-        )
-
-        auth_users_data.append(
-            {
-                "id": user_id,
-                "hashed_password": PASSWORD_HASHER.hash(f"{username}_pwd"),
-            }
-        )
-
-        user_ids.append(user_id)
-
-    conn.execute(
-        text(
-            """
-            INSERT INTO users (id, username, created_at, updated_at, deleted_at)
-            VALUES (:id, :username, :created_at, :updated_at, :deleted_at)
-            """
-        ),
-        users_data,
-    )
-
-    conn.execute(
-        text(
-            """
-            INSERT INTO auth_users (id, hashed_password)
-            VALUES (:id, :hashed_password)
-            """
-        ),
-        auth_users_data,
-    )
-
-    return user_ids
-
 
 LISTING_TITLES = [
     "iPhone 14 Pro 256GB",
@@ -393,6 +110,162 @@ PUBLISHED_RATIO = 0.80
 SOLD_AFTER_PUBLISH_RATIO = 0.35
 
 
+def create_user_with_profile(
+    conn: Connection,
+    *,
+    email: str,
+    password: str,
+    name: str,
+    rating: int,
+    created_at: datetime | None = None,
+    updated_at: datetime | None = None,
+    deleted_at: datetime | None = None,
+) -> UUID:
+    now = datetime.now(UTC)
+    created_at = created_at or now
+    updated_at = updated_at or created_at
+
+    user_result = conn.execute(
+        text(
+            """
+            INSERT INTO users (id, email, created_at, updated_at, deleted_at)
+            VALUES (:id, :email, :created_at, :updated_at, :deleted_at)
+            RETURNING id
+            """
+        ),
+        {
+            "id": uuid7(),
+            "email": email,
+            "created_at": created_at,
+            "updated_at": updated_at,
+            "deleted_at": deleted_at,
+        },
+    )
+    user_id = user_result.scalar_one()
+
+    conn.execute(
+        text(
+            """
+            INSERT INTO auth_users (id, hashed_password)
+            VALUES (:id, :hashed_password)
+            """
+        ),
+        {
+            "id": user_id,
+            "hashed_password": PASSWORD_HASHER.hash(password),
+        },
+    )
+
+    conn.execute(
+        text(
+            """
+            INSERT INTO user_profiles (id, name, rating)
+            VALUES (:id, :name, :rating)
+            """
+        ),
+        {
+            "id": user_id,
+            "name": name,
+            "rating": rating,
+        },
+    )
+
+    return user_id
+
+
+def create_fake_users(conn: Connection) -> list[UUID]:
+    user_ids: list[UUID] = []
+
+    for index in range(N_USERS):
+        first_name = random.choice(FAKE_NAMES)
+        surname = random.choice(FAKE_SURNAMES)
+        full_name = f"{first_name} {surname}"
+        local = f"user_{index + 1:03d}"
+        email = f"{local}@marketplace.local"
+        rating = random.choices([1, 2, 3, 4, 5], weights=RATING_WEIGHTS)[0]
+
+        user_ids.append(
+            create_user_with_profile(
+                conn,
+                email=email,
+                password=f"{local}_pwd",
+                name=full_name,
+                rating=rating,
+            )
+        )
+
+    return user_ids
+
+
+def create_fake_dev_users(conn: Connection) -> list[UUID]:
+    user_ids: list[UUID] = []
+
+    for profile in DEV_USERS:
+        email = str(profile["email"])
+        name = str(profile["name"])
+        rating = int(profile["rating"])
+        local = email.split("@")[0]
+        user_ids.append(
+            create_user_with_profile(
+                conn,
+                email=email,
+                password=f"{local}_pwd",
+                name=name,
+                rating=rating,
+            )
+        )
+
+    return user_ids
+
+
+def create_fake_uwu_user(conn: Connection) -> UUID:
+    return create_user_with_profile(
+        conn,
+        email="uwu@marketplace.local",
+        password="password",
+        name="Uwu User",
+        rating=5,
+    )
+
+
+def create_fake_users_spread(conn: Connection) -> list[UUID]:
+    """Create users with creation dates between yesterday and 2 years ago."""
+    user_ids: list[UUID] = []
+
+    now = datetime.now(UTC)
+
+    for i in range(N_SPREAD_USERS):
+        days_ago = random.randint(1, 730)
+        created_at = now - timedelta(days=days_ago)
+
+        is_deleted = random.random() < 0.15
+        deleted_at = None
+        if is_deleted:
+            max_days_for_deletion = max(1, days_ago - 1)
+            deletion_days_ago = random.randint(1, max_days_for_deletion)
+            deleted_at = now - timedelta(days=deletion_days_ago)
+
+        local = f"spread_user_{i + 1:04d}"
+        first_name = random.choice(FAKE_NAMES)
+        surname = random.choice(FAKE_SURNAMES)
+        full_name = f"{first_name} {surname}"
+
+        user_ids.append(
+            create_user_with_profile(
+                conn,
+                email=f"{local}@marketplace.local",
+                password=f"{local}_pwd",
+                name=full_name,
+                rating=random.choices([1, 2, 3, 4, 5], weights=RATING_WEIGHTS)[0],
+                created_at=created_at,
+                updated_at=deleted_at or created_at,
+                deleted_at=deleted_at,
+            )
+        )
+
+    return user_ids
+
+
 def ensure_categories(conn: Connection) -> list[UUID]:
     existing_category_ids = [
         row[0] for row in conn.execute(text("SELECT id FROM categories")).all()
@@ -400,15 +273,19 @@ def ensure_categories(conn: Connection) -> list[UUID]:
     if existing_category_ids:
         return existing_category_ids
 
-    categories_data = [
-        {
-            "id": uuid7(),
-            "name": name,
-            "created_at": datetime.now(UTC),
-            "updated_at": datetime.now(UTC),
-        }
-        for name in DEFAULT_CATEGORIES
-    ]
+    category_ids: list[UUID] = []
+    categories_data: list[dict] = []
+    for name in DEFAULT_CATEGORIES:
+        category_id = uuid7()
+        category_ids.append(category_id)
+        categories_data.append(
+            {
+                "id": category_id,
+                "name": name,
+                "created_at": datetime.now(UTC),
+                "updated_at": datetime.now(UTC),
+            }
+        )
     conn.execute(
         text(
             """
@@ -418,25 +295,27 @@ def ensure_categories(conn: Connection) -> list[UUID]:
         ),
         categories_data,
     )
-    return [item["id"] for item in categories_data]
+    return category_ids
 
 
 def create_fake_listings(
     conn: Connection,
     seller_ids: list[UUID],
     category_ids: list[UUID],
-) -> None:
+) -> list[UUID]:
     """Seed listings and status history."""
     now = datetime.now(UTC)
     listings_data: list[dict] = []
     history_data: list[dict] = []
+    listing_ids: list[UUID] = []
 
     for i in range(N_LISTINGS):
         listing_id = uuid7()
+        listing_ids.append(listing_id)
+
         seller_id = random.choice(seller_ids)
         category_id = random.choice(category_ids)
 
-        # Random creation date between 1 year ago and 3 days ago
         days_ago = random.randint(3, 365)
         created_at = now - timedelta(days=days_ago)
 
@@ -449,21 +328,17 @@ def create_fake_listings(
             for img in range(1, random.randint(2, 5))
         ]
 
-        # 80% of listings reach published, 20% stay as draft
         reaches_published = random.random() < PUBLISHED_RATIO
 
         published_at = None
         sold_at = None
         if reaches_published:
             status = "published"
-            # Time to publish: between 5 minutes and 72 hours
             publish_delay_minutes = random.randint(5, 4320)
             published_at = created_at + timedelta(minutes=publish_delay_minutes)
 
-            # Some published listings are sold after publication.
             reaches_sold = random.random() < SOLD_AFTER_PUBLISH_RATIO
             if reaches_sold:
-                # Sold between 1 hour and 120 days after publication.
                 sold_delay_minutes = random.randint(60, 172800)
                 sold_at = published_at + timedelta(minutes=sold_delay_minutes)
                 if sold_at > now:
@@ -495,7 +370,6 @@ def create_fake_listings(
             }
         )
 
-        # Status history: always record the initial draft event
         history_data.append(
             {
                 "id": uuid7(),
@@ -552,49 +426,106 @@ def create_fake_listings(
         f"Seeded {len(listings_data)} listings with {len(history_data)} status history entries."
     )
 
+    return listing_ids
+
+
+def create_fake_interactions(
+    conn: Connection,
+    user_ids: list[UUID],
+    listing_ids: list[UUID],
+) -> None:
+    now = datetime.now(UTC)
+    interactions_data: list[dict] = []
+
+    for _ in range(N_INTERACTIONS):
+        interactions_data.append(
+            {
+                "id": uuid7(),
+                "user_id": random.choice(user_ids),
+                "listing_id": random.choice(listing_ids),
+                "interaction_count": random.randint(1, 4),
+                "last_interaction_at": now
+                - timedelta(
+                    days=random.randint(0, 180),
+                    minutes=random.randint(0, 1439),
+                ),
+            }
+        )
+
+    conn.execute(
+        text(
+            """
+            INSERT INTO user_listing_interaction (id, user_id, listing_id, interaction_count, last_interaction_at)
+            VALUES (:id, :user_id, :listing_id, :interaction_count, :last_interaction_at)
+            ON CONFLICT (user_id, listing_id)
+            DO UPDATE SET
+                interaction_count = user_listing_interaction.interaction_count + EXCLUDED.interaction_count,
+                last_interaction_at = GREATEST(
+                    user_listing_interaction.last_interaction_at,
+                    EXCLUDED.last_interaction_at
+                )
+            """
+        ),
+        interactions_data,
+    )
+
+    print(f"Processed {len(interactions_data)} interaction events.")
+
 
 def main():
     engine = create_engine(
-        f"postgresql+psycopg://postgres:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/marketplace",  # do it as root
+        f"postgresql+psycopg://postgres:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/marketplace",
         echo=DB_ECHO,
     )
+
     with engine.begin() as conn:
         existing_users = conn.execute(text("SELECT COUNT(*) FROM users")).scalar_one()
         existing_listings = conn.execute(
             text("SELECT COUNT(*) FROM listings")
         ).scalar_one()
+        existing_interactions = conn.execute(
+            text("SELECT COUNT(*) FROM user_listing_interaction")
+        ).scalar_one()
+
+        if existing_users == 0:
+            create_fake_uwu_user(conn)
+            dev_user_ids = create_fake_dev_users(conn)
+            user_ids = create_fake_users(conn)
+            spread_user_ids = create_fake_users_spread(conn)
+            print(
+                f"Seeded users/auth/profile: {1 + len(dev_user_ids) + len(user_ids) + len(spread_user_ids)}"
+            )
+        else:
+            print(f"Database already has {existing_users} users.")
+
         category_ids = ensure_categories(conn)
 
-        if existing_users > 0 and existing_listings > 0:
-            print(
-                f"Database already has {existing_users} users and {existing_listings} listings — skipping seed. "
-                "Run 'docker compose down -v' to reset."
-            )
-            return
-
-        if existing_users > 0 and existing_listings == 0:
-            # In this fake dataset every existing user can act as seller.
+        if existing_listings == 0:
             seller_ids = [
-                row[0] for row in conn.execute(text("SELECT id FROM users")).all()
+                row[0]
+                for row in conn.execute(
+                    text("SELECT id FROM users WHERE deleted_at IS NULL")
+                ).all()
             ]
-            create_fake_listings(conn, seller_ids, category_ids)
-            print(f"Database already had users; seeded {N_LISTINGS} listings.")
-            return
+            listing_ids = create_fake_listings(conn, seller_ids, category_ids)
+        else:
+            listing_ids = [
+                row[0] for row in conn.execute(text("SELECT id FROM listings")).all()
+            ]
+            print(f"Database already has {existing_listings} listings.")
 
-        uwu_user_id = create_fake_uwu_user(conn)
-        create_fake_uwu_user_profile(conn, uwu_user_id)
-
-        dev_user_ids = create_fake_dev_users(conn)
-        create_fake_dev_user_profiles(conn, dev_user_ids)
-
-        user_ids = create_fake_users(conn)
-        create_fake_user_profiles(conn, user_ids)
-
-        spread_user_ids = create_fake_users_spread(conn)
-        create_fake_user_profiles(conn, spread_user_ids)
-
-        all_seller_ids = [uwu_user_id] + dev_user_ids + user_ids
-        create_fake_listings(conn, all_seller_ids, category_ids)
+        if existing_interactions == 0:
+            user_ids_for_interactions = [
+                row[0]
+                for row in conn.execute(
+                    text("SELECT id FROM users WHERE deleted_at IS NULL")
+                ).all()
+            ]
+            create_fake_interactions(conn, user_ids_for_interactions, listing_ids)
+        else:
+            print(
+                f"Database already has {existing_interactions} rows in user_listing_interaction."
+            )
 
 
 if __name__ == "__main__":
