@@ -18,7 +18,7 @@ RANDOM_SEED = os.getenv("RANDOM_SEED", "42")
 random.seed(int(RANDOM_SEED))
 
 N_USERS = 30
-N_SPREAD_USERS = 300
+N_HISTORICAL_USERS = 300
 N_LISTINGS = 500
 N_INTERACTIONS = 2000
 
@@ -234,15 +234,14 @@ def create_fake_users_spread(conn: Connection) -> list[UUID]:
 
     now = datetime.now(UTC)
 
-    for i in range(N_SPREAD_USERS):
+    for i in range(N_HISTORICAL_USERS):
         days_ago = random.randint(1, 730)
         created_at = now - timedelta(days=days_ago)
 
-        is_deleted = random.random() < 0.15
+        is_deleted = random.random() < 0.15 and days_ago > 1
         deleted_at = None
         if is_deleted:
-            max_days_for_deletion = max(1, days_ago - 1)
-            deletion_days_ago = random.randint(1, max_days_for_deletion)
+            deletion_days_ago = random.randint(1, days_ago - 1)
             deleted_at = now - timedelta(days=deletion_days_ago)
 
         local = f"spread_user_{i + 1:04d}"
