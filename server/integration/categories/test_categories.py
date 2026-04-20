@@ -7,7 +7,7 @@ from marketplace_andes.categories.models import Category
 
 
 def test_delete_all_categories(get_test_client, get_db_test_session: Session):
-    initial_count = len(get_db_test_session.exec(select(Category)).all())
+    existing_count = len(get_db_test_session.exec(select(Category)).all())
     now = datetime.now(UTC)
     first_category = Category(
         id=uuid7(),
@@ -28,5 +28,5 @@ def test_delete_all_categories(get_test_client, get_db_test_session: Session):
     response = get_test_client.delete("/categories")
 
     assert response.status_code == 200
-    assert response.json() == {"deleted_count": initial_count + 2}
+    assert response.json() == {"deleted_count": existing_count + 2}
     assert get_db_test_session.exec(select(Category)).all() == []
