@@ -14,7 +14,9 @@ class UserListingInteraction(SQLModel, table=True):
             "listing_id",
             name="uq_user_listing_interaction",
         ),
-        sa.CheckConstraint("interaction_count >= 1", name="ck_interaction_count_positive"),
+        sa.CheckConstraint(
+            "interaction_count >= 1", name="ck_interaction_count_positive"
+        ),
         sa.Index("idx_user_listing_interaction_user_id", "user_id"),
         sa.Index("idx_user_listing_interaction_listing_id", "listing_id"),
     )

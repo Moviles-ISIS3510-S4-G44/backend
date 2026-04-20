@@ -1,7 +1,7 @@
 """Add user listing interactions table.
 
 Revision ID: 7b3a1d2e9f40
-Revises: d2c9a8b7e6f5
+Revises: f1a9d3c6b2e4
 Create Date: 2026-04-20 15:10:00.000000
 
 """
@@ -14,7 +14,7 @@ from sqlalchemy.dialects import postgresql
 
 
 revision: str = "7b3a1d2e9f40"
-down_revision: str | Sequence[str] | None = "d2c9a8b7e6f5"
+down_revision: str | Sequence[str] | None = "f1a9d3c6b2e4"
 branch_labels: str | Sequence[str] | None = None
 depends_on: str | Sequence[str] | None = None
 
@@ -34,7 +34,9 @@ def upgrade() -> None:
         sa.Column("last_interaction_at", sa.TIMESTAMP(timezone=True), nullable=False),
         sa.ForeignKeyConstraint(["listing_id"], ["listings.id"], ondelete="CASCADE"),
         sa.ForeignKeyConstraint(["user_id"], ["users.id"], ondelete="CASCADE"),
-        sa.CheckConstraint("interaction_count >= 1", name="ck_interaction_count_positive"),
+        sa.CheckConstraint(
+            "interaction_count >= 1", name="ck_interaction_count_positive"
+        ),
         sa.UniqueConstraint(
             "user_id",
             "listing_id",
@@ -53,7 +55,9 @@ def upgrade() -> None:
         ["listing_id"],
         unique=False,
     )
-    op.alter_column("user_listing_interaction", "interaction_count", server_default=None)
+    op.alter_column(
+        "user_listing_interaction", "interaction_count", server_default=None
+    )
 
 
 def downgrade() -> None:
