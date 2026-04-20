@@ -1,6 +1,4 @@
 from pydantic import BaseModel, ConfigDict
-
-
 from uuid import UUID
 
 
@@ -8,11 +6,7 @@ class LoggedUser(BaseModel):
     model_config = ConfigDict(from_attributes=True, frozen=True)
 
     id: UUID
-    username: str
-    name: str
     email: str
-    rating: int
-
 
 
 class RegisterUserRequest(BaseModel):
