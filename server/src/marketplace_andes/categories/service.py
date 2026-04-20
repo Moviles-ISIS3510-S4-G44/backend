@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from sqlmodel import Session, select
+from sqlmodel import Session, delete, select
 
 from .models import Category
 
@@ -22,3 +22,9 @@ class CategoryService:
     def get_by_id(self, category_id: UUID) -> Category | None:
         statement = select(Category).where(Category.id == category_id)
         return self.session.exec(statement).first()
+
+    def delete_all(self) -> int:
+        statement = delete(Category)
+        result = self.session.exec(statement)
+        self.session.commit()
+        return result.rowcount or 0

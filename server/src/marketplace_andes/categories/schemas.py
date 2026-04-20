@@ -12,3 +12,7 @@ class CategoryResponse(BaseModel):
 
     id: UUID
     name: str
+
+
+class DeleteAllCategoriesResponse(BaseModel):
+    deleted_count: int
