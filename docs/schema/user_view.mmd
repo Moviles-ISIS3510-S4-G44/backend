@@ -31,6 +31,17 @@ erDiagram
 
     listings {
         UUID id PK
+        UUID seller_id FK
+        UUID category_id FK
+        VARCHAR(255) title
+        TEXT description
+        VARCHAR(32) condition
+        INTEGER price
+        TEXT[] images
+        VARCHAR(255) location
+        VARCHAR(32) status
+        TIMESTAMPTZ created_at
+        TIMESTAMPTZ updated_at
     }
 
     user_listing_interaction {
