@@ -1,13 +1,11 @@
 WITH user_base AS (
     SELECT
         u.id AS user_key,
-        u.username,
+        u.email,
         u.created_at,
         u.updated_at,
         u.deleted_at,
         up.name,
-        up.surname,
-        up.university,
         up.rating AS star_rating,
         -- Status Logic
         CASE WHEN u.deleted_at IS NULL THEN 'Active' ELSE 'Churned' END AS current_status,

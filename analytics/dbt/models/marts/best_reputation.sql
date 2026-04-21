@@ -1,10 +1,8 @@
 WITH rated_users AS (
     SELECT
         user_key,
-        username,
+        email,
         name,
-        surname,
-        university,
         star_rating,
         current_status
     FROM {{ ref('fact_user_stats') }}
@@ -15,12 +13,10 @@ WITH rated_users AS (
 
 SELECT
     user_key,
-    username,
+    email,
     name,
-    surname,
-    university,
     star_rating,
     REPEAT('★', star_rating) || REPEAT('☆', 5 - star_rating) AS stars_display,
     RANK() OVER (ORDER BY star_rating DESC) AS reputation_rank
 FROM rated_users
-ORDER BY reputation_rank, username
+ORDER BY reputation_rank, email

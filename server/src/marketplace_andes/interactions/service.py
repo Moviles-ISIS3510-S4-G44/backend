@@ -35,6 +35,7 @@ class InteractionService:
                 user_id=user_id,
                 listing_id=listing_id,
                 interaction_count=1,
+                first_interaction_at=now,
                 last_interaction_at=now,
             )
             self.session.add(interaction)
