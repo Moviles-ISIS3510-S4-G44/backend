@@ -59,9 +59,19 @@ erDiagram
         TIMESTAMPTZ changed_at
     }
 
+    user_listing_interaction {
+        UUID id PK
+        UUID user_id FK
+        UUID listing_id FK
+        INTEGER interaction_count
+        TIMESTAMPTZ last_interaction_at
+    }
+
     users ||--|| auth_users : "has credentials"
     users ||--o{ auth_sessions : "has sessions"
     users ||--|| user_profiles : "has profile"
     users ||--o{ listings : "publishes"
     categories ||--o{ listings : "classifies"
     listings ||--o{ listing_status_history : "tracks state changes"
+    users ||--o{ user_listing_interaction : "interacts with listings"
+    listings ||--o{ user_listing_interaction : "receives user interactions"
