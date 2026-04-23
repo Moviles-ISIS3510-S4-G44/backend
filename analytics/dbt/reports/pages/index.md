@@ -56,7 +56,12 @@ title: User Retention Overview
 
 ## Business Questions
 
+### Sprint 2
+
 - [Best Reputation Students](best-reputation)
 - [Active Listings per Day](active-listings-per-day)
-- [Listing Visit Coverage per Month](listing-visit-coverage-per-month)
-- [Time to First Visit](time-to-first-visit)
+
+### Sprint 3
+
+- [2 - Listing Visit Coverage per Month (Type 3)](listing-visit-coverage-per-month)
+- [3 - Time to First Visit (Type 3)](time-to-first-visit)

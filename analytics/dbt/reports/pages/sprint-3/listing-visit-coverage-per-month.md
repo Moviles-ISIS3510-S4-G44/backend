@@ -1,5 +1,5 @@
 ---
-title: Listing Visit Coverage per Month
+title: 2 - Listing Visit Coverage per Month (Type 3)
 ---
 
 ```sql monthly_visit_coverage
