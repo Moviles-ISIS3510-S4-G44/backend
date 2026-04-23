@@ -58,3 +58,4 @@ title: User Retention Overview
 
 - [Best Reputation Students](best-reputation)
 - [Active Listings per Day](active-listings-per-day)
+- [Listing Visit Coverage per Month](listing-visit-coverage-per-month)

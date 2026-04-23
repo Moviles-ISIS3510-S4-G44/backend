@@ -1,0 +1,3 @@
+select *
+from marketplace_andes_analytics.pct_created_listings_with_visit_per_month
+order by created_month desc

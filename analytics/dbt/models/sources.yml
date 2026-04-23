@@ -6,3 +6,4 @@ sources:
       - name: user_profiles
       - name: listings
       - name: listing_status_history
+      - name: user_listing_interaction
