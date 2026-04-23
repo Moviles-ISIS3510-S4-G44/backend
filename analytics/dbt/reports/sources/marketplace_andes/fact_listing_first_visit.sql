@@ -1,0 +1,2 @@
+select *
+from marketplace_andes_analytics.fact_listing_first_visit

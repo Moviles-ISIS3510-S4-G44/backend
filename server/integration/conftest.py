@@ -39,12 +39,14 @@ def migrated_postgres_container(
     migrations_dir = Path(__file__).resolve().parents[2] / "migrations"
     env = os.environ.copy()
     env.pop("VIRTUAL_ENV", None)  # in case of running of an venv
-    env.update({
-        "PG_BACKEND_MIGRATION_USER": parsed_db_url.username or "",
-        "PG_BACKEND_MIGRATION_PASSWORD": parsed_db_url.password or "",
-        "PG_BACKEND_MIGRATION_HOST": parsed_db_url.host or "",
-        "PG_BACKEND_MIGRATION_PORT": str(parsed_db_url.port or ""),
-    })
+    env.update(
+        {
+            "PG_BACKEND_MIGRATION_USER": parsed_db_url.username or "",
+            "PG_BACKEND_MIGRATION_PASSWORD": parsed_db_url.password or "",
+            "PG_BACKEND_MIGRATION_HOST": parsed_db_url.host or "",
+            "PG_BACKEND_MIGRATION_PORT": str(parsed_db_url.port or ""),
+        }
+    )
 
     subprocess.run(
         ["uv", "run", "alembic", "upgrade", "head"],

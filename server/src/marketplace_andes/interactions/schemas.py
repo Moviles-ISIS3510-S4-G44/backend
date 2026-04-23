@@ -5,7 +5,6 @@ from pydantic import BaseModel, ConfigDict
 
 
 class InteractionRegisterRequest(BaseModel):
-    user_id: UUID
     listing_id: UUID
 
 
@@ -16,4 +15,5 @@ class InteractionResponse(BaseModel):
     user_id: UUID
     listing_id: UUID
     interaction_count: int
+    first_interaction_at: datetime
     last_interaction_at: datetime
