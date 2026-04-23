@@ -29,6 +29,22 @@ erDiagram
         INTEGER rating
     }
 
+    listings {
+        UUID id PK
+        UUID seller_id FK
+    }
+
+    user_listing_interaction {
+        UUID id PK
+        UUID user_id FK
+        UUID listing_id FK
+        INTEGER interaction_count
+        TIMESTAMPTZ first_interaction_at
+        TIMESTAMPTZ last_interaction_at
+    }
+
     users ||--|| auth_users : "has credentials"
     users ||--o{ auth_sessions : "has sessions"
     users ||--|| user_profiles : "has profile"
+    users ||--o{ user_listing_interaction : "interacts"
+    listings ||--o{ user_listing_interaction : "receives interactions"
