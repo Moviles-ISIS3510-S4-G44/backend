@@ -12,7 +12,25 @@ def run_pipeline():
         "user_profiles",
         "listings",
         "listing_status_history",
+        "categories",
+        "user_listing_interaction",
     ).parallelize()
+
+    source.users.apply_hints(
+        incremental=dlt.sources.incremental("updated_at"),
+    )
+
+    source.listings.apply_hints(
+        incremental=dlt.sources.incremental("updated_at"),
+    )
+
+    source.listing_status_history.apply_hints(
+        incremental=dlt.sources.incremental("changed_at"),
+    )
+
+    source.user_listing_interaction.apply_hints(
+        write_disposition="replace",
+    )
 
     source.users.apply_hints(
         incremental=dlt.sources.incremental("updated_at"),

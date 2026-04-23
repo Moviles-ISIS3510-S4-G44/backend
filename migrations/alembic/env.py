@@ -13,7 +13,7 @@ def get_db_url():
     pg_host = os.getenv("PG_BACKEND_MIGRATION_HOST", "db")
     pg_port = os.getenv("PG_BACKEND_MIGRATION_PORT", "5432")
     pg_db = os.getenv("PG_BACKEND_MIGRATION_DB", "marketplace")
-    pg_sslmode = os.getenv("PG_BACKEND_MIGRATION_SSLMODE", "prefer")
+    pg_sslmode = os.getenv("PG_BACKEND_MIGRATION_SSLMODE", "disable")
 
     return (
         f"postgresql+psycopg://{pg_user}:{pg_password}"

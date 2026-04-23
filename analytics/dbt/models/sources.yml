@@ -1,3 +1,5 @@
+version: 2
+
 sources:
   - name: dlt_raw
     schema: marketplace_andes_analytics_raw
@@ -6,3 +8,5 @@ sources:
       - name: user_profiles
       - name: listings
       - name: listing_status_history
+      - name: categories
+      - name: user_listing_interaction
