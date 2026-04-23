@@ -17,6 +17,7 @@ class UserRepository:
     def get_user_by_id(self, user_id: UUID) -> User | None:
         stmt = select(User).where(User.id == user_id)
         return self.session.exec(stmt).first()
+
     def get_user_profile_by_id(self, user_id: UUID) -> UserProfile | None:
         stmt = select(UserProfile).where(UserProfile.id == user_id)
         return self.session.exec(stmt).first()

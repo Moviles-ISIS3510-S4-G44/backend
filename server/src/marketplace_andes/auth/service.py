@@ -93,9 +93,7 @@ class AuthService:
             refresh_expires_in=self.__jwt_service.jwt_refresh_token_expire_minutes * 60,
         )
 
-    def register_user(
-        self, email: str, password: str, name: str, anon_ip: str
-    ) -> UUID:
+    def register_user(self, email: str, password: str, name: str, anon_ip: str) -> UUID:
         if self.__user_repository.get_id_from_email(email):
             self.__logger.warning(
                 f"Registration attempted with existing email: {email} at IP: {anon_ip}"

@@ -434,31 +434,60 @@ def create_fake_interactions(
     listing_ids: list[UUID],
 ) -> None:
     now = datetime.now(UTC)
+
+    listing_created_at: dict[UUID, datetime] = {
+        row.id: row.created_at
+        for row in conn.execute(
+            text("SELECT id, created_at FROM listings WHERE id = ANY(:ids)"),
+            {"ids": listing_ids},
+        )
+    }
+
     interactions_data: list[dict] = []
 
     for _ in range(N_INTERACTIONS):
+        listing_id = random.choice(listing_ids)
+        last_interaction_at = now - timedelta(
+            days=random.randint(0, 180),
+            minutes=random.randint(0, 1439),
+        )
+        created_at = listing_created_at.get(listing_id, last_interaction_at)
+        if created_at.tzinfo is None:
+            created_at = created_at.replace(tzinfo=UTC)
+        earliest = min(created_at, last_interaction_at)
+        window_seconds = max(int((last_interaction_at - earliest).total_seconds()), 0)
+        first_offset = random.randint(0, window_seconds) if window_seconds else 0
+        first_interaction_at = earliest + timedelta(seconds=first_offset)
+
         interactions_data.append(
             {
                 "id": uuid7(),
                 "user_id": random.choice(user_ids),
-                "listing_id": random.choice(listing_ids),
+                "listing_id": listing_id,
                 "interaction_count": random.randint(1, 4),
-                "last_interaction_at": now
-                - timedelta(
-                    days=random.randint(0, 180),
-                    minutes=random.randint(0, 1439),
-                ),
+                "first_interaction_at": first_interaction_at,
+                "last_interaction_at": last_interaction_at,
             }
         )
 
     conn.execute(
         text(
             """
-            INSERT INTO user_listing_interaction (id, user_id, listing_id, interaction_count, last_interaction_at)
-            VALUES (:id, :user_id, :listing_id, :interaction_count, :last_interaction_at)
+            INSERT INTO user_listing_interaction (
+                id, user_id, listing_id, interaction_count,
+                first_interaction_at, last_interaction_at
+            )
+            VALUES (
+                :id, :user_id, :listing_id, :interaction_count,
+                :first_interaction_at, :last_interaction_at
+            )
             ON CONFLICT (user_id, listing_id)
             DO UPDATE SET
                 interaction_count = user_listing_interaction.interaction_count + EXCLUDED.interaction_count,
+                first_interaction_at = LEAST(
+                    user_listing_interaction.first_interaction_at,
+                    EXCLUDED.first_interaction_at
+                ),
                 last_interaction_at = GREATEST(
                     user_listing_interaction.last_interaction_at,
                     EXCLUDED.last_interaction_at

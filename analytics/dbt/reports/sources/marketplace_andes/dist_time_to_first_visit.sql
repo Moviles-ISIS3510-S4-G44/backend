@@ -1,0 +1,2 @@
+select *
+from marketplace_andes_analytics.dist_time_to_first_visit

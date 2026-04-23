@@ -58,3 +58,4 @@ title: User Retention Overview
 
 - [Best Reputation Students](best-reputation)
 - [Active Listings per Day](active-listings-per-day)
+- [Time to First Visit](time-to-first-visit)
