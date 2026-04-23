@@ -79,3 +79,42 @@ def listing_publish_time_viz(db_path: Path, out_dir: Path):
     plt.tight_layout()
     plt.savefig(output_path, dpi=600, bbox_inches="tight")
     plt.close()
+
+
+def listing_visits_first_3_days_viz(db_path: Path, out_dir: Path):
+    conn = duckdb.connect(db_path)
+
+    query = """
+        SELECT
+            listing_id,
+            visits_first_3_days,
+            unique_visitors_first_3_days
+        FROM marketplace_andes_analytics.fact_listing_visits_first_3_days
+        WHERE visits_first_3_days > 0
+        ORDER BY visits_first_3_days DESC
+    """
+    df = conn.execute(query).df()
+    conn.close()
+
+    output_path = out_dir / "listing_visits_first_3_days_viz.png"
+
+    _, (box_ax, hist_ax) = plt.subplots(1, 2, figsize=(14, 6))
+
+    # Box plot
+    box_ax.boxplot(df["visits_first_3_days"], vert=True)
+    box_ax.set_ylabel("Number of Visits")
+    box_ax.set_title("Distribution of Visits per Listing (First 3 Days)")
+    box_ax.set_xticklabels(["All Listings"])
+    box_ax.grid(True, alpha=0.3)
+
+    # Histogram
+    hist_ax.hist(df["visits_first_3_days"], bins=30, color="steelblue", edgecolor="black")
+    hist_ax.set_xlabel("Number of Visits")
+    hist_ax.set_ylabel("Number of Listings")
+    hist_ax.set_title("Histogram of Visits per Listing (First 3 Days)")
+    hist_ax.grid(True, alpha=0.3)
+
+    plt.tight_layout()
+    plt.savefig(output_path, dpi=600, bbox_inches="tight")
+    plt.close()
+

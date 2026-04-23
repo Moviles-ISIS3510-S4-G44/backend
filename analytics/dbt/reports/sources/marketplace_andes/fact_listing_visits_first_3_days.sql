@@ -1,0 +1,1 @@
+select * from marketplace_andes_analytics.fact_listing_visits_first_3_days

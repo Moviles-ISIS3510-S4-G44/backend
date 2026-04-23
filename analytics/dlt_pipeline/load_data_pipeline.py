@@ -12,6 +12,7 @@ def run_pipeline():
         "user_profiles",
         "listings",
         "listing_status_history",
+        "user_listing_interaction"
     ).parallelize()
 
     source.users.apply_hints(

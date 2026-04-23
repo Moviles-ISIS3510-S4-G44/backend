@@ -6,7 +6,7 @@ from sqlmodel import Session, col, select
 from marketplace_andes.listings.models import Listing
 from marketplace_andes.users.models import User
 
-from .models import UserListingInteraction
+from .models import UserListingInteraction, InteractionEvent
 
 
 class InteractionService:
@@ -38,6 +38,15 @@ class InteractionService:
                 last_interaction_at=now,
             )
             self.session.add(interaction)
+
+        
+        event = InteractionEvent(
+            id=uuid7(),
+            user_id=user_id,
+            listing_id=listing_id,
+            interaction_timestamp=now,
+        )
+        self.session.add(event)
 
         self.session.commit()
         self.session.refresh(interaction)
