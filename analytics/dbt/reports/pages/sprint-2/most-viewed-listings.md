@@ -12,7 +12,7 @@ This dashboard identifies the most viewed listing by week, by month, across each
 SELECT
     listing_title,
     total_views
-FROM marketplace_andes_analytics.most_viewed_listings
+FROM marketplace_andes.most_viewed_listings
 WHERE period_type = 'week'
 ORDER BY period_start DESC, ranking
 LIMIT 1
@@ -26,7 +26,7 @@ LIMIT 1
 SELECT
     listing_title,
     total_views
-FROM marketplace_andes_analytics.most_viewed_listings
+FROM marketplace_andes.most_viewed_listings
 WHERE period_type = 'month'
 ORDER BY period_start DESC, ranking
 LIMIT 1
@@ -41,7 +41,7 @@ SELECT
     period_start,
     listing_title,
     total_views
-FROM marketplace_andes_analytics.most_viewed_listings
+FROM marketplace_andes.most_viewed_listings
 WHERE period_type = 'month'
   AND ranking = 1
 ORDER BY period_start
@@ -60,7 +60,7 @@ ORDER BY period_start
 SELECT
     listing_title,
     total_views
-FROM marketplace_andes_analytics.most_viewed_listings
+FROM marketplace_andes.most_viewed_listings
 WHERE period_type = 'historic'
 ORDER BY ranking
 LIMIT 1
