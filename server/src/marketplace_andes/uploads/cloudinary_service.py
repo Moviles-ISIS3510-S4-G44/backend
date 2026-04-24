@@ -1,3 +1,4 @@
+import logging
 from functools import lru_cache
 from typing import BinaryIO
 
@@ -6,6 +7,8 @@ from cloudinary import uploader
 from cloudinary.exceptions import Error as CloudinaryError
 
 from marketplace_andes.config import get_global_config
+
+logger = logging.getLogger(__name__)
 
 
 class CloudinaryService:
@@ -50,8 +53,12 @@ class CloudinaryService:
     def delete_file(self, public_id: str) -> None:
         try:
             uploader.destroy(public_id)
-        except CloudinaryError:
-            return
+        except CloudinaryError as exc:
+            logger.warning(
+                "Failed to rollback uploaded Cloudinary asset with public_id '%s': %s",
+                public_id,
+                exc,
+            )
 
 
 @lru_cache
