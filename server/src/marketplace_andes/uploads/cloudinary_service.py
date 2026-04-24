@@ -37,6 +37,7 @@ class CloudinaryService:
         )
 
     def upload_file(self, file_obj: BinaryIO, folder: str) -> dict[str, str]:
+        """Upload a binary file object to Cloudinary and return URL + public id."""
         try:
             result = uploader.upload(file_obj, folder=folder)
         except CloudinaryError as exc:
@@ -50,15 +51,18 @@ class CloudinaryService:
             raise CloudinaryUploadError("Cloudinary did not return a public_id")
         return {"secure_url": str(secure_url), "public_id": str(public_id)}
 
-    def delete_file(self, public_id: str) -> None:
+    def delete_file(self, public_id: str) -> bool:
+        """Delete a Cloudinary asset by public_id; return False if deletion fails."""
         try:
             uploader.destroy(public_id)
+            return True
         except CloudinaryError as exc:
             logger.warning(
                 "Failed to rollback uploaded Cloudinary asset with public_id '%s': %s",
                 public_id,
                 exc,
             )
+            return False
 
 
 @lru_cache

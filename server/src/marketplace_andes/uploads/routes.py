@@ -55,11 +55,19 @@ async def upload_listing_images(
             urls.append(upload_result["secure_url"])
             uploaded_public_ids.append(upload_result["public_id"])
     except CloudinaryUploadError as exc:
+        cleanup_failed = False
         for public_id in uploaded_public_ids:
-            cloudinary_service.delete_file(public_id)
+            cleanup_failed = (
+                not cloudinary_service.delete_file(public_id) or cleanup_failed
+            )
+
+        detail = f"Cloudinary error: {exc}"
+        if cleanup_failed:
+            detail += ". Cleanup of uploaded assets may be incomplete."
+
         raise HTTPException(
             status_code=status.HTTP_502_BAD_GATEWAY,
-            detail=f"Cloudinary error: {exc}",
+            detail=detail,
         ) from exc
 
     return ListingImageUploadResponse(urls=urls)
