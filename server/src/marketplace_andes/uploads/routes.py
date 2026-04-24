@@ -58,7 +58,7 @@ async def upload_listing_images(
         cleanup_failed = False
         for public_id in uploaded_public_ids:
             cleanup_failed = (
-                not cloudinary_service.delete_file(public_id) or cleanup_failed
+                cleanup_failed or not cloudinary_service.delete_file(public_id)
             )
 
         detail = f"Cloudinary error: {exc}"

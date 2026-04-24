@@ -54,8 +54,7 @@ class CloudinaryService:
     def delete_file(self, public_id: str) -> bool:
         """Delete a Cloudinary asset by public_id; return False if deletion fails."""
         try:
-            uploader.destroy(public_id)
-            return True
+            result = uploader.destroy(public_id)
         except CloudinaryError as exc:
             logger.warning(
                 "Failed to rollback uploaded Cloudinary asset with public_id '%s': %s",
@@ -63,6 +62,16 @@ class CloudinaryService:
                 exc,
             )
             return False
+
+        delete_result = str(result.get("result", ""))
+        is_deleted = delete_result == "ok"
+        if not is_deleted:
+            logger.warning(
+                "Cloudinary rollback delete returned '%s' for public_id '%s'",
+                delete_result,
+                public_id,
+            )
+        return is_deleted
 
 
 @lru_cache
