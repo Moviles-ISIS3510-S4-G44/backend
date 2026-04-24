@@ -10,6 +10,7 @@ from .categories.routes import router as categories_router
 from .listings.routes import router as listings_router
 from .interactions.routes import router as interactions_router
 from .purchases.routes import router as purchases_router
+from .chat.routes import router as chat_router
 
 
 app = FastAPI(lifespan=lifespan)
@@ -22,3 +23,4 @@ app.include_router(categories_router)
 app.include_router(listings_router)
 app.include_router(interactions_router)
 app.include_router(purchases_router)
+app.include_router(chat_router)
