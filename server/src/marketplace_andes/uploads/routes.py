@@ -1,6 +1,9 @@
 from fastapi import APIRouter, File, HTTPException, UploadFile, status
 
-from .cloudinary_service import CloudinaryService, CloudinaryUploadError
+from .cloudinary_service import (
+    CloudinaryUploadError,
+    get_cloudinary_service,
+)
 from .schemas import ListingImageUploadResponse
 
 router = APIRouter(prefix="/uploads", tags=["uploads"])
@@ -39,18 +42,21 @@ async def upload_listing_images(
             ),
         )
 
-    cloudinary_service = CloudinaryService()
+    cloudinary_service = get_cloudinary_service()
     urls: list[str] = []
+    uploaded_public_ids: list[str] = []
 
     try:
         for uploaded_file in files:
-            urls.append(
-                cloudinary_service.upload_file(
-                    uploaded_file.file,
-                    folder=LISTING_IMAGES_FOLDER,
-                )
+            upload_result = cloudinary_service.upload_file(
+                uploaded_file.file,
+                folder=LISTING_IMAGES_FOLDER,
             )
+            urls.append(upload_result["secure_url"])
+            uploaded_public_ids.append(upload_result["public_id"])
     except CloudinaryUploadError as exc:
+        for public_id in uploaded_public_ids:
+            cloudinary_service.delete_file(public_id)
         raise HTTPException(
             status_code=status.HTTP_502_BAD_GATEWAY,
             detail=f"Cloudinary error: {exc}",
