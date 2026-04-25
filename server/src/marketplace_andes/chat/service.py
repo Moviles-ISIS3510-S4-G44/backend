@@ -45,7 +45,9 @@ class ChatService:
         conversations = self.repo.get_conversations_for_user(user_id)
         result = []
         for conv in conversations:
-            other_user_id = conv.seller_id if conv.buyer_id == user_id else conv.buyer_id
+            other_user_id = (
+                conv.seller_id if conv.buyer_id == user_id else conv.buyer_id
+            )
             other_profile = self.repo.get_user_profile(other_user_id)
             listing = self.repo.get_listing(conv.listing_id)
             last_msg = self.repo.get_last_message(conv.id)
@@ -98,6 +100,9 @@ class ChatService:
     def list_messages(self, conversation_id: UUID) -> list[MessageResponse]:
         messages = self.repo.get_messages_for_conversation(conversation_id)
         return [MessageResponse.model_validate(m) for m in messages]
+
+    def conversation_exists(self, conversation_id: UUID) -> bool:
+        return self.repo.get_conversation_by_id(conversation_id) is not None
 
     def save_message(
         self, conversation_id: UUID, sender_id: UUID, body: str

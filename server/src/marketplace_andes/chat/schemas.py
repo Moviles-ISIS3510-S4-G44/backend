@@ -1,7 +1,7 @@
 from datetime import datetime
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class ConversationCreateRequest(BaseModel):
@@ -37,6 +37,10 @@ class MessageResponse(BaseModel):
     sender_id: UUID
     body: str
     sent_at: datetime
+
+
+class MessageCreateRequest(BaseModel):
+    body: str = Field(max_length=2_000)
 
 
 class WsIncomingMessage(BaseModel):

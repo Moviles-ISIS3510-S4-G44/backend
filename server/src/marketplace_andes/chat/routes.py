@@ -1,7 +1,14 @@
 from typing import Annotated
 from uuid import UUID
 
-from fastapi import APIRouter, HTTPException, Path, Query, WebSocket, WebSocketDisconnect
+from fastapi import (
+    APIRouter,
+    HTTPException,
+    Path,
+    Query,
+    WebSocket,
+    WebSocketDisconnect,
+)
 from sqlmodel import Session
 
 from marketplace_andes.auth.dependencies import CurrentUserDep
@@ -11,6 +18,7 @@ from marketplace_andes.db.dependencies import EngineDep, SessionDep
 from .schemas import (
     ConversationCreateRequest,
     ConversationResponse,
+    MessageCreateRequest,
     MessageResponse,
     WsOutgoingMessage,
 )
@@ -41,6 +49,8 @@ async def create_or_get_conversation(
         raise HTTPException(status_code=status_code, detail=detail)
 
     response = service.get_conversation_for_user(conversation.id, current_user.id)
+    if response is None:
+        raise HTTPException(status_code=500, detail="Unable to load conversation")
     return response
 
 
@@ -58,7 +68,9 @@ async def get_conversation(
     session: SessionDep,
     current_user: CurrentUserDep,
 ) -> ConversationResponse:
-    result = ChatService(session).get_conversation_for_user(conversation_id, current_user.id)
+    result = ChatService(session).get_conversation_for_user(
+        conversation_id, current_user.id
+    )
     if result is None:
         raise HTTPException(status_code=404, detail="Conversation not found")
     return result
@@ -72,8 +84,47 @@ async def get_messages(
 ) -> list[MessageResponse]:
     service = ChatService(session)
     if not service.user_is_participant(conversation_id, current_user.id):
-        raise HTTPException(status_code=403, detail="Not a participant of this conversation")
+        raise HTTPException(
+            status_code=403, detail="Not a participant of this conversation"
+        )
     return service.list_messages(conversation_id)
+
+
+@router.post("/conversations/{conversation_id}/messages", status_code=201)
+async def post_message(
+    conversation_id: Annotated[UUID, Path()],
+    payload: MessageCreateRequest,
+    session: SessionDep,
+    current_user: CurrentUserDep,
+) -> MessageResponse:
+    service = ChatService(session)
+    if not service.conversation_exists(conversation_id):
+        raise HTTPException(status_code=404, detail="Conversation not found")
+
+    if not service.user_is_participant(conversation_id, current_user.id):
+        raise HTTPException(
+            status_code=403, detail="Not a participant of this conversation"
+        )
+
+    body = payload.body.strip()
+    if not body:
+        raise HTTPException(status_code=422, detail="Message body cannot be empty")
+
+    message = service.save_message(
+        conversation_id=conversation_id,
+        sender_id=current_user.id,
+        body=body,
+    )
+    outgoing = WsOutgoingMessage(
+        id=str(message.id),
+        conversation_id=str(message.conversation_id),
+        sender_id=str(message.sender_id),
+        body=message.body,
+        sent_at=message.sent_at.isoformat(),
+    )
+    await manager.broadcast(conversation_id, outgoing.model_dump())
+
+    return MessageResponse.model_validate(message)
 
 
 @router.websocket("/conversations/{conversation_id}/ws")
@@ -91,7 +142,9 @@ async def websocket_endpoint(
         return
 
     with Session(engine) as session:
-        is_participant = ChatService(session).user_is_participant(conversation_id, user_id)
+        is_participant = ChatService(session).user_is_participant(
+            conversation_id, user_id
+        )
 
     if not is_participant:
         await websocket.close(code=4003)
