@@ -65,3 +65,7 @@ title: User Retention Overview
 
 - [2 - Listing Visit Coverage per Month (Type 3)](listing-visit-coverage-per-month)
 - [3 - Time to First Visit (Type 3)](time-to-first-visit)
+- [Listing Visits in First 30 Days](listing-visits-first-30-days)
+- [Purchase Revenue](purchase-revenue)
+- [Seller Ratings](seller-ratings)
+- [Time to Purchase](time-to-purchase)
