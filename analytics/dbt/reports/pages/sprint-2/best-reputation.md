@@ -1,5 +1,5 @@
 ---
-title: Best Reputation Students
+title: Best Reputation Users
 ---
 
 ```sql top_students
@@ -24,7 +24,7 @@ title: Best Reputation Students
   order by star_rating desc
 ```
 
-## Top Rated Students
+## Top Rated Users
 
 <DataTable data={top_students} rows=20>
     <Column id=reputation_rank title="Rank" />
@@ -38,7 +38,7 @@ title: Best Reputation Students
 
 <BarChart
     data={rating_distribution}
-    title="Students per Star Rating"
+    title="Users per Star Rating"
     x=stars_display
     y=total_users
     xAxisTitle="Rating"
