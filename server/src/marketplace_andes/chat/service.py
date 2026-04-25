@@ -8,6 +8,12 @@ from .models import Conversation, Message
 from .repository import ChatRepository
 from .schemas import ConversationResponse, MessageResponse, ParticipantInfo
 
+MESSAGE_BODY_EMPTY_DETAIL = "Message body cannot be empty or contain only whitespace"
+
+
+class MessageBodyEmptyError(ValueError):
+    pass
+
 
 class ChatService:
     def __init__(self, session: Session):
@@ -45,7 +51,9 @@ class ChatService:
         conversations = self.repo.get_conversations_for_user(user_id)
         result = []
         for conv in conversations:
-            other_user_id = conv.seller_id if conv.buyer_id == user_id else conv.buyer_id
+            other_user_id = (
+                conv.seller_id if conv.buyer_id == user_id else conv.buyer_id
+            )
             other_profile = self.repo.get_user_profile(other_user_id)
             listing = self.repo.get_listing(conv.listing_id)
             last_msg = self.repo.get_last_message(conv.id)
@@ -99,15 +107,25 @@ class ChatService:
         messages = self.repo.get_messages_for_conversation(conversation_id)
         return [MessageResponse.model_validate(m) for m in messages]
 
+    def get_conversation(self, conversation_id: UUID) -> Conversation | None:
+        return self.repo.get_conversation_by_id(conversation_id)
+
+    def is_participant(self, conversation: Conversation, user_id: UUID) -> bool:
+        return conversation.buyer_id == user_id or conversation.seller_id == user_id
+
     def save_message(
         self, conversation_id: UUID, sender_id: UUID, body: str
     ) -> Message:
+        normalized_body = body.strip()
+        if not normalized_body:
+            raise MessageBodyEmptyError(MESSAGE_BODY_EMPTY_DETAIL)
+
         now = datetime.now(UTC)
         message = Message(
             id=uuid7(),
             conversation_id=conversation_id,
             sender_id=sender_id,
-            body=body.strip(),
+            body=normalized_body,
             sent_at=now,
         )
         self.session.add(message)
@@ -122,7 +140,7 @@ class ChatService:
         return message
 
     def user_is_participant(self, conversation_id: UUID, user_id: UUID) -> bool:
-        conv = self.repo.get_conversation_by_id(conversation_id)
+        conv = self.get_conversation(conversation_id)
         if conv is None:
             return False
-        return conv.buyer_id == user_id or conv.seller_id == user_id
+        return self.is_participant(conv, user_id)

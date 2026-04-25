@@ -1,7 +1,9 @@
 from datetime import datetime
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
+
+MAX_MESSAGE_LENGTH = 2_000
 
 
 class ConversationCreateRequest(BaseModel):
@@ -37,6 +39,10 @@ class MessageResponse(BaseModel):
     sender_id: UUID
     body: str
     sent_at: datetime
+
+
+class MessageCreateRequest(BaseModel):
+    body: str = Field(max_length=MAX_MESSAGE_LENGTH)
 
 
 class WsIncomingMessage(BaseModel):
