@@ -1,5 +1,5 @@
 ---
-title: Time to First Visit
+title: 3 - Time to First Visit (Type 3)
 ---
 
 ## Business question
