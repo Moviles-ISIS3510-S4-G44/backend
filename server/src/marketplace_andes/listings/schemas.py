@@ -17,6 +17,16 @@ class ListingCreateRequest(BaseModel):
     location: str
 
 
+class ListingUpdateRequest(BaseModel):
+    category_id: UUID | None = None
+    title: str | None = None
+    description: str | None = None
+    price: int | None = None
+    condition: ListingCondition | None = None
+    images: list[str] | None = None
+    location: str | None = None
+
+
 class ListingResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 

@@ -32,16 +32,6 @@ erDiagram
     listings {
         UUID id PK
         UUID seller_id FK
-        UUID category_id FK
-        VARCHAR(255) title
-        TEXT description
-        VARCHAR(32) condition
-        INTEGER price
-        TEXT[] images
-        VARCHAR(255) location
-        VARCHAR(32) status
-        TIMESTAMPTZ created_at
-        TIMESTAMPTZ updated_at
     }
 
     user_listing_interaction {
@@ -49,11 +39,12 @@ erDiagram
         UUID user_id FK
         UUID listing_id FK
         INTEGER interaction_count
+        TIMESTAMPTZ first_interaction_at
         TIMESTAMPTZ last_interaction_at
     }
 
     users ||--|| auth_users : "has credentials"
     users ||--o{ auth_sessions : "has sessions"
     users ||--|| user_profiles : "has profile"
-    users ||--o{ user_listing_interaction : "interacts with listings"
-    listings ||--o{ user_listing_interaction : "receives user interactions"
+    users ||--o{ user_listing_interaction : "interacts"
+    listings ||--o{ user_listing_interaction : "receives interactions"

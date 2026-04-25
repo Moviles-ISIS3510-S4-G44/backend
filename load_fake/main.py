@@ -428,6 +428,73 @@ def create_fake_listings(
     return listing_ids
 
 
+def create_fake_purchases(conn: Connection, all_user_ids: list[UUID]) -> None:
+    rows = conn.execute(
+        text("""
+            SELECT l.id, l.seller_id, l.price, lsh.changed_at AS sold_at
+            FROM listings l
+            JOIN listing_status_history lsh
+              ON lsh.listing_id = l.id AND lsh.to_status = 'sold'
+            WHERE l.status = 'sold'
+        """)
+    ).all()
+
+    if not rows:
+        return
+
+    purchases_data: list[dict] = []
+    for row in rows:
+        eligible_buyers = [uid for uid in all_user_ids if uid != row.seller_id]
+        buyer_id = random.choice(eligible_buyers)
+        has_rating = random.random() < 0.70
+        seller_rating = (
+            random.choices([1, 2, 3, 4, 5], weights=RATING_WEIGHTS)[0] if has_rating else None
+        )
+        purchases_data.append(
+            {
+                "id": uuid7(),
+                "listing_id": row.id,
+                "buyer_id": buyer_id,
+                "price_at_purchase": row.price,
+                "purchased_at": row.sold_at,
+                "seller_rating": seller_rating,
+            }
+        )
+
+    conn.execute(
+        text(
+            """
+            INSERT INTO purchases (id, listing_id, buyer_id, price_at_purchase, purchased_at, seller_rating)
+            VALUES (:id, :listing_id, :buyer_id, :price_at_purchase, :purchased_at, :seller_rating)
+            ON CONFLICT (listing_id) DO NOTHING
+            """
+        ),
+        purchases_data,
+    )
+
+    # Update each seller's profile rating to the rounded average of their received ratings
+    conn.execute(
+        text(
+            """
+            UPDATE user_profiles up
+            SET rating = subq.avg_rating
+            FROM (
+                SELECT
+                    l.seller_id,
+                    ROUND(AVG(p.seller_rating)) AS avg_rating
+                FROM purchases p
+                JOIN listings l ON l.id = p.listing_id
+                WHERE p.seller_rating IS NOT NULL
+                GROUP BY l.seller_id
+            ) subq
+            WHERE up.id = subq.seller_id
+            """
+        )
+    )
+
+    print(f"Seeded {len(purchases_data)} purchases.")
+
+
 def create_fake_interactions(
     conn: Connection,
     user_ids: list[UUID],
@@ -584,6 +651,22 @@ def main(force: bool = False):
             print(
                 f"Database already has {existing_interactions} interactions."
             )
+
+        existing_purchases = conn.execute(
+            text("SELECT COUNT(*) FROM purchases")
+        ).scalar_one()
+        if existing_purchases == 0:
+            all_user_ids = [
+                row[0]
+                for row in conn.execute(
+                    text("SELECT id FROM users WHERE deleted_at IS NULL")
+                ).all()
+            ]
+            create_fake_purchases(conn, all_user_ids)
+        else:
+            print(f"Database already has {existing_purchases} purchases.")
+
+
 if __name__ == "__main__":
     import sys
     force = "--force" in sys.argv
