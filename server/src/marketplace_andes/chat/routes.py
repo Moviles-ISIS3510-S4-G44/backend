@@ -50,7 +50,10 @@ async def create_or_get_conversation(
 
     response = service.get_conversation_for_user(conversation.id, current_user.id)
     if response is None:
-        raise HTTPException(status_code=500, detail="Unable to load conversation")
+        raise HTTPException(
+            status_code=500,
+            detail="Failed to retrieve conversation details after creation",
+        )
     return response
 
 

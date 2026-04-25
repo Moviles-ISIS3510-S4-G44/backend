@@ -107,12 +107,16 @@ class ChatService:
     def save_message(
         self, conversation_id: UUID, sender_id: UUID, body: str
     ) -> Message:
+        normalized_body = body.strip()
+        if not normalized_body:
+            raise ValueError("message_body_empty")
+
         now = datetime.now(UTC)
         message = Message(
             id=uuid7(),
             conversation_id=conversation_id,
             sender_id=sender_id,
-            body=body.strip(),
+            body=normalized_body,
             sent_at=now,
         )
         self.session.add(message)
