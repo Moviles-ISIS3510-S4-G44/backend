@@ -109,15 +109,16 @@ async def post_message(
             status_code=403, detail="Not a participant of this conversation"
         )
 
-    body = payload.body.strip()
-    if not body:
-        raise HTTPException(status_code=422, detail="Message body cannot be empty")
-
-    message = service.save_message(
-        conversation_id=conversation_id,
-        sender_id=current_user.id,
-        body=body,
-    )
+    try:
+        message = service.save_message(
+            conversation_id=conversation_id,
+            sender_id=current_user.id,
+            body=payload.body,
+        )
+    except ValueError as exc:
+        if str(exc) == "message_body_empty":
+            raise HTTPException(status_code=422, detail="Message body cannot be empty")
+        raise
     outgoing = WsOutgoingMessage(
         id=str(message.id),
         conversation_id=str(message.conversation_id),
