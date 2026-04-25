@@ -108,8 +108,8 @@ class ChatService:
     def get_conversation(self, conversation_id: UUID) -> Conversation | None:
         return self.repo.get_conversation_by_id(conversation_id)
 
-    def conversation_exists(self, conversation_id: UUID) -> bool:
-        return self.get_conversation(conversation_id) is not None
+    def is_participant(self, conversation: Conversation, user_id: UUID) -> bool:
+        return conversation.buyer_id == user_id or conversation.seller_id == user_id
 
     def save_message(
         self, conversation_id: UUID, sender_id: UUID, body: str
@@ -143,4 +143,4 @@ class ChatService:
         conv = self.get_conversation(conversation_id)
         if conv is None:
             return False
-        return conv.buyer_id == user_id or conv.seller_id == user_id
+        return self.is_participant(conv, user_id)

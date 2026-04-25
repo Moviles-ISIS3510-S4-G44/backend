@@ -105,10 +105,7 @@ async def post_message(
     if conversation is None:
         raise HTTPException(status_code=404, detail="Conversation not found")
 
-    if (
-        conversation.buyer_id != current_user.id
-        and conversation.seller_id != current_user.id
-    ):
+    if not service.is_participant(conversation, current_user.id):
         raise HTTPException(
             status_code=403, detail="Not a participant of this conversation"
         )
