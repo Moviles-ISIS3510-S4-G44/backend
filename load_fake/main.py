@@ -570,13 +570,16 @@ def create_fake_interactions(
 def main(force: bool = False):
     DATABASE_URL = os.getenv("DATABASE_URL")
 
-    if not DATABASE_URL:
-        raise Exception("DATABASE_URL no está definida")
+    if DATABASE_URL:
+        connect_args = {"sslmode": "require"}  # obligatorio en Render
+    else:
+        DATABASE_URL = f"postgresql+psycopg://{os.getenv('PG_USER', 'backend_user')}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/marketplace"
+        connect_args = {}
 
     engine = create_engine(
         DATABASE_URL,
         echo=DB_ECHO,
-        connect_args={"sslmode": "require"},  # 🔥 obligatorio en Render
+        connect_args=connect_args,
     )
 
     with engine.begin() as conn:
