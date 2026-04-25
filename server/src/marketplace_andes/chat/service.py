@@ -9,6 +9,10 @@ from .repository import ChatRepository
 from .schemas import ConversationResponse, MessageResponse, ParticipantInfo
 
 
+class MessageBodyEmptyError(ValueError):
+    pass
+
+
 class ChatService:
     def __init__(self, session: Session):
         self.repo = ChatRepository(session)
@@ -109,7 +113,7 @@ class ChatService:
     ) -> Message:
         normalized_body = body.strip()
         if not normalized_body:
-            raise ValueError("message_body_empty")
+            raise MessageBodyEmptyError
 
         now = datetime.now(UTC)
         message = Message(
