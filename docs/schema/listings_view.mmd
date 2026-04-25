@@ -2,31 +2,6 @@ erDiagram
 
     users {
         UUID id PK
-        VARCHAR(255) email
-        TIMESTAMPTZ created_at
-        TIMESTAMPTZ updated_at
-        TIMESTAMPTZ deleted_at
-    }
-
-    auth_users {
-        UUID id PK, FK
-        TEXT hashed_password
-    }
-
-    auth_sessions {
-        UUID id PK
-        UUID user_id FK
-        TEXT refresh_token_hash
-        INET ip_address
-        TIMESTAMPTZ expires_at
-        TIMESTAMPTZ created_at
-        TIMESTAMPTZ revoked_at
-    }
-
-    user_profiles {
-        UUID id PK, FK
-        VARCHAR(100) name
-        INTEGER rating
     }
 
     categories {
@@ -84,37 +59,12 @@ erDiagram
         INTEGER seller_rating
     }
 
-    conversations {
-        UUID id PK
-        UUID listing_id FK
-        UUID buyer_id FK
-        UUID seller_id FK
-        TIMESTAMPTZ created_at
-        TIMESTAMPTZ last_message_at
-    }
-
-    messages {
-        UUID id PK
-        UUID conversation_id FK
-        UUID sender_id FK
-        TEXT body
-        TIMESTAMPTZ sent_at
-    }
-
-    users ||--|| auth_users : "has credentials"
-    users ||--o{ auth_sessions : "has sessions"
-    users ||--|| user_profiles : "has profile"
-    users ||--o{ listings : "publishes"
-    users ||--o{ user_listing_interaction : "interacts"
     categories ||--o{ listings : "classifies"
+    users ||--o{ listings : "publishes"
     listings ||--o{ listing_status_history : "tracks state changes"
     listings ||--o{ user_listing_interaction : "records user events"
-    users ||--o{ interaction_events : "generates"
     listings ||--o{ interaction_events : "records visits"
-    users ||--o{ purchases : "buys"
+    users ||--o{ user_listing_interaction : "interacts"
+    users ||--o{ interaction_events : "generates"
     listings ||--o| purchases : "sold via"
-    listings ||--o{ conversations : "discussed in"
-    users ||--o{ conversations : "participates as buyer"
-    users ||--o{ conversations : "participates as seller"
-    conversations ||--o{ messages : "contains"
-    users ||--o{ messages : "sends"
+    users ||--o{ purchases : "buys"

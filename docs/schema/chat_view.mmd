@@ -1,0 +1,35 @@
+erDiagram
+
+    users {
+        UUID id PK
+        VARCHAR(255) email
+    }
+
+    listings {
+        UUID id PK
+        VARCHAR(255) title
+        VARCHAR(32) status
+    }
+
+    conversations {
+        UUID id PK
+        UUID listing_id FK
+        UUID buyer_id FK
+        UUID seller_id FK
+        TIMESTAMPTZ created_at
+        TIMESTAMPTZ last_message_at
+    }
+
+    messages {
+        UUID id PK
+        UUID conversation_id FK
+        UUID sender_id FK
+        TEXT body
+        TIMESTAMPTZ sent_at
+    }
+
+    listings ||--o{ conversations : "discussed in"
+    users ||--o{ conversations : "participates as buyer"
+    users ||--o{ conversations : "participates as seller"
+    conversations ||--o{ messages : "contains"
+    users ||--o{ messages : "sends"
