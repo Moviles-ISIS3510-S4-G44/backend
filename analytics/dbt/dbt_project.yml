@@ -1,3 +1,4 @@
+profile: marketplace_andes
 name: marketplace_andes_analytics
 
 model-paths: ["models"]

@@ -19,6 +19,9 @@ class Config(BaseSettings):
     jwt_algorithm: str = Field(default="HS256")
     jwt_access_token_expire_minutes: int = Field(default=60)
     jwt_refresh_token_expire_minutes: int = Field(default=60 * 24 * 7)  # 7 days
+    cloudinary_cloud_name: str = Field(default="")
+    cloudinary_api_key: str = Field(default="")
+    cloudinary_api_secret: str = Field(default="")
 
     model_config = SettingsConfigDict(
         env_file=os.getenv("ENV_FILE", ".env"),
