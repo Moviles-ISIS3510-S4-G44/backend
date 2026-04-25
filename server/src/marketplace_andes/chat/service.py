@@ -105,15 +105,20 @@ class ChatService:
         messages = self.repo.get_messages_for_conversation(conversation_id)
         return [MessageResponse.model_validate(m) for m in messages]
 
+    def get_conversation(self, conversation_id: UUID) -> Conversation | None:
+        return self.repo.get_conversation_by_id(conversation_id)
+
     def conversation_exists(self, conversation_id: UUID) -> bool:
-        return self.repo.get_conversation_by_id(conversation_id) is not None
+        return self.get_conversation(conversation_id) is not None
 
     def save_message(
         self, conversation_id: UUID, sender_id: UUID, body: str
     ) -> Message:
         normalized_body = body.strip()
         if not normalized_body:
-            raise MessageBodyEmptyError
+            raise MessageBodyEmptyError(
+                "Message body cannot be empty or contain only whitespace"
+            )
 
         now = datetime.now(UTC)
         message = Message(
@@ -135,7 +140,7 @@ class ChatService:
         return message
 
     def user_is_participant(self, conversation_id: UUID, user_id: UUID) -> bool:
-        conv = self.repo.get_conversation_by_id(conversation_id)
+        conv = self.get_conversation(conversation_id)
         if conv is None:
             return False
         return conv.buyer_id == user_id or conv.seller_id == user_id

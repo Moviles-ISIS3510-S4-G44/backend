@@ -101,10 +101,14 @@ async def post_message(
     current_user: CurrentUserDep,
 ) -> MessageResponse:
     service = ChatService(session)
-    if not service.conversation_exists(conversation_id):
+    conversation = service.get_conversation(conversation_id)
+    if conversation is None:
         raise HTTPException(status_code=404, detail="Conversation not found")
 
-    if not service.user_is_participant(conversation_id, current_user.id):
+    if (
+        conversation.buyer_id != current_user.id
+        and conversation.seller_id != current_user.id
+    ):
         raise HTTPException(
             status_code=403, detail="Not a participant of this conversation"
         )
