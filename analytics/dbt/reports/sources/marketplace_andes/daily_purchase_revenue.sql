@@ -1,0 +1,2 @@
+select *
+from marketplace_andes_analytics.daily_purchase_revenue

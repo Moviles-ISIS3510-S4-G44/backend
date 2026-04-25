@@ -2,15 +2,18 @@ from datetime import UTC, datetime
 from typing import Annotated
 from uuid import UUID, uuid7
 
-from fastapi import APIRouter, HTTPException, Path
+from fastapi import APIRouter, HTTPException, Path, Query
 
+from marketplace_andes.auth.dependencies import CurrentUserDep
 from marketplace_andes.db.dependencies import SessionDep
 
+from .enums import ListingCondition
 from .models import Listing
 from .schemas import (
     DeleteAllListingsResponse,
     ListingCreateRequest,
     ListingResponse,
+    ListingUpdateRequest,
     StatusHistoryResponse,
 )
 from .service import ListingService
@@ -18,7 +21,7 @@ from .service import ListingService
 router = APIRouter(prefix="/listings", tags=["listings"])
 
 
-@router.post("")
+@router.post("", status_code=201)
 async def create_listing(
     payload: ListingCreateRequest,
     session: SessionDep,
@@ -49,9 +52,36 @@ async def create_listing(
 
 
 @router.get("")
-async def list_listings(session: SessionDep) -> list[ListingResponse]:
+async def list_listings(
+    session: SessionDep,
+    q: str | None = Query(default=None),
+    category_id: UUID | None = Query(default=None),
+    condition: ListingCondition | None = Query(default=None),
+    min_price: int | None = Query(default=None),
+    max_price: int | None = Query(default=None),
+    location: str | None = Query(default=None),
+    status: str | None = Query(default=None),
+) -> list[ListingResponse]:
     service = ListingService(session)
-    listings = service.list_all()
+    listings = service.search(
+        q=q,
+        category_id=category_id,
+        condition=condition,
+        min_price=min_price,
+        max_price=max_price,
+        location=location,
+        status=status,
+    )
+    return [ListingResponse.model_validate(listing) for listing in listings]
+
+
+@router.get("/me")
+async def get_my_listings(
+    session: SessionDep,
+    current_user: CurrentUserDep,
+) -> list[ListingResponse]:
+    service = ListingService(session)
+    listings = service.get_by_seller(current_user.id)
     return [ListingResponse.model_validate(listing) for listing in listings]
 
 
@@ -72,6 +102,29 @@ async def get_listing(
     if not listing:
         raise HTTPException(status_code=404, detail="Listing not found")
     return ListingResponse.model_validate(listing)
+
+
+@router.patch("/{listing_id}", status_code=200)
+async def update_listing(
+    listing_id: Annotated[UUID, Path()],
+    payload: ListingUpdateRequest,
+    session: SessionDep,
+    current_user: CurrentUserDep,
+) -> ListingResponse:
+    service = ListingService(session)
+
+    listing = service.get_by_id(listing_id)
+    if listing is None:
+        raise HTTPException(status_code=404, detail="Listing not found")
+    if listing.seller_id != current_user.id:
+        raise HTTPException(status_code=403, detail="Only the seller can edit this listing")
+    if listing.status == "sold":
+        raise HTTPException(status_code=409, detail="Sold listings cannot be edited")
+    if payload.category_id is not None and not service.category_exists(payload.category_id):
+        raise HTTPException(status_code=404, detail="Category not found")
+
+    updated = service.update_listing(listing_id, payload)
+    return ListingResponse.model_validate(updated)
 
 
 @router.patch("/{listing_id}/status")

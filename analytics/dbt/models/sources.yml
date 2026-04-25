@@ -7,3 +7,4 @@ sources:
       - name: listings
       - name: listing_status_history
       - name: user_listing_interaction
+      - name: purchases

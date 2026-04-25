@@ -5,11 +5,13 @@ description = "Marketplace Andes"
 readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
+    "cloudinary>=1.44.2",
     "dbt-duckdb>=1.10.1",
     "fastapi[standard]>=0.135.1",
     "passlib[argon2]>=1.7.4",
     "psycopg[binary]>=3.3.3",
     "pyjwt>=2.12.1",
+    "python-multipart>=0.0.26",
     "sqlmodel>=0.0.37",
 ]
 

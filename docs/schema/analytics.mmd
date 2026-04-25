@@ -1,0 +1,144 @@
+erDiagram
+    direction LR
+
+    dlt_raw_users {
+        UUID id PK
+        VARCHAR(255) email
+        TIMESTAMPTZ created_at
+        TIMESTAMPTZ updated_at
+        TIMESTAMPTZ deleted_at
+    }
+
+    dlt_raw_user_profiles {
+        UUID id PK
+        VARCHAR(100) name
+        INTEGER rating
+    }
+
+    dlt_raw_listings {
+        UUID id PK
+        UUID seller_id
+        VARCHAR(32) condition
+        INTEGER price
+        VARCHAR(32) status
+        TIMESTAMPTZ created_at
+    }
+
+    dlt_raw_listing_status_history {
+        UUID id PK
+        UUID listing_id
+        VARCHAR(32) from_status
+        VARCHAR(32) to_status
+        TIMESTAMPTZ changed_at
+    }
+
+    dlt_raw_user_listing_interaction {
+        UUID id PK
+        UUID user_id
+        UUID listing_id
+        INTEGER interaction_count
+        TIMESTAMPTZ first_interaction_at
+        TIMESTAMPTZ last_interaction_at
+    }
+
+    stg_listings {
+        UUID listing_id PK
+        UUID seller_id
+        VARCHAR(32) condition
+        INTEGER price
+        VARCHAR(32) status
+        TIMESTAMPTZ created_at
+    }
+
+    stg_listing_status_history {
+        UUID event_id PK
+        UUID listing_id
+        VARCHAR(32) from_status
+        VARCHAR(32) to_status
+        TIMESTAMPTZ changed_at
+    }
+
+    stg_user_listing_interactions {
+        UUID interaction_id PK
+        UUID listing_id
+        UUID user_id
+        INTEGER interaction_count
+        TIMESTAMPTZ first_interaction_at
+        TIMESTAMPTZ last_interaction_at
+    }
+
+    fact_user_stats {
+        UUID user_key PK
+        VARCHAR(255) email
+        VARCHAR(100) name
+        INTEGER star_rating
+        VARCHAR(16) current_status
+        INTEGER user_count
+    }
+
+    fact_listing_lifecycle {
+        UUID listing_id PK
+        UUID seller_id
+        TIMESTAMPTZ created_at
+        TIMESTAMPTZ first_published_at
+        INTEGER time_to_publish_minutes
+    }
+
+    fact_listing_first_visit {
+        UUID listing_id PK
+        UUID seller_id
+        TIMESTAMPTZ created_at
+        TIMESTAMPTZ first_visit_at
+        INTEGER time_to_first_visit_minutes
+        INTEGER time_to_publish_minutes
+    }
+
+    avg_time_to_publish {
+        INTEGER published_listing_count
+        FLOAT avg_minutes_to_publish
+        FLOAT median_minutes_to_publish
+    }
+
+    active_listings_per_day {
+        DATE day PK
+        INTEGER active_listings_count
+        INTEGER sold_before_day_count
+    }
+
+    best_reputation {
+        UUID user_key
+        VARCHAR(255) email
+        VARCHAR(100) name
+        INTEGER star_rating
+        INTEGER reputation_rank
+    }
+
+    dist_time_to_first_visit {
+        INTEGER n_listings
+        FLOAT mean_minutes
+        FLOAT median_minutes
+        FLOAT p90_minutes
+    }
+
+    dlt_raw_listings ||--|| stg_listings : "stages listings"
+    dlt_raw_listing_status_history ||--o{ stg_listing_status_history : "stages status events"
+    dlt_raw_user_listing_interaction ||--o{ stg_user_listing_interactions : "stages interactions"
+
+    dlt_raw_users ||--o{ fact_user_stats : "enriches user stats"
+    dlt_raw_user_profiles |o--o{ fact_user_stats : "adds profile attributes"
+
+    stg_listings ||--o{ fact_listing_lifecycle : "drives lifecycle metrics"
+    stg_listing_status_history ||--o{ fact_listing_lifecycle : "finds first publish"
+
+    stg_listings ||--o{ fact_listing_first_visit : "provides listing context"
+    stg_user_listing_interactions ||--o{ fact_listing_first_visit : "finds first visit"
+    fact_listing_lifecycle |o--o{ fact_listing_first_visit : "adds publish lag"
+
+    stg_listings ||--o{ avg_time_to_publish : "aggregates publish lag"
+    stg_listing_status_history ||--o{ avg_time_to_publish : "aggregates publish lag"
+
+    stg_listings ||--o{ active_listings_per_day : "daily active state"
+    stg_listing_status_history ||--o{ active_listings_per_day : "daily sold state"
+
+    fact_user_stats ||--o{ best_reputation : "ranks active rated users"
+    fact_listing_first_visit }o--|| dist_time_to_first_visit : "distribution summary"

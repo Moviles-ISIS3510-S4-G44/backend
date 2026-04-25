@@ -2,7 +2,7 @@ marketplace_andes_analytics:
   outputs:
     dev:
       type: duckdb
-      path: './reports/sources/marketplace_andes/analytics'
+      path: reports/sources/marketplace_andes/analytics.duckdb
       schema: marketplace_andes_analytics
       threads: 4
       timeout_seconds: 300

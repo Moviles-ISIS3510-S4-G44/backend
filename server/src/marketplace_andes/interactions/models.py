@@ -50,6 +50,12 @@ class UserListingInteraction(SQLModel, table=True):
             server_default="1",
         ),
     )
+    first_interaction_at: datetime = Field(
+        sa_column=sa.Column(
+            sa.TIMESTAMP(timezone=True),
+            nullable=False,
+        ),
+    )
     last_interaction_at: datetime = Field(
         sa_column=sa.Column(
             sa.TIMESTAMP(timezone=True),
