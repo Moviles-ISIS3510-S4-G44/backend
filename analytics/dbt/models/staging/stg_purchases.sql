@@ -3,5 +3,6 @@ SELECT
     listing_id,
     buyer_id,
     price_at_purchase,
-    purchased_at
+    purchased_at,
+    seller_rating
 FROM {{ source('dlt_raw', 'purchases') }}
