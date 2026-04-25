@@ -116,10 +116,10 @@ async def post_message(
             sender_id=current_user.id,
             body=payload.body,
         )
-    except MessageBodyEmptyError:
+    except MessageBodyEmptyError as exc:
         raise HTTPException(
             status_code=422,
-            detail="Message body cannot be empty or contain only whitespace",
+            detail=str(exc),
         )
     outgoing = WsOutgoingMessage(
         id=str(message.id),

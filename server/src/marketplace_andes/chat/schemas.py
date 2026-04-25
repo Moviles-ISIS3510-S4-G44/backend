@@ -3,6 +3,8 @@ from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field
 
+MAX_MESSAGE_LENGTH = 2_000
+
 
 class ConversationCreateRequest(BaseModel):
     listing_id: UUID
@@ -40,7 +42,7 @@ class MessageResponse(BaseModel):
 
 
 class MessageCreateRequest(BaseModel):
-    body: str = Field(max_length=2_000)
+    body: str = Field(max_length=MAX_MESSAGE_LENGTH)
 
 
 class WsIncomingMessage(BaseModel):
