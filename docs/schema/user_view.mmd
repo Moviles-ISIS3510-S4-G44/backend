@@ -43,8 +43,30 @@ erDiagram
         TIMESTAMPTZ last_interaction_at
     }
 
+    conversations {
+        UUID id PK
+        UUID listing_id FK
+        UUID buyer_id FK
+        UUID seller_id FK
+        TIMESTAMPTZ created_at
+        TIMESTAMPTZ last_message_at
+    }
+
+    messages {
+        UUID id PK
+        UUID conversation_id FK
+        UUID sender_id FK
+        TEXT body
+        TIMESTAMPTZ sent_at
+    }
+
     users ||--|| auth_users : "has credentials"
     users ||--o{ auth_sessions : "has sessions"
     users ||--|| user_profiles : "has profile"
     users ||--o{ user_listing_interaction : "interacts"
     listings ||--o{ user_listing_interaction : "receives interactions"
+    listings ||--o{ conversations : "discussed in"
+    users ||--o{ conversations : "participates as buyer"
+    users ||--o{ conversations : "participates as seller"
+    conversations ||--o{ messages : "contains"
+    users ||--o{ messages : "sends"
