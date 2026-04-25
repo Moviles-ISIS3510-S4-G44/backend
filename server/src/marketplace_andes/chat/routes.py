@@ -22,7 +22,7 @@ from .schemas import (
     MessageResponse,
     WsOutgoingMessage,
 )
-from .service import ChatService, MessageBodyEmptyError
+from .service import ChatService, MESSAGE_BODY_EMPTY_DETAIL, MessageBodyEmptyError
 from .ws_manager import manager
 
 router = APIRouter(prefix="/chat", tags=["chat"])
@@ -116,10 +116,10 @@ async def post_message(
             sender_id=current_user.id,
             body=payload.body,
         )
-    except MessageBodyEmptyError as exc:
+    except MessageBodyEmptyError:
         raise HTTPException(
             status_code=422,
-            detail=str(exc),
+            detail=MESSAGE_BODY_EMPTY_DETAIL,
         )
     outgoing = WsOutgoingMessage(
         id=str(message.id),

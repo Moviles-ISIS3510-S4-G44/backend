@@ -8,6 +8,8 @@ from .models import Conversation, Message
 from .repository import ChatRepository
 from .schemas import ConversationResponse, MessageResponse, ParticipantInfo
 
+MESSAGE_BODY_EMPTY_DETAIL = "Message body cannot be empty or contain only whitespace"
+
 
 class MessageBodyEmptyError(ValueError):
     pass
@@ -116,9 +118,7 @@ class ChatService:
     ) -> Message:
         normalized_body = body.strip()
         if not normalized_body:
-            raise MessageBodyEmptyError(
-                "Message body cannot be empty or contain only whitespace"
-            )
+            raise MessageBodyEmptyError(MESSAGE_BODY_EMPTY_DETAIL)
 
         now = datetime.now(UTC)
         message = Message(
