@@ -1,12 +1,9 @@
-from typing import Annotated
-from uuid import UUID
-
-from fastapi import APIRouter, HTTPException, Path
+from fastapi import APIRouter, HTTPException
 
 from marketplace_andes.auth.dependencies import CurrentUserDep
 from marketplace_andes.db.dependencies import SessionDep
 
-from .schemas import PurchaseCreateRequest, PurchaseResponse, RateSellerRequest
+from .schemas import PurchaseCreateRequest, PurchaseResponse
 from .service import PurchaseService
 
 router = APIRouter(prefix="/purchases", tags=["purchases"])
@@ -57,34 +54,3 @@ async def get_my_purchases(
     service = PurchaseService(session)
     purchases = service.get_purchases_by_buyer(current_user.id)
     return [PurchaseResponse.model_validate(p) for p in purchases]
-
-
-@router.get("/sold")
-async def get_my_sales(
-    session: SessionDep,
-    current_user: CurrentUserDep,
-) -> list[PurchaseResponse]:
-    service = PurchaseService(session)
-    purchases = service.get_purchases_as_seller(current_user.id)
-    return [PurchaseResponse.model_validate(p) for p in purchases]
-
-
-@router.patch("/{purchase_id}/rate-seller")
-async def rate_seller(
-    purchase_id: Annotated[UUID, Path()],
-    payload: RateSellerRequest,
-    session: SessionDep,
-    current_user: CurrentUserDep,
-) -> PurchaseResponse:
-    service = PurchaseService(session)
-    purchase = service.rate_seller(
-        purchase_id=purchase_id,
-        buyer_id=current_user.id,
-        rating=payload.rating,
-    )
-    if purchase is None:
-        raise HTTPException(
-            status_code=404,
-            detail="Purchase not found or does not belong to you",
-        )
-    return PurchaseResponse.model_validate(purchase)

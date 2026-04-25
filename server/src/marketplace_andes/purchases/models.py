@@ -11,9 +11,6 @@ class Purchase(SQLModel, table=True):
     __table_args__ = (
         sa.UniqueConstraint("listing_id", name="uq_purchases_listing_id"),
         sa.CheckConstraint("price_at_purchase > 0", name="ck_purchases_price_positive"),
-        sa.CheckConstraint(
-            "seller_rating BETWEEN 1 AND 5", name="ck_purchases_seller_rating_range"
-        ),
         sa.Index("idx_purchases_buyer_id", "buyer_id"),
     )
 
@@ -48,12 +45,5 @@ class Purchase(SQLModel, table=True):
         sa_column=sa.Column(
             sa.TIMESTAMP(timezone=True),
             nullable=False,
-        ),
-    )
-    seller_rating: int | None = Field(
-        default=None,
-        sa_column=sa.Column(
-            sa.Integer(),
-            nullable=True,
         ),
     )

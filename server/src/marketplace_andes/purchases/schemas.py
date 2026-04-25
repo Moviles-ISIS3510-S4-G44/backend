@@ -1,15 +1,11 @@
 from datetime import datetime
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict
 
 
 class PurchaseCreateRequest(BaseModel):
     listing_id: UUID
-
-
-class RateSellerRequest(BaseModel):
-    rating: int = Field(ge=1, le=5)
 
 
 class PurchaseResponse(BaseModel):
@@ -20,4 +16,3 @@ class PurchaseResponse(BaseModel):
     buyer_id: UUID
     price_at_purchase: int
     purchased_at: datetime
-    seller_rating: int | None

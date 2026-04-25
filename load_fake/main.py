@@ -446,10 +446,6 @@ def create_fake_purchases(conn: Connection, all_user_ids: list[UUID]) -> None:
     for row in rows:
         eligible_buyers = [uid for uid in all_user_ids if uid != row.seller_id]
         buyer_id = random.choice(eligible_buyers)
-        has_rating = random.random() < 0.70
-        seller_rating = (
-            random.choices([1, 2, 3, 4, 5], weights=RATING_WEIGHTS)[0] if has_rating else None
-        )
         purchases_data.append(
             {
                 "id": uuid7(),
@@ -457,39 +453,18 @@ def create_fake_purchases(conn: Connection, all_user_ids: list[UUID]) -> None:
                 "buyer_id": buyer_id,
                 "price_at_purchase": row.price,
                 "purchased_at": row.sold_at,
-                "seller_rating": seller_rating,
             }
         )
 
     conn.execute(
         text(
             """
-            INSERT INTO purchases (id, listing_id, buyer_id, price_at_purchase, purchased_at, seller_rating)
-            VALUES (:id, :listing_id, :buyer_id, :price_at_purchase, :purchased_at, :seller_rating)
+            INSERT INTO purchases (id, listing_id, buyer_id, price_at_purchase, purchased_at)
+            VALUES (:id, :listing_id, :buyer_id, :price_at_purchase, :purchased_at)
             ON CONFLICT (listing_id) DO NOTHING
             """
         ),
         purchases_data,
-    )
-
-    # Update each seller's profile rating to the rounded average of their received ratings
-    conn.execute(
-        text(
-            """
-            UPDATE user_profiles up
-            SET rating = subq.avg_rating
-            FROM (
-                SELECT
-                    l.seller_id,
-                    ROUND(AVG(p.seller_rating)) AS avg_rating
-                FROM purchases p
-                JOIN listings l ON l.id = p.listing_id
-                WHERE p.seller_rating IS NOT NULL
-                GROUP BY l.seller_id
-            ) subq
-            WHERE up.id = subq.seller_id
-            """
-        )
     )
 
     print(f"Seeded {len(purchases_data)} purchases.")
