@@ -43,6 +43,7 @@ services:
 
   postgres:
     image: postgres:18.3-trixie
+    command: ["postgres", "-c", "max_connections=200"]
     restart: unless-stopped
     user: postgres
     env_file:

@@ -1,6 +1,7 @@
 from datetime import UTC, datetime
 from uuid import UUID, uuid7
 
+from sqlalchemy import or_
 from sqlmodel import Session, col, delete, select
 
 from marketplace_andes.categories.models import Category
@@ -53,7 +54,13 @@ class ListingService:
         if max_price is not None:
             statement = statement.where(Listing.price <= max_price)
         if location is not None:
-            statement = statement.where(col(Listing.location).ilike(f"%{location}%"))
+            pattern = f"%{location}%"
+            statement = statement.where(
+                or_(
+                    col(Listing.location).ilike(pattern),
+                    col(Listing.location_name).ilike(pattern),
+                )
+            )
         if status is not None:
             statement = statement.where(Listing.status == status)
         return list(self.session.exec(statement).all())
@@ -90,6 +97,8 @@ class ListingService:
             listing.images = payload.images
         if payload.location is not None:
             listing.location = payload.location
+        if payload.location_name is not None:
+            listing.location_name = payload.location_name
 
         listing.updated_at = now
         self.session.add(listing)

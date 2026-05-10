@@ -55,6 +55,10 @@ class Listing(SQLModel, table=True):
     location: str = Field(
         sa_column=sa.Column(sa.String(length=255), nullable=False),
     )
+    location_name: str | None = Field(
+        default=None,
+        sa_column=sa.Column(sa.String(length=255), nullable=True),
+    )
     status: str = Field(
         sa_column=sa.Column(sa.String(length=32), nullable=False),
     )

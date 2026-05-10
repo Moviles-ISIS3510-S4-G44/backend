@@ -44,6 +44,7 @@ async def create_listing(
         images=payload.images,
         status="draft",
         location=payload.location,
+        location_name=payload.location_name,
         created_at=now,
         updated_at=now,
     )

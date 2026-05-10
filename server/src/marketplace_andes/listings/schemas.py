@@ -15,6 +15,7 @@ class ListingCreateRequest(BaseModel):
     condition: ListingCondition
     images: list[str]
     location: str
+    location_name: str | None = None
 
 
 class ListingUpdateRequest(BaseModel):
@@ -25,6 +26,7 @@ class ListingUpdateRequest(BaseModel):
     condition: ListingCondition | None = None
     images: list[str] | None = None
     location: str | None = None
+    location_name: str | None = None
 
 
 class ListingResponse(BaseModel):
@@ -40,6 +42,7 @@ class ListingResponse(BaseModel):
     images: list[str]
     status: str
     location: str
+    location_name: str | None
     created_at: datetime
     updated_at: datetime
 

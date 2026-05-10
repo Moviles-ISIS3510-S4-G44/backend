@@ -92,12 +92,13 @@ class ListingCondition(StrEnum):
 
 
 LISTING_CONDITIONS = list(ListingCondition)
-LISTING_LOCATIONS = [
-    "4.6097,-74.0817",   # Bogotá
-    "6.2442,-75.5812",   # Medellín
-    "3.4516,-76.5320",   # Cali
-    "10.9685,-74.7813",  # Barranquilla
-    "7.1193,-73.1227",   # Bucaramanga
+# (coordinate string for listings.location, human-readable label for listings.location_name)
+LISTING_LOCATIONS: list[tuple[str, str]] = [
+    ("4.6097,-74.0817", "Bogotá"),
+    ("6.2442,-75.5812", "Medellín"),
+    ("3.4516,-76.5320", "Cali"),
+    ("10.9685,-74.7813", "Barranquilla"),
+    ("7.1193,-73.1227", "Bucaramanga"),
 ]
 DEFAULT_CATEGORIES = [
     "Electronics",
@@ -322,7 +323,7 @@ def create_fake_listings(
         title = f"{random.choice(LISTING_TITLES)} #{i + 1:03d}"
         condition = random.choice(LISTING_CONDITIONS).value
         price = random.randint(10000, 5000000)
-        location = random.choice(LISTING_LOCATIONS)
+        location_coords, location_name = random.choice(LISTING_LOCATIONS)
         images = [
             f"https://picsum.photos/seed/{listing_id.hex}-{img}/900/900"
             for img in range(1, random.randint(2, 5))
@@ -364,7 +365,8 @@ def create_fake_listings(
                 "price": price,
                 "images": images,
                 "status": status,
-                "location": location,
+                "location": location_coords,
+                "location_name": location_name,
                 "created_at": created_at,
                 "updated_at": updated_at,
             }
@@ -405,8 +407,8 @@ def create_fake_listings(
     conn.execute(
         text(
             """
-            INSERT INTO listings (id, seller_id, category_id, title, description, condition, price, images, status, location, created_at, updated_at)
-            VALUES (:id, :seller_id, :category_id, :title, :description, :condition, :price, :images, :status, :location, :created_at, :updated_at)
+            INSERT INTO listings (id, seller_id, category_id, title, description, condition, price, images, status, location, location_name, created_at, updated_at)
+            VALUES (:id, :seller_id, :category_id, :title, :description, :condition, :price, :images, :status, :location, :location_name, :created_at, :updated_at)
             """
         ),
         listings_data,

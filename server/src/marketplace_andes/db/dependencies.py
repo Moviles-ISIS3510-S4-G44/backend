@@ -19,6 +19,9 @@ def get_db_config() -> EngineConfig:
 DBConfigDep = Annotated[EngineConfig, Depends(get_db_config)]
 
 
+from functools import lru_cache
+
+@lru_cache
 def get_engine(config: DBConfigDep) -> Engine:
     return create_engine(config.db_url, echo=config.echo)
 
