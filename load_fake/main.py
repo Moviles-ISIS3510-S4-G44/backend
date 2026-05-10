@@ -21,6 +21,7 @@ N_USERS = 30
 N_HISTORICAL_USERS = 10
 N_LISTINGS = 20
 N_INTERACTIONS = 200
+N_FAVORITES = 85
 
 PASSWORD_HASHER = PasswordHasher()
 
@@ -567,6 +568,94 @@ def create_fake_interactions(
     print(f"Processed {len(interactions_data)} interaction events.")
 
 
+def create_fake_favorites(conn: Connection, user_ids: list[UUID]) -> None:
+    """Seed user_listing_favorite with varied created_at for analytics (daily trends)."""
+    if not user_ids:
+        return
+
+    rows = conn.execute(
+        text(
+            """
+            SELECT id AS listing_id, seller_id, created_at
+            FROM listings
+            WHERE status = 'published'
+            """
+        )
+    ).all()
+
+    if not rows:
+        rows = conn.execute(
+            text(
+                """
+                SELECT id AS listing_id, seller_id, created_at
+                FROM listings
+                """
+            )
+        ).all()
+
+    if not rows:
+        print("No listings available; skipping favorites seed.")
+        return
+
+    now = datetime.now(UTC)
+    pairs: set[tuple[UUID, UUID]] = set()
+    favorites_data: list[dict] = []
+
+    for _ in range(N_FAVORITES * 5):
+        if len(favorites_data) >= N_FAVORITES:
+            break
+        row = random.choice(rows)
+        listing_id = row.listing_id
+        seller_id = row.seller_id
+        listing_created = row.created_at
+        eligible = [u for u in user_ids if u != seller_id]
+        if not eligible:
+            continue
+        user_id = random.choice(eligible)
+        key = (user_id, listing_id)
+        if key in pairs:
+            continue
+        pairs.add(key)
+
+        if listing_created.tzinfo is None:
+            listing_created = listing_created.replace(tzinfo=UTC)
+
+        created_at = now - timedelta(
+            days=random.randint(0, 120),
+            hours=random.randint(0, 23),
+            minutes=random.randint(0, 59),
+        )
+        if created_at < listing_created:
+            created_at = listing_created + timedelta(
+                minutes=random.randint(1, 60 * 24 * 7)
+            )
+
+        favorites_data.append(
+            {
+                "id": uuid7(),
+                "user_id": user_id,
+                "listing_id": listing_id,
+                "created_at": created_at,
+            }
+        )
+
+    if not favorites_data:
+        return
+
+    conn.execute(
+        text(
+            """
+            INSERT INTO user_listing_favorite (id, user_id, listing_id, created_at)
+            VALUES (:id, :user_id, :listing_id, :created_at)
+            ON CONFLICT (user_id, listing_id) DO NOTHING
+            """
+        ),
+        favorites_data,
+    )
+
+    print(f"Seeded {len(favorites_data)} favorites (deduped pairs).")
+
+
 def main(force: bool = False):
     DATABASE_URL = os.getenv("DATABASE_URL")
 
@@ -588,6 +677,7 @@ def main(force: bool = False):
             print("⚠️ FORCE MODE: limpiando base de datos...")
 
             tables = [
+                "user_listing_favorite",
                 "user_listing_interaction",
                 "listing_status_history",
                 "listings",
@@ -654,6 +744,20 @@ def main(force: bool = False):
             print(
                 f"Database already has {existing_interactions} interactions."
             )
+
+        existing_favorites = conn.execute(
+            text("SELECT COUNT(*) FROM user_listing_favorite")
+        ).scalar_one()
+        if existing_favorites == 0:
+            user_ids_for_favorites = [
+                row[0]
+                for row in conn.execute(
+                    text("SELECT id FROM users WHERE deleted_at IS NULL")
+                ).all()
+            ]
+            create_fake_favorites(conn, user_ids_for_favorites)
+        else:
+            print(f"Database already has {existing_favorites} favorites.")
 
         existing_purchases = conn.execute(
             text("SELECT COUNT(*) FROM purchases")
