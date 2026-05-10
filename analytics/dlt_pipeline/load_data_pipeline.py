@@ -13,6 +13,7 @@ def run_pipeline():
         "listings",
         "listing_status_history",
         "user_listing_interaction",
+        "user_listing_favorite",
         "purchases",
     ).parallelize()
 
@@ -30,6 +31,10 @@ def run_pipeline():
 
     source.user_listing_interaction.apply_hints(
         incremental=dlt.sources.incremental("last_interaction_at"),
+    )
+
+    source.user_listing_favorite.apply_hints(
+        incremental=dlt.sources.incremental("created_at"),
     )
 
     source.purchases.apply_hints(
