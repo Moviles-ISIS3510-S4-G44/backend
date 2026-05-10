@@ -1,0 +1,2 @@
+SELECT *
+FROM marketplace_andes_analytics.daily_new_favorites
