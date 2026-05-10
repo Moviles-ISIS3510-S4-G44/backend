@@ -69,3 +69,7 @@ title: User Retention Overview
 - [Purchase Revenue](purchase-revenue)
 - [Seller Ratings](seller-ratings)
 - [Time to Purchase](time-to-purchase)
+
+### Sprint 4
+
+- [Favorites analytics notebook](sprint-4/notebook)
