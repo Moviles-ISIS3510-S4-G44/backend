@@ -73,3 +73,4 @@ title: User Retention Overview
 ### Sprint 4
 
 - [Favorites analytics notebook](sprint-4/notebook)
+- [Profile visits by seller (daily)](sprint-4/profile-visits-by-seller) — Isaac

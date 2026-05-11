@@ -6,6 +6,8 @@ from fastapi import APIRouter, HTTPException, Path, Query
 
 from marketplace_andes.auth.dependencies import CurrentUserDep
 from marketplace_andes.db.dependencies import SessionDep
+from marketplace_andes.users.models import UserProfile
+from sqlmodel import select
 
 from .enums import ListingCondition
 from .models import Listing
@@ -19,6 +21,15 @@ from .schemas import (
 from .service import ListingService
 
 router = APIRouter(prefix="/listings", tags=["listings"])
+
+
+def enrich_listing_response(listing: Listing, session: SessionDep) -> ListingResponse:
+    res = ListingResponse.model_validate(listing)
+    profile = session.get(UserProfile, listing.seller_id)
+    if profile:
+        res.seller_name = profile.name
+        res.seller_rating = profile.rating
+    return res
 
 
 @router.post("", status_code=201)
@@ -49,7 +60,7 @@ async def create_listing(
         updated_at=now,
     )
     listing = service.create(listing)
-    return ListingResponse.model_validate(listing)
+    return enrich_listing_response(listing, session)
 
 
 @router.get("")
@@ -73,7 +84,7 @@ async def list_listings(
         location=location,
         status=status,
     )
-    return [ListingResponse.model_validate(listing) for listing in listings]
+    return [enrich_listing_response(listing, session) for listing in listings]
 
 
 @router.get("/me")
@@ -83,7 +94,7 @@ async def get_my_listings(
 ) -> list[ListingResponse]:
     service = ListingService(session)
     listings = service.get_by_seller(current_user.id)
-    return [ListingResponse.model_validate(listing) for listing in listings]
+    return [enrich_listing_response(listing, session) for listing in listings]
 
 
 @router.delete("")
@@ -102,7 +113,7 @@ async def get_listing(
     listing = service.get_by_id(listing_id)
     if not listing:
         raise HTTPException(status_code=404, detail="Listing not found")
-    return ListingResponse.model_validate(listing)
+    return enrich_listing_response(listing, session)
 
 
 @router.patch("/{listing_id}", status_code=200)

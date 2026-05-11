@@ -1,0 +1,2 @@
+SELECT *
+FROM marketplace_andes_analytics.daily_profile_visits_by_seller

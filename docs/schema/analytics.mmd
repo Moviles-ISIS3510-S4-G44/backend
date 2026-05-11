@@ -41,6 +41,27 @@ erDiagram
         TIMESTAMPTZ last_interaction_at
     }
 
+    dlt_raw_profile_visit_events {
+        UUID id PK
+        UUID visitor_user_id
+        UUID visited_user_id
+        TIMESTAMPTZ visited_at
+    }
+
+    stg_profile_visit_events {
+        UUID profile_visit_event_id PK
+        UUID visitor_user_id
+        UUID visited_user_id
+        TIMESTAMPTZ visited_at
+    }
+
+    daily_profile_visits_by_seller {
+        DATE visit_date
+        UUID seller_user_id
+        VARCHAR seller_name
+        INTEGER profile_visit_count
+    }
+
     stg_listings {
         UUID listing_id PK
         UUID seller_id
@@ -123,6 +144,10 @@ erDiagram
     dlt_raw_listings ||--|| stg_listings : "stages listings"
     dlt_raw_listing_status_history ||--o{ stg_listing_status_history : "stages status events"
     dlt_raw_user_listing_interaction ||--o{ stg_user_listing_interactions : "stages interactions"
+
+    dlt_raw_profile_visit_events ||--|| stg_profile_visit_events : "stages profile visits"
+    dlt_raw_users ||--o{ dlt_raw_profile_visit_events : "visitor and visited users"
+    stg_profile_visit_events ||--o{ daily_profile_visits_by_seller : "daily per seller"
 
     dlt_raw_users ||--o{ fact_user_stats : "enriches user stats"
     dlt_raw_user_profiles |o--o{ fact_user_stats : "adds profile attributes"

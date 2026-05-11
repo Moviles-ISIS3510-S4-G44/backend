@@ -11,6 +11,14 @@ class LoggedUser(BaseModel):
     rating: int
 
 
+class PublicUser(BaseModel):
+    model_config = ConfigDict(from_attributes=True, frozen=True)
+
+    id: UUID
+    name: str
+    rating: int
+
+
 class RegisterUserRequest(BaseModel):
     model_config = ConfigDict(from_attributes=True, frozen=True)
 

@@ -34,6 +34,8 @@ class ListingResponse(BaseModel):
 
     id: UUID
     seller_id: UUID
+    seller_name: str | None = None
+    seller_rating: int | None = None
     category_id: UUID
     title: str
     description: str

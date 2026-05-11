@@ -13,8 +13,8 @@ WITH user_base AS (
         CASE WHEN u.created_at >= (CURRENT_DATE - INTERVAL '30 days') THEN 1 ELSE 0 END AS is_new_user,
         -- Logic for "Deleted in last 30 days"
         CASE WHEN u.deleted_at >= (CURRENT_DATE - INTERVAL '30 days') THEN 1 ELSE 0 END AS is_recent_churn
-    FROM {{ source('dlt_raw', 'users') }} u
-    LEFT JOIN {{ source('dlt_raw', 'user_profiles') }} up ON u.id = up.id
+    FROM {{ ref('stg_users') }} AS u
+    LEFT JOIN {{ ref('stg_user_profiles') }} AS up ON u.id = up.id
 )
 
 SELECT

@@ -15,6 +15,7 @@ def run_pipeline():
         "user_listing_interaction",
         "user_listing_favorite",
         "purchases",
+        "profile_visit_events",
     ).parallelize()
 
     source.users.apply_hints(
@@ -40,6 +41,10 @@ def run_pipeline():
     source.purchases.apply_hints(
         incremental=dlt.sources.incremental("purchased_at"),
     )
+
+    # Full replace each run: small append-only event table; incremental cursor
+    # missed new rows in practice when re-running the pipeline after app visits.
+    source.profile_visit_events.apply_hints(write_disposition="replace")
 
     pipeline = dlt.pipeline(
         pipeline_name="marketplace_andes_to_analytics_pipeline",

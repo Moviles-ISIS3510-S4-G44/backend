@@ -22,6 +22,7 @@ N_HISTORICAL_USERS = 10
 N_LISTINGS = 20
 N_INTERACTIONS = 200
 N_FAVORITES = 85
+N_PROFILE_VISITS = 150
 
 PASSWORD_HASHER = PasswordHasher()
 
@@ -570,6 +571,53 @@ def create_fake_interactions(
     print(f"Processed {len(interactions_data)} interaction events.")
 
 
+def create_fake_profile_visits(conn: Connection, user_ids: list[UUID]) -> None:
+    """Seed profile_visit_events for seller profile analytics (visitor != visited)."""
+    if len(user_ids) < 2:
+        print("Not enough users for profile visit seed; skipping.")
+        return
+
+    now = datetime.now(UTC)
+    rows: list[dict] = []
+    for _ in range(N_PROFILE_VISITS):
+        visited = random.choice(user_ids)
+        eligible = [u for u in user_ids if u != visited]
+        if not eligible:
+            continue
+        visitor = random.choice(eligible)
+        visited_at = now - timedelta(
+            days=random.randint(0, 120),
+            hours=random.randint(0, 23),
+            minutes=random.randint(0, 59),
+        )
+        rows.append(
+            {
+                "id": uuid7(),
+                "visitor_user_id": visitor,
+                "visited_user_id": visited,
+                "visited_at": visited_at,
+            }
+        )
+
+    if not rows:
+        return
+
+    conn.execute(
+        text(
+            """
+            INSERT INTO profile_visit_events (
+                id, visitor_user_id, visited_user_id, visited_at
+            )
+            VALUES (
+                :id, :visitor_user_id, :visited_user_id, :visited_at
+            )
+            """
+        ),
+        rows,
+    )
+    print(f"Seeded {len(rows)} profile visit events.")
+
+
 def create_fake_favorites(conn: Connection, user_ids: list[UUID]) -> None:
     """Seed user_listing_favorite with varied created_at for analytics (daily trends)."""
     if not user_ids:
@@ -681,6 +729,7 @@ def main(force: bool = False):
             tables = [
                 "user_listing_favorite",
                 "user_listing_interaction",
+                "profile_visit_events",
                 "listing_status_history",
                 "listings",
                 "categories",
@@ -699,6 +748,9 @@ def main(force: bool = False):
         existing_users = conn.execute(text("SELECT COUNT(*) FROM users")).scalar_one()
         existing_listings = conn.execute(text("SELECT COUNT(*) FROM listings")).scalar_one()
         existing_interactions = conn.execute(text("SELECT COUNT(*) FROM user_listing_interaction")).scalar_one()
+        existing_profile_visits = conn.execute(
+            text("SELECT COUNT(*) FROM profile_visit_events")
+        ).scalar_one()
 
         # 👤 USERS
         if existing_users == 0:
@@ -760,6 +812,17 @@ def main(force: bool = False):
             create_fake_favorites(conn, user_ids_for_favorites)
         else:
             print(f"Database already has {existing_favorites} favorites.")
+
+        if existing_profile_visits == 0:
+            user_ids_for_profile_visits = [
+                row[0]
+                for row in conn.execute(
+                    text("SELECT id FROM users WHERE deleted_at IS NULL")
+                ).all()
+            ]
+            create_fake_profile_visits(conn, user_ids_for_profile_visits)
+        else:
+            print(f"Database already has {existing_profile_visits} profile visit events.")
 
         existing_purchases = conn.execute(
             text("SELECT COUNT(*) FROM purchases")

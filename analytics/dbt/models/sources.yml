@@ -9,3 +9,4 @@ sources:
       - name: user_listing_interaction
       - name: user_listing_favorite
       - name: purchases
+      - name: profile_visit_events
